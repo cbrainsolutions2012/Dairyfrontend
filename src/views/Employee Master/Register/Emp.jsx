@@ -40,13 +40,13 @@ function Emp() {
     if (!formData.MobileNumber) newErrors.MobileNumber = 'Mobile Number is required';
     if (!formData.Username) newErrors.Username = 'User Name is required';
     if (!formData.Password) newErrors.Password = 'Password is required';
-    if (!formData.Pancard) newErrors.Pancard = 'Pancard is required';
-    if (!formData.Dob) newErrors.Dob = 'Date of Birth is required';
+    // if (!formData.Pancard) newErrors.Pancard = 'Pancard is required';
+    // if (!formData.Dob) newErrors.Dob = 'Date of Birth is required';
     if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
-    if (!formData.City) newErrors.City = 'City is required';
-    if (!formData.Address) newErrors.Address = 'Address is required';
+    // if (!formData.City) newErrors.City = 'City is required';
+    // if (!formData.Address) newErrors.Address = 'Address is required';
     if (!formData.WorkingArea) newErrors.WorkingArea = 'Working Area is required';
-    if (!formData.Adharcard) newErrors.Adharcard = 'Adhar Card is required';
+    // if (!formData.Adharcard) newErrors.Adharcard = 'Adhar Card is required';
     return newErrors;
   };
   const handleSearchChange = (e) => {
@@ -193,7 +193,20 @@ function Emp() {
         if (response.status === 201) {
           setTimeout(() => {
             alert('Employee registered successfully');
-            fetchTableData();
+            setTableData((prevData) => [...prevData, response.data.employee]);
+            setFormData({
+              FullName: '',
+              MobileNumber: '',
+              Username: '',
+              Password: '',
+              Pancard: '',
+              Dob: '',
+              EmailId: '',
+              City: '',
+              Address: '',
+              WorkingArea: '',
+              Adharcard: ''
+            });
           }, 2000);
         }
       } catch (error) {

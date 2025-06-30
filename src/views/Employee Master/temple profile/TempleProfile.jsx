@@ -9,6 +9,7 @@ import '../commonemp.scss';
 import { useNavigate } from 'react-router';
 
 function TempleProfile() {
+  const navigate = useNavigate();
   const tableRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [tableData, setTableData] = useState([]);
@@ -142,22 +143,22 @@ function TempleProfile() {
   const validate = () => {
     const newErrors = {};
     if (!formData.TempleName) newErrors.TempleName = 'Temple Name is required';
-    if (!formData.City) newErrors.City = 'City is required';
-    if (!formData.Address) newErrors.Address = 'Address is required';
+    // if (!formData.City) newErrors.City = 'City is required';
+    // if (!formData.Address) newErrors.Address = 'Address is required';
     // if (!formData.MobileNo) newErrors.MobileNo = 'Mobile No. is required';
     // if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
     // if (!formData.Pancard) newErrors.Pancard = 'Pancard is required';
     if (!formData.RegNumber) newErrors.RegNumber = 'Registration Number is required';
-    if (!formData.Website) newErrors.Website = 'Website URL is required';
+    // if (!formData.Website) newErrors.Website = 'Website URL is required';
     if (!formData.OwnerName) newErrors.OwnerName = 'Owner Name is required';
-    if (!formData.GSTNumber) newErrors.GSTNumber = 'GST Number is required';
+    // if (!formData.GSTNumber) newErrors.GSTNumber = 'GST Number is required';
     if (!formData.MobileNo.match(/^\d{10}$/)) newErrors.MobileNo = 'Mobile No. must be 10 digits';
-    if (formData.EmailId && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.EmailId)) {
-      newErrors.EmailId = 'Invalid email format';
-    }
-    if (formData.Pancard && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.Pancard)) {
-      newErrors.Pancard = 'Invalid PAN card format';
-    }
+    // if (formData.EmailId && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.EmailId)) {
+    //   newErrors.EmailId = 'Invalid email format';
+    // }
+    // if (formData.Pancard && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.Pancard)) {
+    // newErrors.Pancard = 'Invalid PAN card format';
+    // }
     // if (formData.GSTNumber && !/^[0-9]{2}[A-Z]{4}[0-9]{7}[A-Z][A-Z0-9][A-Z0-9]$/.test(formData.GSTNumber)) {
     //   newErrors.GSTNumber = 'Invalid GST Number format';
     // }
@@ -165,18 +166,19 @@ function TempleProfile() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
       try {
         // Handle form submission
-        const res = axios.post('https://api.mytemplesoftware.in/api/temples', formData, {
+        const res = await axios.post('https://api.mytemplesoftware.in/api/temples', formData, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
+
         if (res.status === 201) {
           alert('Temple profile created successfully');
           setFormData({
@@ -192,15 +194,19 @@ function TempleProfile() {
             Address: ''
           });
           setErrors({});
+          // Refresh table data instead of manually adding to state
           fetchTableData();
         }
       } catch (error) {
-        console.error('There is an error submitting form data');
-        setErrors({ submit: 'Failed to submit data. Please try again' });
-        alert('Failed to submit data. Please try again');
-        console.error(error);
+        console.error('There is an error submitting form data:', error);
+        if (error.response && error.response.data && error.response.data.message) {
+          setErrors({ submit: error.response.data.message });
+          alert(`Failed to submit data: ${error.response.data.message}`);
+        } else {
+          setErrors({ submit: 'Failed to submit data. Please try again' });
+          alert('Failed to submit data. Please try again');
+        }
       }
-      console.log(formData);
     } else {
       setErrors(formErrors);
     }
@@ -304,9 +310,6 @@ function TempleProfile() {
               </div>
               <div className="form-actions">
                 <button type="submit">Submit</button>
-                <button type="button" onClick={() => setFormData({})}>
-                  Cancel
-                </button>
               </div>
             </form>
           </Card.Body>
@@ -368,7 +371,7 @@ function TempleProfile() {
                         <td>{item.GSTNumber}</td>
                         <td>{item.Address}</td>
                         <td>
-                          <Button className="me-2" variant="primary" href={`/edittemple/${item.Id}`}>
+                          <Button className="me-2" variant="primary" onClick={() => navigate(`/edittemple/${item.Id}`)}>
                             Edit
                           </Button>
                           <Button variant="danger" onClick={() => confirmDelete(item.Id)}>

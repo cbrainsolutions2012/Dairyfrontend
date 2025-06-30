@@ -6,9 +6,11 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useNavigate } from 'react-router';
 
 function Pooja() {
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     SevaName: ''
@@ -190,12 +192,15 @@ function Pooja() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://api.mytemplesoftware.in/api/seva/${id}`, {
+      const res = await axios.delete(`https://api.mytemplesoftware.in/api/seva/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      setTableData(tableData.filter((item) => item.id !== id));
+      if (res.status === 200) {
+        alert('Seva deleted successfully');
+        setTableData((prevData) => prevData.filter((item) => item.Id !== id));
+      }
     } catch (error) {
       setApiError('Seva not deleted. Please try again.');
       alert('Failed to delete Seva. Please try again.');
@@ -268,11 +273,10 @@ function Pooja() {
                         <tr key={item.Id}>
                           <td>{item.SevaName}</td>
                           <td>
-                            {/* <Button className="me-2">Edit</Button> */}
-                            <Button className="me-2" variant="primary" href={`/editseva/${item.Id}`}>
+                            <Button className="me-2" variant="primary" onClick={() => navigate(`/editseva/${item.Id}`)}>
                               Edit
                             </Button>
-                            <Button variant="danger" onClick={() => confirmDelete(item.id || item.Id)}>
+                            <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
                               Delete
                             </Button>
                           </td>

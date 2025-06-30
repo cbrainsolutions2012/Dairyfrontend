@@ -6,11 +6,14 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useNavigate } from 'react-router';
 
 const Gotra = () => {
   // console.log(tr_number);
-  const token = localStorage.getItem('token') || '';
+  const token = localStorage.getItem('token');
   // console.log(user_id);
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     GotraName: ''
@@ -61,7 +64,7 @@ const Gotra = () => {
         });
         if (res.status === 201) {
           alert('Gotra added successfully');
-          fetchTableData();
+          setTableData((prevData) => [...prevData, res.data.gotra]);
         }
       } catch (error) {
         console.error('There is an error submitting form data');
@@ -193,8 +196,16 @@ const Gotra = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://api.mytemplesoftware.in/api/gotra/${id}/`);
-      setTableData(tableData.filter((item) => item.id !== id));
+      const res = await axios.delete(`https://api.mytemplesoftware.in/api/gotra/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.status === 200) {
+        alert('Gotra deleted successfully');
+        setTableData((prevData) => prevData.filter((item) => item.Id !== id));
+      }
     } catch (error) {
       setApiError('Gotra not deleted. Please try again.');
       alert('Failed to delete Gotra. Please try again.');
@@ -267,10 +278,10 @@ const Gotra = () => {
                           <td>{item.GotraName}</td>
                           <td>
                             {/* <Button className="me-2">Edit</Button> */}
-                            <Button className="me-2" variant="primary" href={`/editgotra/${item.Id}`}>
+                            <Button className="me-2" variant="primary" onClick={() => navigate(`/editgotra/${item.Id}`)}>
                               Edit
                             </Button>
-                            <Button variant="danger" onClick={() => confirmDelete(item.id || item.Id)}>
+                            <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
                               Delete
                             </Button>
                           </td>

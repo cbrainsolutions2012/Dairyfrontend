@@ -6,9 +6,11 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import '../commonemp.scss';
+import { useNavigate } from 'react-router';
 
 function DonateMaster() {
   const tableRef = useRef(null);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [gotraList, setGotraList] = useState([]);
   const [tabData, setTabData] = useState([]); // State to hold table data
@@ -53,15 +55,17 @@ function DonateMaster() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://api.mytemplesoftware.in/api/dengidar/${id}`, {
+      const res = await axios.delete(`https://api.mytemplesoftware.in/api/dengidar/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           'Content-Type': 'application/json'
         }
       });
       // Remove the deleted item from the table data
-      setTabData(tabData.filter((item) => item.Id !== id));
-      alert('Devotee deleted successfully!');
+      if (res.status === 200) {
+        alert('Devotee deleted successfully');
+        setTabData((prevData) => prevData.filter((item) => item.Id !== id));
+      }
     } catch (error) {
       console.error('Error deleting devotee:', error);
       alert('Failed to delete devotee. Please try again.');
@@ -203,15 +207,15 @@ function DonateMaster() {
   const validate = () => {
     const newErrors = {};
     if (!formData.FullName) newErrors.FullName = 'Full Name is required';
-    if (!formData.City) newErrors.City = 'City is required';
-    if (!formData.Address) newErrors.Address = 'Address is required';
+    // if (!formData.City) newErrors.City = 'City is required';
+    // if (!formData.Address) newErrors.Address = 'Address is required';
     if (!formData.MobileNumber) newErrors.MobileNumber = 'Mobile Number is required';
-    if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
-    if (!formData.PanCard) newErrors.PanCard = 'PAN Card is required';
-    if (!formData.AdharCard) newErrors.AdharCard = 'Adhaar No. is required'; // Fixed field name
+    // if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
+    // if (!formData.PanCard) newErrors.PanCard = 'PAN Card is required';
+    // if (!formData.AdharCard) newErrors.AdharCard = 'Adhaar No. is required'; // Fixed field name
     if (!formData.GotraTypeId) newErrors.GotraTypeId = 'Gotra type is required';
-    if (!formData.DOB) newErrors.DOB = 'Date of Birth is required';
-    if (!formData.RegisterDate) newErrors.RegisterDate = 'Date is required';
+    // if (!formData.DOB) newErrors.DOB = 'Date of Birth is required';
+    // if (!formData.RegisterDate) newErrors.RegisterDate = 'Date is required';
     return newErrors;
   };
 
@@ -407,10 +411,10 @@ function DonateMaster() {
                           <td>{item.EmailId}</td>
                           <td>
                             {/* <Button className="me-2">Edit</Button> */}
-                            <Button variant="warning" href={`/editdevotee/${item.Id}`}>
+                            <Button variant="warning" className="me-2" onClick={() => navigate(`/editdevotee/${item.Id}`)}>
                               Edit
                             </Button>
-                            <Button variant="danger" className="me-2" onClick={() => confirmDelete(item.id || item.Id)}>
+                            <Button variant="danger" className="me-2" onClick={() => confirmDelete(item.Id)}>
                               Delete
                             </Button>
                           </td>

@@ -85,13 +85,13 @@ const menuItems = {
           icon: 'fa-solid fa-file-invoice',
           url: '/cashbook'
         },
-        // {
-        //   id: 'income',
-        //   title: 'उत्पन्न',
-        //   type: 'item',
-        //   icon: 'fa-solid fa-file-invoice',
-        //   url: '/income'
-        // },
+        {
+          id: 'income',
+          title: 'उत्पन्न',
+          type: 'item',
+          icon: 'fa-solid fa-file-invoice',
+          url: '/income'
+        },
         {
           id: 'expenses',
           title: 'खर्च',

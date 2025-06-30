@@ -123,11 +123,6 @@ export const routes = [
       },
       {
         exact: 'true',
-        path: '/templereg',
-        element: lazy(() => import('./views/Employee Master/temple profile/TempleProfile'))
-      },
-      {
-        exact: 'true',
         path: '/edittemple/:id',
         element: lazy(() => import('./views/Employee Master/temple profile/EditTemple'))
       },
