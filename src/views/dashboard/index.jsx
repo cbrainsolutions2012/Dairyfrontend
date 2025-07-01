@@ -17,6 +17,8 @@ import axios from 'axios';
 const DashAnalytics = () => {
   const tableRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tableData, setTableData] = useState([]);
+  const [dashboardData, setDashboardData] = useState({});
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -34,9 +36,24 @@ const DashAnalytics = () => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   fetchTableData();
-  // }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/auth/dashboard-stats', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      console.log(res.data);
+      setDashboardData(res.data.data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  };
+  useEffect(() => {
+    // fetchTableData();
+    fetchDashboardData();
+  }, []);
 
   const handleExportToExcel = () => {
     const table = tableRef.current;
@@ -127,7 +144,7 @@ const DashAnalytics = () => {
                 title: 'कर्मचारी',
                 class: 'bg-c-blue',
                 icon: 'fa-solid fa-user-tie',
-                primaryText: '10000'
+                primaryText: dashboardData?.totalEmployees || '0'
                 // secondaryText: 'Completed Orders',
                 // extraText: '351'
               }}
@@ -142,7 +159,7 @@ const DashAnalytics = () => {
                 title: 'देणगीदार',
                 class: 'bg-c-green',
                 icon: 'fa-solid fa-hand-holding-dollar',
-                primaryText: '10000'
+                primaryText: dashboardData?.totalDengidar || '0'
                 // secondaryText: 'This Month',
                 // extraText: '213'
               }}
@@ -156,7 +173,7 @@ const DashAnalytics = () => {
                 title: 'उत्त्पन्न',
                 class: 'bg-c-yellow',
                 icon: 'fa-solid fa-building-columns',
-                primaryText: '10000'
+                primaryText: dashboardData?.thisMonthIncome || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}
@@ -164,13 +181,13 @@ const DashAnalytics = () => {
           </Link>
         </Col>
         <Col md={6} xl={3}>
-          <Link to={'/exenses'}>
+          <Link to={'/expenses'}>
             <OrderCard
               params={{
                 title: 'खर्च',
                 class: 'bg-c-red',
                 icon: 'fa-solid fa-money-check',
-                primaryText: '100'
+                primaryText: dashboardData?.thisMonthExpense || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}
@@ -182,10 +199,10 @@ const DashAnalytics = () => {
           <Link to={'/pooja'}>
             <OrderCard
               params={{
-                title: 'पुजेचे  प्रकार',
+                title: 'सेवेचे प्रकार',
                 class: 'bg-c-purple',
                 icon: 'fa-solid fa-hands-praying',
-                primaryText: '100'
+                primaryText: dashboardData?.totalSevaTypes || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}
@@ -194,13 +211,13 @@ const DashAnalytics = () => {
         </Col>
 
         <Col md={6} xl={3}>
-          <Link to={'/donation'}>
+          <Link to={'/gotra'}>
             <OrderCard
               params={{
-                title: 'सेवेचे प्रकार',
+                title: 'गोत्र',
                 class: 'bg-c-yellow',
                 icon: 'fa-solid fa-hand-holding-dollar',
-                primaryText: '100'
+                primaryText: dashboardData?.totalGotra || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}
@@ -209,13 +226,13 @@ const DashAnalytics = () => {
         </Col>
 
         <Col md={6} xl={3}>
-          <Link to={'/templereg'}>
+          <Link to={'/gosevareceipt'}>
             <OrderCard
               params={{
-                title: 'ट्रस्ट  माहिती',
+                title: 'गोसेवा पावती',
                 class: 'bg-c-green',
                 icon: 'fa-solid fa-gopuram',
-                primaryText: '100'
+                primaryText: dashboardData?.totalGoSevaAmount || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}
@@ -224,13 +241,13 @@ const DashAnalytics = () => {
         </Col>
 
         <Col md={6} xl={3}>
-          <Link to={'/countermaster'}>
+          <Link to={'/dengipawti'}>
             <OrderCard
               params={{
-                title: 'काउंटर',
+                title: 'देणगी पावती',
                 class: 'bg-c-red',
                 icon: 'feather icon-award',
-                primaryText: '100'
+                primaryText: dashboardData?.totalDReceipt || '0'
                 // secondaryText: 'This Month',
                 // extraText: ''
               }}

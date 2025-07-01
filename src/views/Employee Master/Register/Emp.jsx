@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Row, Col, Card, Table, Button, Form } from 'react-bootstrap';
+import { Row, Col, Card, Table, Button, Form, Pagination } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
@@ -13,6 +13,12 @@ function Emp() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const [tableData, setTableData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Configurable items per page
+
   const [formData, setFormData] = useState({
     FullName: '',
     MobileNumber: '',
@@ -50,11 +56,27 @@ function Emp() {
     return newErrors;
   };
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
 
-  const handleSearch = () => {
-    console.log('Search term:', searchTerm);
+    if (value === '') {
+      setFilteredData(tableData);
+    } else {
+      const filtered = tableData.filter(
+        (item) =>
+          (item.FullName && item.FullName.toLowerCase().includes(value.toLowerCase())) ||
+          (item.MobileNumber && item.MobileNumber.toString().includes(value)) ||
+          (item.Pancard && item.Pancard.toLowerCase().includes(value.toLowerCase())) ||
+          (item.Dob && item.Dob.toLowerCase().includes(value.toLowerCase())) ||
+          (item.EmailId && item.EmailId.toLowerCase().includes(value.toLowerCase())) ||
+          (item.City && item.City.toLowerCase().includes(value.toLowerCase())) ||
+          (item.Address && item.Address.toLowerCase().includes(value.toLowerCase())) ||
+          (item.WorkingArea && item.WorkingArea.toLowerCase().includes(value.toLowerCase())) ||
+          (item.Adharcard && item.Adharcard.includes(value))
+      );
+      setFilteredData(filtered);
+    }
   };
 
   const fetchTableData = async () => {
@@ -68,48 +90,140 @@ function Emp() {
       if (data) {
         if (Array.isArray(data)) {
           setTableData(data);
+          setFilteredData(data);
         } else {
           console.error('Expected data to be an array, but got:', data);
           setApiError('Failed to fetch table data. Please try again.');
+          setTableData([]);
+          setFilteredData([]);
         }
       } else {
         console.error('No data found in the response:', res.data);
         setApiError('No data found. Please try again later.');
+        setTableData([]);
+        setFilteredData([]);
       }
       console.log(res.data);
     } catch (error) {
       console.log(error);
+      setTableData([]);
+      setFilteredData([]);
     }
   };
   useEffect(() => {
     fetchTableData();
   }, []);
 
-  const handleExportToExcel = () => {
-    const table = tableRef.current;
-    if (!table) return;
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    const clonedTable = table.cloneNode(true);
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-    // Remove the "Action" column from the cloned table
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
 
-    headers[actionIndex].remove(); // header remove
+    // Previous button
+    items.push(<Pagination.Prev key="prev" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)} />);
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
+    // First page
+    if (startPage > 1) {
+      items.push(
+        <Pagination.Item key={1} onClick={() => handlePageChange(1)}>
+          {1}
+        </Pagination.Item>
+      );
+      if (startPage > 2) {
+        items.push(<Pagination.Ellipsis key="ellipsis1" />);
       }
-    });
+    }
 
-    // Convert the modified table to a workbook and export
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <Pagination.Item key={i} active={i === currentPage} onClick={() => handlePageChange(i)}>
+          {i}
+        </Pagination.Item>
+      );
+    }
 
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(<Pagination.Ellipsis key="ellipsis2" />);
+      }
+      items.push(
+        <Pagination.Item key={totalPages} onClick={() => handlePageChange(totalPages)}>
+          {totalPages}
+        </Pagination.Item>
+      );
+    }
+
+    // Next button
+    items.push(<Pagination.Next key="next" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)} />);
+
+    return items;
+  };
+
+  const handleExportToExcel = () => {
+    if (!Array.isArray(tableData) || tableData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
+
+    // Prepare data for Excel export
+    const excelData = tableData.map((item, index) => ({
+      'Sr.No': index + 1,
+      'पूर्ण नाव': item.FullName || '',
+      'मोबाईल क्रमांक': item.MobileNumber || '',
+      पॅनकार्ड: item.Pancard || '',
+      जन्मतारीख: item.Dob ? new Date(item.Dob).toLocaleDateString('en-IN') : '',
+      'ईमेल आयडी': item.EmailId || '',
+      शहर: item.City || '',
+      पत्ता: item.Address || '',
+      कार्यक्षेत्र: item.WorkingArea || '',
+      आधारकार्ड: item.Adharcard || ''
+    }));
+
+    // Create workbook and worksheet
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(excelData);
+
+    // Set column widths for better readability
+    const colWidths = [
+      { wch: 8 }, // Sr.No
+      { wch: 20 }, // Full Name
+      { wch: 15 }, // Mobile Number
+      { wch: 12 }, // PAN Card
+      { wch: 12 }, // Date of Birth
+      { wch: 25 }, // Email ID
+      { wch: 15 }, // City
+      { wch: 30 }, // Address
+      { wch: 15 }, // Working Area
+      { wch: 15 } // Aadhaar Card
+    ];
+    ws['!cols'] = colWidths;
+
+    // Add worksheet to workbook
+    utils.book_append_sheet(wb, ws, 'Employee Data');
+
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `Employee_Data_${currentDate}.xlsx`;
+
+    // Save the file
+    writeFile(wb, filename);
   };
 
   const handleExportToPDF = () => {
@@ -159,7 +273,7 @@ function Emp() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save(`Employee_${new Date().toLocaleDateString()}.pdf`);
     });
   };
 
@@ -351,9 +465,7 @@ function Emp() {
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
-                <Button variant="primary" onClick={handleSearch} className="me-2">
-                  Search
-                </Button>
+
                 <Button variant="success" onClick={handleExportToExcel} className="me-2">
                   Excel
                 </Button>
@@ -382,9 +494,8 @@ function Emp() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tableData
-                      .filter((item) => item.FullName.toLowerCase().includes(searchTerm.toLowerCase()))
-                      .map((item) => (
+                    {currentItems && currentItems.length > 0 ? (
+                      currentItems.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.FullName}</td>
                           <td>{item.MobileNumber}</td>
@@ -404,11 +515,30 @@ function Emp() {
                             </Button>
                           </td>
                         </tr>
-                      ))}
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="10" className="text-center">
+                          {searchTerm ? 'No matching records found' : 'No data found'}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </PerfectScrollbar>
             </div>
+
+            {/* Pagination and Info */}
+            {filteredData.length > 0 && (
+              <div className="d-flex justify-content-between align-items-center p-3">
+                <div className="text-muted">
+                  Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
+                  {searchTerm && <span> (filtered from {tableData.length} total entries)</span>}
+                </div>
+
+                {totalPages > 1 && <Pagination className="mb-0">{renderPaginationItems()}</Pagination>}
+              </div>
+            )}
           </Card.Body>
         </Card>
       </Col>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Row, Col, Card, Table, Button } from 'react-bootstrap';
+import { Row, Col, Card, Table, Button, Form } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
@@ -16,6 +16,9 @@ function DengiPawati() {
   const [sevaList, setSevaList] = useState([]);
   const [devoteeFound, setDevoteeFound] = useState(false);
   const [receiptData, setReceiptData] = useState([]);
+  const [allReceiptData, setAllReceiptData] = useState([]); // Store all data for search/filter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReceiptId, setEditingReceiptId] = useState(null);
 
@@ -52,7 +55,22 @@ function DengiPawati() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+
+    if (value === '') {
+      setReceiptData(allReceiptData); // Show all data if search term is empty
+    } else {
+      const filteredData = allReceiptData.filter(
+        (receipt) =>
+          (receipt.FullName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.ReceiptNumber || '').toString().toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.SevaName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.PaymentType || '').toLowerCase().includes(value.toLowerCase())
+      );
+      setReceiptData(filteredData);
+    }
   };
 
   // Clear form and reset to search new devotee
@@ -233,10 +251,13 @@ function DengiPawati() {
       });
 
       if (res.data.success) {
-        setReceiptData(res.data.data || []);
+        const data = res.data.data || [];
+        setAllReceiptData(data); // Store all data for search/filter
+        setReceiptData(data); // Set current display data
       }
     } catch (error) {
       console.error('Error fetching receipt data:', error);
+      setAllReceiptData([]);
       setReceiptData([]);
     }
   };
@@ -247,30 +268,59 @@ function DengiPawati() {
   }, []);
 
   const handleExportToExcel = () => {
-    const table = tableRef.current;
-    if (!table) return;
+    if (!Array.isArray(receiptData) || receiptData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    // Prepare data for Excel export
+    const excelData = receiptData.map((item, index) => ({
+      'Sr.No': index + 1,
+      'पावती क्रमांक': item.ReceiptNumber || '',
+      'देणगीदार नाव': item.FullName || '',
+      'सेवा प्रकार': item.SevaName || '',
+      रक्कम: item.Amount ? `₹${item.Amount}` : '',
+      'देयक प्रकार': item.PaymentType || '',
+      'सेवा तारीख': item.SevaDate ? new Date(item.SevaDate).toLocaleDateString() : '',
+      'बँकेचे नाव': item.BankName || '',
+      'चेक क्रमांक': item.ChequeNo || '',
+      'डीडी क्रमांक': item.DDNo || '',
+      'ट्रान्झॅक्शन आयडी': item.TransactionId || '',
+      नोट: item.Note || '',
+      निर्माता: item.CreatedByName || ''
+    }));
 
-    // Remove the "Action" column from the cloned table
+    // Create workbook and worksheet
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(excelData);
 
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+    // Set column widths for better readability
+    const colWidths = [
+      { wch: 8 }, // Sr.No
+      { wch: 15 }, // Receipt Number
+      { wch: 20 }, // Devotee Name
+      { wch: 15 }, // Seva Type
+      { wch: 12 }, // Amount
+      { wch: 12 }, // Payment Type
+      { wch: 12 }, // Seva Date
+      { wch: 15 }, // Bank Name
+      { wch: 12 }, // Cheque No
+      { wch: 12 }, // DD No
+      { wch: 15 }, // Transaction ID
+      { wch: 25 }, // Note
+      { wch: 15 } // Created By
+    ];
+    ws['!cols'] = colWidths;
 
-    headers[actionIndex].remove(); // header remove
+    // Add worksheet to workbook
+    utils.book_append_sheet(wb, ws, 'Receipt Data');
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
-      }
-    });
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `DengiPawati_Data_${currentDate}.xlsx`;
 
-    // Convert the modified table to a workbook and export
-
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    // Save the file
+    writeFile(wb, filename);
   };
 
   const handleExportToPDF = () => {
@@ -448,6 +498,47 @@ function DengiPawati() {
         alert('Failed to delete receipt. Please try again.');
       }
     }
+  };
+
+  // Pagination calculations
+  const totalItems = receiptData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = receiptData.slice(startIndex, endIndex);
+
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, start + maxVisible - 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
   };
 
   return (
@@ -717,6 +808,7 @@ function DengiPawati() {
                 <Card.Title as="h5">पावती यादी</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
+                <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
                 <Button variant="success" onClick={handleExportToExcel} className="me-2">
                   Excel
                 </Button>
@@ -743,8 +835,8 @@ function DengiPawati() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(receiptData) &&
-                      receiptData.map((item) => (
+                    {Array.isArray(currentData) &&
+                      currentData.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.ReceiptNumber}</td>
                           <td>{item.FullName || 'N/A'}</td>
@@ -769,7 +861,7 @@ function DengiPawati() {
                           </td>
                         </tr>
                       ))}
-                    {receiptData.length === 0 && (
+                    {currentData.length === 0 && (
                       <tr>
                         <td colSpan="7" className="text-center">
                           No receipts found
@@ -779,6 +871,47 @@ function DengiPawati() {
                   </tbody>
                 </Table>
               </PerfectScrollbar>
+            </div>
+
+            {/* Pagination Info */}
+            <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+              <div className="pagination-info">
+                <small className="text-muted">
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+                  {searchTerm && ` (filtered from ${allReceiptData.length} total entries)`}
+                </small>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls d-flex align-items-center">
+                  <Button variant="outline-secondary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1} className="me-2">
+                    Previous
+                  </Button>
+
+                  {getPageNumbers().map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? 'primary' : 'outline-primary'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="me-1"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="ms-1"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </Card.Body>
         </Card>

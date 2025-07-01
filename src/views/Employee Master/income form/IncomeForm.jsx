@@ -15,6 +15,7 @@ function IncomeForm() {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     incomeName: '',
+    amount: '',
     bankName: '',
     date: '',
     note: '',
@@ -25,50 +26,81 @@ function IncomeForm() {
   });
   const [apiError, setApiError] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [allTableData, setAllTableData] = useState([]); // Store all data for search/filter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIncomeId, setEditingIncomeId] = useState(null);
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) {
-      fetchTableData(); // Reset to show all data
+    if (value === '') {
+      setTableData(allTableData); // Show all data if search term is empty
+    } else {
+      const filteredData = allTableData.filter(
+        (item) =>
+          (item.IncomeName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.BankName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.Note || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.PaymentType || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.Amount || '').toString().toLowerCase().includes(value.toLowerCase())
+      );
+      setTableData(filteredData);
+    }
+  };
+  const handleExportToExcel = () => {
+    if (!Array.isArray(tableData) || tableData.length === 0) {
+      alert('No data available to export');
       return;
     }
 
-    const filteredData = tableData.filter(
-      (item) =>
-        item.IncomeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.BankName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.Note?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setTableData(filteredData);
-  };
+    // Prepare data for Excel export
+    const excelData = tableData.map((item, index) => ({
+      'Sr.No': index + 1,
+      'उत्पन्नचे नाव': item.IncomeName || '',
+      रक्कम: item.Amount ? `₹${item.Amount}` : '',
+      दिनांक: item.Date ? new Date(item.Date).toLocaleDateString() : '',
+      'बँकेचे नाव': item.BankName || '',
+      'चेक क्रमांक': item.ChequeNo || '',
+      'DD क्रमांक': item.DDNo || '',
+      'व्यवहार आयडी': item.TransactionId || '',
+      'भुगतान प्रकार': item.PaymentType || '',
+      नोंद: item.Note || '',
+      'तयार केलेले': item.CreatedByName || ''
+    }));
 
-  const handleExportToExcel = () => {
-    console.log('excel');
-    const table = tableRef.current;
-    if (!table) return;
+    // Create workbook and worksheet
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(excelData);
 
-    const clonedTable = table.cloneNode(true);
+    // Set column widths
+    const colWidths = [
+      { wch: 8 }, // Sr.No
+      { wch: 20 }, // Income Name
+      { wch: 12 }, // Amount
+      { wch: 12 }, // Date
+      { wch: 15 }, // Bank Name
+      { wch: 12 }, // Cheque No
+      { wch: 12 }, // DD No
+      { wch: 15 }, // Transaction ID
+      { wch: 12 }, // Payment Type
+      { wch: 20 }, // Note
+      { wch: 15 } // Created By
+    ];
+    ws['!cols'] = colWidths;
 
-    // Remove the "Action" column from the cloned table
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+    // Add worksheet to workbook
+    utils.book_append_sheet(wb, ws, 'Income Data');
 
-    if (headers[actionIndex]) headers[actionIndex].remove(); // header remove
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `Income_Data_${currentDate}.xlsx`;
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) cells[actionIndex].remove();
-    });
-
-    // Convert the modified table to a workbook and export
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    // Save the file
+    writeFile(wb, filename);
   };
 
   const handleExportToPDF = () => {
@@ -281,10 +313,13 @@ function IncomeForm() {
       });
 
       if (response.data.success) {
-        setTableData(response.data.data || []);
+        const data = response.data.data || [];
+        setAllTableData(data); // Store all data for search/filter
+        setTableData(data); // Set current display data
       }
     } catch (error) {
       console.error('Error fetching expense data:', error);
+      setAllTableData([]);
       setTableData([]);
     }
   }, [token]);
@@ -296,6 +331,47 @@ function IncomeForm() {
   console.log(tableData);
 
   // console.log(Array.isArray(tableData)); // Should log true
+
+  // Pagination calculations
+  const totalItems = tableData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = tableData.slice(startIndex, endIndex);
+
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, start + maxVisible - 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
 
   return (
     <React.Fragment>
@@ -357,6 +433,19 @@ function IncomeForm() {
                   <input type="text" name="ddNo" value={formData.ddNo} onChange={handleChange} />
                 </div>
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="paymentType">भुगतान प्रकार</label>
+                  <select name="paymentType" value={formData.paymentType} onChange={handleChange}>
+                    <option value="">-- निवडा --</option>
+                    <option value="cash">नगद</option>
+                    <option value="cheque">चेक</option>
+                    <option value="dd">डीडी</option>
+                    <option value="online">ऑनलाइन</option>
+                    <option value="card">कार्ड</option>
+                  </select>
+                </div>
+              </div>
               <div className="form-actions">
                 <Button type="submit" variant="primary">
                   {isEditing ? 'उत्पन्न अपडेट करा' : 'उत्पन्न जोडा'}
@@ -381,10 +470,10 @@ function IncomeForm() {
                 <Card.Title as="h5">उत्पन्न</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
-                <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />
-                <Button variant="primary" onClick={handleSearch} className="me-2">
+                <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />
+                {/* <Button variant="primary" value={searchTerm} onClick={handleSearch} className="me-2">
                   Search
-                </Button>
+                </Button> */}
                 <Button variant="success" onClick={handleExportToExcel} className="me-2">
                   Excel
                 </Button>
@@ -414,8 +503,8 @@ function IncomeForm() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(tableData) && tableData.length > 0 ? (
-                      tableData.map((item) => (
+                    {Array.isArray(currentData) && currentData.length > 0 ? (
+                      currentData.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.IncomeName}</td>
                           <td>₹{item.Amount}</td>
@@ -440,13 +529,54 @@ function IncomeForm() {
                     ) : (
                       <tr>
                         <td colSpan="7" style={{ textAlign: 'center' }}>
-                          No expenses found
+                          No incomes found
                         </td>
                       </tr>
                     )}
                   </tbody>
                 </Table>
               </PerfectScrollbar>
+            </div>
+
+            {/* Pagination Info */}
+            <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+              <div className="pagination-info">
+                <small className="text-muted">
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+                  {searchTerm && ` (filtered from ${allTableData.length} total entries)`}
+                </small>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls d-flex align-items-center">
+                  <Button variant="outline-secondary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1} className="me-2">
+                    Previous
+                  </Button>
+
+                  {getPageNumbers().map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? 'primary' : 'outline-primary'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="me-1"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="ms-1"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </Card.Body>
         </Card>

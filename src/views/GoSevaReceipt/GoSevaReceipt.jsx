@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Row, Col, Card, Table, Button } from 'react-bootstrap';
+import { Row, Col, Card, Table, Button, Form } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
@@ -13,6 +13,9 @@ function GoSevaReceipt() {
   const [searchTerm, setSearchTerm] = useState('');
   const [devoteeFound, setDevoteeFound] = useState(false);
   const [receiptData, setReceiptData] = useState([]);
+  const [allReceiptData, setAllReceiptData] = useState([]); // Store all data for search/filter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [gotraList, setGotraList] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReceiptId, setEditingReceiptId] = useState(null);
@@ -46,7 +49,23 @@ function GoSevaReceipt() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+
+    if (value === '') {
+      setReceiptData(allReceiptData); // Show all data if search term is empty
+    } else {
+      const filteredData = allReceiptData.filter(
+        (receipt) =>
+          (receipt.DonarName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.DengidarName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.ReceiptNo || '').toString().toLowerCase().includes(value.toLowerCase()) ||
+          (receipt.DengidarPhone || '').includes(value) ||
+          (receipt.PaymentType || '').toLowerCase().includes(value.toLowerCase())
+      );
+      setReceiptData(filteredData);
+    }
   };
 
   // Clear form and reset to search new devotee
@@ -202,10 +221,13 @@ function GoSevaReceipt() {
       });
 
       if (res.data.success) {
-        setReceiptData(res.data.data || []);
+        const data = res.data.data || [];
+        setAllReceiptData(data); // Store all data for search/filter
+        setReceiptData(data); // Set current display data
       }
     } catch (error) {
       console.error('Error fetching receipt data:', error);
+      setAllReceiptData([]);
       setReceiptData([]);
     }
   };
@@ -735,6 +757,47 @@ function GoSevaReceipt() {
     }
   };
 
+  // Pagination calculations
+  const totalItems = receiptData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = receiptData.slice(startIndex, endIndex);
+
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, start + maxVisible - 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -948,6 +1011,13 @@ function GoSevaReceipt() {
                 </small>
               </Col>
               <Col md={8} className="d-flex justify-content-end align-items-center">
+                <Form.Control
+                  type="text"
+                  placeholder="Search by Receipt No."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="me-2"
+                />
                 <Button
                   variant="success"
                   onClick={handleExportToExcel}
@@ -1011,8 +1081,8 @@ function GoSevaReceipt() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(receiptData) &&
-                      receiptData.map((item) => (
+                    {Array.isArray(currentData) &&
+                      currentData.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.ReceiptNo}</td>
                           <td>{item.DonarName || item.DengidarName || 'N/A'}</td>
@@ -1038,9 +1108,9 @@ function GoSevaReceipt() {
                           </td>
                         </tr>
                       ))}
-                    {receiptData.length === 0 && (
+                    {currentData.length === 0 && (
                       <tr>
-                        <td colSpan="7" className="text-center">
+                        <td colSpan="9" className="text-center">
                           No receipts found
                         </td>
                       </tr>
@@ -1048,6 +1118,47 @@ function GoSevaReceipt() {
                   </tbody>
                 </Table>
               </PerfectScrollbar>
+            </div>
+
+            {/* Pagination Info */}
+            <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+              <div className="pagination-info">
+                <small className="text-muted">
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+                  {searchTerm && ` (filtered from ${allReceiptData.length} total entries)`}
+                </small>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls d-flex align-items-center">
+                  <Button variant="outline-secondary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1} className="me-2">
+                    Previous
+                  </Button>
+
+                  {getPageNumbers().map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? 'primary' : 'outline-primary'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="me-1"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="ms-1"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </Card.Body>
         </Card>

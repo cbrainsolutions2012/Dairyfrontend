@@ -14,6 +14,9 @@ function DonateMaster() {
   const [searchTerm, setSearchTerm] = useState('');
   const [gotraList, setGotraList] = useState([]);
   const [tabData, setTabData] = useState([]); // State to hold table data
+  const [allData, setAllData] = useState([]); // Store all data for search/filter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     FullName: '',
     MobileNumber: '',
@@ -33,11 +36,25 @@ function DonateMaster() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
 
-  const handleSearch = () => {
-    console.log('Search term:', searchTerm);
+    if (value === '') {
+      setTabData(allData); // Show all data if search term is empty
+    } else {
+      const filteredData = allData.filter(
+        (item) =>
+          (item.FullName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.MobileNumber || '').includes(value) ||
+          (item.PanCard || '').includes(value) ||
+          (item.AdharCard || '').includes(value) ||
+          (item.City || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.Address || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.EmailId || '').toLowerCase().includes(value.toLowerCase())
+      );
+      setTabData(filteredData);
+    }
   };
 
   // Function to get gotra name by ID
@@ -61,10 +78,11 @@ function DonateMaster() {
           'Content-Type': 'application/json'
         }
       });
-      // Remove the deleted item from the table data
+      // Remove the deleted item from both states
       if (res.status === 200) {
         alert('Devotee deleted successfully');
         setTabData((prevData) => prevData.filter((item) => item.Id !== id));
+        setAllData((prevData) => prevData.filter((item) => item.Id !== id));
       }
     } catch (error) {
       console.error('Error deleting devotee:', error);
@@ -81,9 +99,12 @@ function DonateMaster() {
         }
       });
       console.log(res.data);
-      setTabData(res.data.data);
+      const data = res.data.data;
+      setAllData(data); // Store all data for search/filter
+      setTabData(data); // Set current display data
     } catch (error) {
       console.log(error);
+      setAllData([]);
       setTabData([]);
     }
   };
@@ -127,30 +148,55 @@ function DonateMaster() {
   };
 
   const handleExportToExcel = () => {
-    const table = tableRef.current;
-    if (!table) return;
+    if (!Array.isArray(tabData) || tabData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    // Prepare data for Excel export
+    const excelData = tabData.map((item, index) => ({
+      'Sr.No': index + 1,
+      आयडी: item.Id || '',
+      दिनांक: item.RegisterDate ? formattedDate(item.RegisterDate) : '',
+      'पुर्ण नाव': item.FullName || '',
+      'दूरध्वनी क्रमांक': item.MobileNumber || '',
+      'पॅन कार्ड': item.PanCard || '',
+      'आधार क्रमांक': item.AdharCard || '',
+      गोत्र: getGotraNameById(item.GotraTypeId) || '',
+      शहर: item.City || '',
+      पत्ता: item.Address || '',
+      'ई-मेल': item.EmailId || ''
+    }));
 
-    // Remove the "Action" column from the cloned table
+    // Create workbook and worksheet
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(excelData);
 
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+    // Set column widths for better readability
+    const colWidths = [
+      { wch: 8 }, // Sr.No
+      { wch: 10 }, // ID
+      { wch: 12 }, // Date
+      { wch: 20 }, // Full Name
+      { wch: 15 }, // Mobile Number
+      { wch: 12 }, // PAN Card
+      { wch: 15 }, // Aadhaar Card
+      { wch: 15 }, // Gotra
+      { wch: 15 }, // City
+      { wch: 30 }, // Address
+      { wch: 25 } // Email
+    ];
+    ws['!cols'] = colWidths;
 
-    headers[actionIndex].remove(); // header remove
+    // Add worksheet to workbook
+    utils.book_append_sheet(wb, ws, 'Devotee Data');
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
-      }
-    });
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `Devotee_Data_${currentDate}.xlsx`;
 
-    // Convert the modified table to a workbook and export
-
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    // Save the file
+    writeFile(wb, filename);
   };
 
   const handleExportToPDF = () => {
@@ -265,6 +311,47 @@ function DonateMaster() {
     }
   };
 
+  // Pagination calculations
+  const totalItems = tabData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = tabData.slice(startIndex, endIndex);
+
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, start + maxVisible - 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -360,13 +447,11 @@ function DonateMaster() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">Temple Master</Card.Title>
+                <Card.Title as="h5">देणगीदार नोंदणी </Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
-                <Button variant="primary" onClick={handleSearch} className="me-2">
-                  Search
-                </Button>
+
                 <Button variant="success" onClick={handleExportToExcel} className="me-2">
                   Excel
                 </Button>
@@ -396,8 +481,8 @@ function DonateMaster() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(tabData) &&
-                      tabData.map((item) => (
+                    {Array.isArray(currentData) &&
+                      currentData.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.Id}</td>
                           <td>{formattedDate(item.RegisterDate)}</td>
@@ -424,6 +509,47 @@ function DonateMaster() {
                   </tbody>
                 </Table>
               </PerfectScrollbar>
+            </div>
+
+            {/* Pagination Info */}
+            <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+              <div className="pagination-info">
+                <small className="text-muted">
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+                  {searchTerm && ` (filtered from ${allData.length} total entries)`}
+                </small>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls d-flex align-items-center">
+                  <Button variant="outline-secondary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1} className="me-2">
+                    Previous
+                  </Button>
+
+                  {getPageNumbers().map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? 'primary' : 'outline-primary'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="me-1"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="ms-1"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </Card.Body>
         </Card>

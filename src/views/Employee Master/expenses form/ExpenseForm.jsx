@@ -18,30 +18,38 @@ function ExpenseForm() {
     Amount: '',
     Date: '',
     BankName: '',
-    Note: ''
+    Note: '',
+    TransactionId: '',
+    ChequeNo: '',
+    DDNo: '',
+    PaymentType: ''
   });
   const [apiError, setApiError] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [allTableData, setAllTableData] = useState([]); // Store all data for search/filter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [isEditing, setIsEditing] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState(null);
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) {
-      fetchTableData(); // Reset to show all data
-      return;
+    if (value === '') {
+      setTableData(allTableData); // Show all data if search term is empty
+    } else {
+      const filteredData = allTableData.filter(
+        (item) =>
+          (item.ExpName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.BankName || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.Note || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.PaymentType || '').toLowerCase().includes(value.toLowerCase()) ||
+          (item.Amount || '').toString().toLowerCase().includes(value.toLowerCase())
+      );
+      setTableData(filteredData);
     }
-
-    const filteredData = tableData.filter(
-      (item) =>
-        item.ExpName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.BankName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.Note?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setTableData(filteredData);
   };
 
   const handleExportToExcel = () => {
@@ -161,7 +169,11 @@ function ExpenseForm() {
             Amount: '',
             Date: '',
             BankName: '',
-            Note: ''
+            Note: '',
+            TransactionId: '',
+            ChequeNo: '',
+            DDNo: '',
+            PaymentType: ''
           });
           setErrors({});
           setApiError('');
@@ -202,7 +214,11 @@ function ExpenseForm() {
           Amount: expense.Amount,
           Date: expense.Date ? new Date(expense.Date).toISOString().split('T')[0] : '',
           BankName: expense.BankName || '',
-          Note: expense.Note || ''
+          Note: expense.Note || '',
+          TransactionId: expense.TransactionId || '',
+          ChequeNo: expense.ChequeNo || '',
+          DDNo: expense.DDNo || '',
+          PaymentType: expense.PaymentType || ''
         });
         setIsEditing(true);
         setEditingExpenseId(expenseId);
@@ -248,7 +264,11 @@ function ExpenseForm() {
       Amount: '',
       Date: '',
       BankName: '',
-      Note: ''
+      Note: '',
+      TransactionId: '',
+      ChequeNo: '',
+      DDNo: '',
+      PaymentType: ''
     });
     setIsEditing(false);
     setEditingExpenseId(null);
@@ -266,10 +286,13 @@ function ExpenseForm() {
       });
 
       if (response.data.success) {
-        setTableData(response.data.data || []);
+        const data = response.data.data || [];
+        setAllTableData(data); // Store all data for search/filter
+        setTableData(data); // Set current display data
       }
     } catch (error) {
       console.error('Error fetching expense data:', error);
+      setAllTableData([]);
       setTableData([]);
     }
   }, [token]);
@@ -281,6 +304,47 @@ function ExpenseForm() {
   console.log(tableData);
 
   // console.log(Array.isArray(tableData)); // Should log true
+
+  // Pagination calculations
+  const totalItems = tableData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = tableData.slice(startIndex, endIndex);
+
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, start + maxVisible - 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
 
   return (
     <React.Fragment>
@@ -327,6 +391,33 @@ function ExpenseForm() {
                   <label htmlFor="Note">नोंद</label>
                   <textarea name="Note" rows={3} value={formData.Note} onChange={handleChange} />
                 </div>
+                <div className="form-group">
+                  <label htmlFor="TransactionId">लेन-देन आयडी</label>
+                  <input type="text" name="TransactionId" value={formData.TransactionId} onChange={handleChange} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="ChequeNo">चेक क्रमांक</label>
+                  <input type="text" name="ChequeNo" value={formData.ChequeNo} onChange={handleChange} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="DDNo">डीडी क्रमांक</label>
+                  <input type="text" name="DDNo" value={formData.DDNo} onChange={handleChange} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="PaymentType">भुगतान प्रकार</label>
+                  <select name="PaymentType" value={formData.PaymentType} onChange={handleChange}>
+                    <option value="">-- निवडा --</option>
+                    <option value="cash">नगद</option>
+                    <option value="cheque">चेक</option>
+                    <option value="dd">डीडी</option>
+                    <option value="online">ऑनलाइन</option>
+                    <option value="card">कार्ड</option>
+                  </select>
+                </div>
               </div>
               <div className="form-actions">
                 <Button type="submit" variant="primary">
@@ -352,10 +443,8 @@ function ExpenseForm() {
                 <Card.Title as="h5">खर्च</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
-                <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />
-                <Button variant="primary" onClick={handleSearch} className="me-2">
-                  Search
-                </Button>
+                <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />
+
                 <Button variant="success" onClick={handleExportToExcel} className="me-2">
                   Excel
                 </Button>
@@ -381,8 +470,8 @@ function ExpenseForm() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(tableData) && tableData.length > 0 ? (
-                      tableData.map((item) => (
+                    {Array.isArray(currentData) && currentData.length > 0 ? (
+                      currentData.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.ExpName}</td>
                           <td>₹{item.Amount}</td>
@@ -410,6 +499,47 @@ function ExpenseForm() {
                   </tbody>
                 </Table>
               </PerfectScrollbar>
+            </div>
+
+            {/* Pagination Info */}
+            <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+              <div className="pagination-info">
+                <small className="text-muted">
+                  Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+                  {searchTerm && ` (filtered from ${allTableData.length} total entries)`}
+                </small>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls d-flex align-items-center">
+                  <Button variant="outline-secondary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1} className="me-2">
+                    Previous
+                  </Button>
+
+                  {getPageNumbers().map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? 'primary' : 'outline-primary'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="me-1"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="ms-1"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </Card.Body>
         </Card>

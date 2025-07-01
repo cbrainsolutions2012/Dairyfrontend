@@ -1,45 +1,170 @@
-import React, { useState, useRef } from 'react';
-import { Row, Col, Card, Table, Button, Form } from 'react-bootstrap';
+import React, { useState, useRef, useEffect } from 'react';
+import { Row, Col, Card, Table, Button, Form, Pagination } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../commonemp.scss';
+import axios from 'axios';
 
 function Cashbook() {
   const tableRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [cashbookData, setCashbookData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // You can make this configurable
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+
+    if (value === '') {
+      setFilteredData(cashbookData);
+    } else {
+      const filtered = cashbookData.filter((item) => item.Description && item.Description.toLowerCase().includes(value.toLowerCase()));
+      setFilteredData(filtered);
+    }
   };
 
-  const handleSearch = () => {
-    console.log('Search term:', searchTerm);
+  const fetchCashbookData = async () => {
+    try {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/current-account/transactions', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const data = res.data.data;
+      if (data && Array.isArray(data)) {
+        setCashbookData(data);
+        setFilteredData(data);
+      } else {
+        console.error('Invalid data format:', data);
+        setCashbookData([]);
+        setFilteredData([]);
+      }
+    } catch (error) {
+      console.error('Error fetching cashbook data:', error);
+      setCashbookData([]);
+      setFilteredData([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchCashbookData();
+  }, []);
+
+  console.log('Cashbook Data:', cashbookData);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Previous button
+    items.push(<Pagination.Prev key="prev" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)} />);
+
+    // First page
+    if (startPage > 1) {
+      items.push(
+        <Pagination.Item key={1} onClick={() => handlePageChange(1)}>
+          {1}
+        </Pagination.Item>
+      );
+      if (startPage > 2) {
+        items.push(<Pagination.Ellipsis key="ellipsis1" />);
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <Pagination.Item key={i} active={i === currentPage} onClick={() => handlePageChange(i)}>
+          {i}
+        </Pagination.Item>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(<Pagination.Ellipsis key="ellipsis2" />);
+      }
+      items.push(
+        <Pagination.Item key={totalPages} onClick={() => handlePageChange(totalPages)}>
+          {totalPages}
+        </Pagination.Item>
+      );
+    }
+
+    // Next button
+    items.push(<Pagination.Next key="next" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)} />);
+
+    return items;
   };
 
   const handleExportToExcel = () => {
-    console.log('excel');
-    const table = tableRef.current;
-    if (!table) return;
+    if (!Array.isArray(filteredData) || filteredData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    // Prepare data for Excel export
+    const excelData = filteredData.map((item, index) => ({
+      'Sr.No': index + 1,
+      अनुक्रमांक: item.Id || '',
+      नाव: item.Description || '',
+      दिनांक: item.Date ? formatDate(item.Date) : '',
+      रक्कम: item.Amount ? `₹${item.Amount}` : '',
+      'व्यवहार प्रकार': item.AmountType || '',
+      'बँक नाव': item.BankName || ''
+    }));
 
-    // Remove the "Action" column from the cloned table
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+    // Create workbook and worksheet
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(excelData);
 
-    if (headers[actionIndex]) headers[actionIndex].remove(); // header remove
+    // Set column widths for better readability
+    const colWidths = [
+      { wch: 8 }, // Sr.No
+      { wch: 12 }, // ID
+      { wch: 25 }, // Description/Name
+      { wch: 12 }, // Date
+      { wch: 15 }, // Amount
+      { wch: 15 }, // Amount Type
+      { wch: 20 } // Bank Name
+    ];
+    ws['!cols'] = colWidths;
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) cells[actionIndex].remove();
-    });
+    // Add worksheet to workbook
+    utils.book_append_sheet(wb, ws, 'Cashbook Data');
 
-    // Convert the modified table to a workbook and export
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `Cashbook_Data_${currentDate}.xlsx`;
+
+    // Save the file
+    writeFile(wb, filename);
   };
 
   const handleExportToPDF = () => {
@@ -93,6 +218,12 @@ function Cashbook() {
     });
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('en-IN', options);
+  };
+
   return (
     <Col sm={12}>
       <Card>
@@ -102,10 +233,8 @@ function Cashbook() {
               <Card.Title as="h5">रोख नोंदवही</Card.Title>
             </Col>
             <Col md={6} className="d-flex justify-content-end">
-              <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />
-              <Button variant="primary" onClick={handleSearch} className="me-2">
-                Search
-              </Button>
+              <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />
+
               <Button variant="success" onClick={handleExportToExcel} className="me-2">
                 Excel
               </Button>
@@ -122,33 +251,47 @@ function Cashbook() {
                 <thead>
                   <tr>
                     <th>अनुक्रमांक</th>
-                    <th>पक्षाचे नाव</th>
+                    <th>नाव</th>
                     <th>दिनांक</th>
                     <th>रक्कम</th>
-                    <th>पॅन कार्ड क्रमांक</th>
-                    <th>व्यवहार प्रकार (क्रेडिट/डेबिट)</th>
-                    <th>कारवाई</th>
+                    <th>व्यवहार प्रकार</th>
+                    <th>बँक नाव</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Example Party</td>
-                    <td>08-11-2016</td>
-                    <td>485</td>
-                    <td>ABCDE1234F</td>
-                    <td>Credit</td>
-                    <td>
-                      <Button variant="primary" className="me-2">
-                        Edit
-                      </Button>
-                      <Button variant="danger">Delete</Button>
-                    </td>
-                  </tr>
+                  {currentItems.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.Id}</td>
+                      <td>{item.Description}</td>
+                      <td>{formatDate(item.Date)}</td>
+                      <td>₹{item.Amount}</td>
+                      <td>{item.AmountType}</td>
+                      <td>{item.BankName}</td>
+                    </tr>
+                  ))}
+                  {currentItems.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="text-center">
+                        {searchTerm ? 'No matching records found' : 'No data available'}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
             </PerfectScrollbar>
           </div>
+
+          {/* Pagination and Info */}
+          {filteredData.length > 0 && (
+            <div className="d-flex justify-content-between align-items-center p-3">
+              <div className="text-muted">
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
+                {searchTerm && <span> (filtered from {cashbookData.length} total entries)</span>}
+              </div>
+
+              {totalPages > 1 && <Pagination className="mb-0">{renderPaginationItems()}</Pagination>}
+            </div>
+          )}
         </Card.Body>
       </Card>
     </Col>
