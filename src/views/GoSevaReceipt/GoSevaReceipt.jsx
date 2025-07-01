@@ -40,7 +40,8 @@ function GoSevaReceipt() {
     PaymentType: '',
     BankName: '',
     Amount: '',
-    Note: ''
+    Note: '',
+    StartDate: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -88,7 +89,8 @@ function GoSevaReceipt() {
       PaymentType: '',
       BankName: '',
       Amount: '',
-      Note: ''
+      Note: '',
+      StartDate: ''
     });
     setSearchTerm('');
     setDevoteeFound(false);
@@ -128,7 +130,8 @@ function GoSevaReceipt() {
           PaymentType: receipt.PaymentType,
           BankName: receipt.BankName || '',
           Amount: receipt.Amount,
-          Note: receipt.Note || ''
+          Note: receipt.Note || '',
+          StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : ''
         });
         setDevoteeFound(true);
         setIsEditing(true);
@@ -670,7 +673,8 @@ function GoSevaReceipt() {
           PaymentType: formData.PaymentType,
           BankName: formData.BankName || null,
           Amount: parseFloat(formData.Amount),
-          Note: formData.Note || null
+          Note: formData.Note || null,
+          StartDate: formData.StartDate
         };
 
         let response;
@@ -707,7 +711,8 @@ function GoSevaReceipt() {
             PaymentType: '',
             BankName: '',
             Amount: '',
-            Note: ''
+            Note: '',
+            StartDate: ''
           });
           setIsEditing(false);
           setEditingReceiptId(null);
@@ -985,6 +990,10 @@ function GoSevaReceipt() {
                 <div className="form-group">
                   <label htmlFor="Note">नोट</label>
                   <textarea rows={3} name="Note" value={formData.Note} onChange={handleChange} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="StartDate">सुरुवात तारीख</label>
+                  <input type="date" name="StartDate" value={formData.StartDate} onChange={handleChange} />
                 </div>
               </div>
 
