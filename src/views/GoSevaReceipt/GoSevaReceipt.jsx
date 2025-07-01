@@ -1006,6 +1006,7 @@ function GoSevaReceipt() {
                       <th>देयक प्रकार</th>
                       <th>सुरुवात तारीख</th>
                       <th>समाप्ती तारीख</th>
+                      <th>निर्माता</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -1020,6 +1021,7 @@ function GoSevaReceipt() {
                           <td>{item.PaymentType}</td>
                           <td>{item.StartDate ? new Date(item.StartDate).toLocaleDateString() : 'N/A'}</td>
                           <td>{item.EndDate ? new Date(item.EndDate).toLocaleDateString() : 'N/A'}</td>
+                          <td>{item.CreatedByName}</td>
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
                               Edit

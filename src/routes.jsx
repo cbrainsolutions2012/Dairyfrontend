@@ -61,6 +61,11 @@ export const routes = [
         path: '/dashboard',
         element: lazy(() => import('./views/dashboard'))
       },
+      {
+        exact: 'true',
+        path: '/*',
+        element: () => <Navigate to="/dashboard" replace />
+      },
       // {
       //   exact: 'true',
       //   path: '/basic/button',

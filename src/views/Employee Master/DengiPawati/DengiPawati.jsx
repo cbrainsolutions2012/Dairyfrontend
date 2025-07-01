@@ -738,6 +738,7 @@ function DengiPawati() {
                       <th>रक्कम</th>
                       <th>देयक प्रकार</th>
                       <th>सेवा तारीख</th>
+                      <th>निर्माता</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -751,6 +752,7 @@ function DengiPawati() {
                           <td>₹{item.Amount}</td>
                           <td>{item.PaymentType}</td>
                           <td>{item.SevaDate ? new Date(item.SevaDate).toLocaleDateString() : 'N/A'}</td>
+                          <td>{item.CreatedByName}</td>
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
                               Edit
