@@ -320,7 +320,7 @@ function TempleProfile() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">Temple Master</Card.Title>
+                <Card.Title as="h5">ट्रस्ट ची माहिती</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
