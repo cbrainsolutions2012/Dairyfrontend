@@ -42,6 +42,14 @@ const menuItems = {
           icon: 'fa-solid fa-hand-holding-dollar',
           url: '/dengipawti'
         },
+
+        {
+          id: 'gosevareceipt',
+          title: 'गोसेवा पावती',
+          type: 'item',
+          icon: 'fa-solid fa-hand-holding-dollar',
+          url: '/gosevareceipt'
+        },
         {
           id: 'pooja',
           title: 'सेवेचे प्रकार',

@@ -3,21 +3,21 @@ import { Row, Col, Card, Table, Button } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../commonemp.scss';
+import '../../views/commonemp.scss';
 
-function DengiPawati() {
+function GoSevaReceipt() {
   const tableRef = useRef(null);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [gotraList, setGotraList] = useState([]);
-  const [sevaList, setSevaList] = useState([]);
   const [devoteeFound, setDevoteeFound] = useState(false);
   const [receiptData, setReceiptData] = useState([]);
+  const [gotraList, setGotraList] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReceiptId, setEditingReceiptId] = useState(null);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
 
   const [formData, setFormData] = useState({
     // Devotee fields
@@ -33,17 +33,11 @@ function DengiPawati() {
     DOB: '',
 
     // Receipt fields
-    ReceiptNumber: '',
-    SevaTypeId: '',
-    SevaFor: '',
-    SevaDate: '',
+    DurationMonths: '',
     PaymentType: '',
     BankName: '',
-    DDNo: '',
-    ChequeNo: '',
     Amount: '',
-    Note: '',
-    TransactionId: ''
+    Note: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -71,17 +65,11 @@ function DengiPawati() {
       DOB: '',
 
       // Receipt fields
-      ReceiptNumber: '',
-      SevaTypeId: '',
-      SevaFor: '',
-      SevaDate: '',
+      DurationMonths: '',
       PaymentType: '',
       BankName: '',
-      DDNo: '',
-      ChequeNo: '',
       Amount: '',
-      Note: '',
-      TransactionId: ''
+      Note: ''
     });
     setSearchTerm('');
     setDevoteeFound(false);
@@ -93,7 +81,7 @@ function DengiPawati() {
   // Handle edit receipt
   const handleEditReceipt = async (receiptId) => {
     try {
-      const res = await axios.get(`https://api.mytemplesoftware.in/api/dengidar-receipt/${receiptId}`, {
+      const res = await axios.get(`https://api.mytemplesoftware.in/api/goseva/${receiptId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           'Content-Type': 'application/json'
@@ -106,33 +94,27 @@ function DengiPawati() {
         setFormData({
           // Devotee fields
           DengidarId: receipt.DengidarId,
-          FullName: receipt.FullName || '',
-          MobileNumber: receipt.MobileNumber || '',
+          FullName: receipt.DonarName || receipt.DengidarName || '',
+          MobileNumber: receipt.DengidarPhone || '',
           PanCard: receipt.PanCard || '',
           AdharCard: receipt.AdharCard || '',
           GotraTypeId: receipt.GotraTypeId || '',
           City: receipt.City || '',
-          Address: receipt.Address || '',
+          Address: receipt.DengidarAddress || '',
           EmailId: receipt.EmailId || '',
           DOB: receipt.DOB ? new Date(receipt.DOB).toISOString().split('T')[0] : '',
 
           // Receipt fields
-          ReceiptNumber: receipt.ReceiptNumber,
-          SevaTypeId: receipt.SevaTypeId,
-          SevaFor: receipt.SevaFor || '',
-          SevaDate: receipt.SevaDate ? new Date(receipt.SevaDate).toISOString().split('T')[0] : '',
+          DurationMonths: receipt.DurationMonths,
           PaymentType: receipt.PaymentType,
           BankName: receipt.BankName || '',
-          DDNo: receipt.DDNo || '',
-          ChequeNo: receipt.ChequeNo || '',
           Amount: receipt.Amount,
-          Note: receipt.Note || '',
-          TransactionId: receipt.TransactionId || ''
+          Note: receipt.Note || ''
         });
         setDevoteeFound(true);
         setIsEditing(true);
         setEditingReceiptId(receiptId);
-        setSearchTerm(receipt.MobileNumber || '');
+        setSearchTerm(receipt.DengidarPhone || '');
       }
     } catch (error) {
       console.error('Error fetching receipt for edit:', error);
@@ -204,19 +186,6 @@ function DengiPawati() {
       if (gotras) {
         setGotraList(Array.isArray(gotras) ? gotras : [gotras]);
       }
-
-      // Fetch Seva types (assuming there's an API for seva types)
-      const sevaRes = await axios.get('https://api.mytemplesoftware.in/api/seva', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const sevas = sevaRes.data.sevas;
-      if (sevas) {
-        setSevaList(Array.isArray(sevas) ? sevas : [sevas]);
-      }
     } catch (error) {
       console.error('Error fetching dropdown data:', error);
     }
@@ -225,7 +194,7 @@ function DengiPawati() {
   // Fetch receipt data for table
   const fetchReceiptData = async () => {
     try {
-      const res = await axios.get('https://api.mytemplesoftware.in/api/dengidar-receipt', {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/goseva', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           'Content-Type': 'application/json'
@@ -246,97 +215,424 @@ function DengiPawati() {
     fetchReceiptData();
   }, []);
 
-  const handleExportToExcel = () => {
-    const table = tableRef.current;
-    if (!table) return;
+  const handleExportToExcel = async () => {
+    if (!Array.isArray(receiptData) || receiptData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    setIsExportingExcel(true);
+    try {
+      // Format date helper function
+      const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        try {
+          return new Date(dateString).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+        } catch {
+          return 'Invalid Date';
+        }
+      };
 
-    // Remove the "Action" column from the cloned table
+      // Prepare data for Excel export with enhanced formatting
+      const excelData = receiptData.map((item, index) => ({
+        'Sr. No.': index + 1,
+        'Receipt No.': item.ReceiptNo || 'N/A',
+        'Donor Name': item.DonarName || item.DengidarName || 'N/A',
+        Phone: item.DengidarPhone || 'N/A',
+        Address: item.DengidarAddress || 'N/A',
+        'Duration (Months)': item.DurationMonths || 'N/A',
+        'Amount (₹)': item.Amount ? `₹${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '₹0.00',
+        'Payment Type': item.PaymentType || 'N/A',
+        'Bank Name': item.BankName || 'N/A',
+        'Start Date': formatDate(item.StartDate),
+        'End Date': formatDate(item.EndDate),
+        Status: item.Status || 'Active',
+        Note: item.Note || '',
+        'Created By': item.CreatedByName || 'N/A',
+        'Days Until Expiry': item.DaysUntilExpiry || 'N/A',
+        'Created Date': formatDate(item.CreatedDate)
+      }));
 
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+      // Create workbook and worksheet
+      const ws = utils.json_to_sheet(excelData);
+      const wb = utils.book_new();
 
-    headers[actionIndex].remove(); // header remove
+      // Enhanced column widths for better presentation
+      const colWidths = [
+        { wch: 8 }, // Sr. No.
+        { wch: 15 }, // Receipt No.
+        { wch: 25 }, // Donor Name
+        { wch: 15 }, // Phone
+        { wch: 30 }, // Address
+        { wch: 12 }, // Duration
+        { wch: 15 }, // Amount
+        { wch: 15 }, // Payment Type
+        { wch: 20 }, // Bank Name
+        { wch: 12 }, // Start Date
+        { wch: 12 }, // End Date
+        { wch: 10 }, // Status
+        { wch: 30 }, // Note
+        { wch: 15 }, // Created By
+        { wch: 15 }, // Days Until Expiry
+        { wch: 15 } // Created Date
+      ];
+      ws['!cols'] = colWidths;
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
+      // Add header styling and metadata
+      const range = utils.decode_range(ws['!ref']);
+
+      // Style header row
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddress = utils.encode_cell({ r: 0, c: col });
+        if (!ws[cellAddress]) continue;
+
+        ws[cellAddress].s = {
+          font: { bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '4472C4' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: {
+            top: { style: 'thin', color: { rgb: '000000' } },
+            bottom: { style: 'thin', color: { rgb: '000000' } },
+            left: { style: 'thin', color: { rgb: '000000' } },
+            right: { style: 'thin', color: { rgb: '000000' } }
+          }
+        };
       }
-    });
 
-    // Convert the modified table to a workbook and export
+      // Add worksheet with title
+      const today = new Date().toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
 
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+      utils.book_append_sheet(wb, ws, 'GoSeva Receipts');
+
+      // Add summary sheet
+      const summaryData = [
+        ['GoSeva Receipts Report Summary'],
+        [''],
+        ['Generated On:', today],
+        ['Total Records:', receiptData.length],
+        [
+          'Total Amount:',
+          `₹${receiptData.reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+        ],
+        ['Active Receipts:', receiptData.filter((item) => item.Status !== 'Expired').length],
+        ['Expired Receipts:', receiptData.filter((item) => item.Status === 'Expired').length],
+        [''],
+        ['Payment Type Breakdown:'],
+        ...Object.entries(
+          receiptData.reduce((acc, item) => {
+            const type = item.PaymentType || 'Unknown';
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+          }, {})
+        ).map(([type, count]) => [type, count])
+      ];
+
+      const summaryWs = utils.aoa_to_sheet(summaryData);
+      summaryWs['!cols'] = [{ wch: 25 }, { wch: 20 }];
+      utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+      const filename = `GoSeva_Receipts_${timestamp}.xlsx`;
+
+      writeFile(wb, filename);
+
+      // Success notification with enhanced UI
+      const totalAmount = receiptData.reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0);
+      alert(
+        `✅ Excel Export Successful!\n\n` +
+          `📄 File: ${filename}\n` +
+          `📊 Records Exported: ${receiptData.length}\n` +
+          `💰 Total Amount: ₹${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n` +
+          `📅 Generated: ${today}`
+      );
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert(`❌ Export Failed!\n\nError: ${error.message}\nPlease try again or contact support.`);
+    } finally {
+      setIsExportingExcel(false);
+    }
   };
 
-  const handleExportToPDF = () => {
-    // get table
-    const table = tableRef.current;
-    if (!table) return;
+  const handleExportToPDF = async () => {
+    if (!Array.isArray(receiptData) || receiptData.length === 0) {
+      alert('No data available to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    setIsExportingPDF(true);
+    try {
+      // Create PDF document
+      const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape orientation for better table fit
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      let currentY = 50;
 
-    // remove action feild
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
+      // Helper function to format dates
+      const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        try {
+          return new Date(dateString).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+        } catch {
+          return 'Invalid Date';
+        }
+      };
 
-    headers[actionIndex].remove(); //remove header
+      // Helper function to add temple header (used on all pages)
+      const addTempleHeader = () => {
+        const startY = 10;
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont('helvetica', 'normal');
 
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
-      }
-    });
+        // First line: Temple Name (center), Establishment Year (right)
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('|| Shriram Samarth ||', pageWidth / 2, startY, { align: 'center' });
 
-    // Append cloned table in body
-    clonedTable.style.position = 'absolute';
-    clonedTable.style.top = '-9999px';
-    document.body.appendChild(clonedTable);
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Nyasachi Sthapana 2011', pageWidth - margin, startY, { align: 'right' });
 
-    html2canvas(clonedTable).then((canvas) => {
-      document.body.removeChild(clonedTable); // Remove the cloned table after capturing
+        // Second line: Trust Name
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Anandi - Narayan Krupa Nyas', pageWidth / 2, startY + 8, { align: 'center' });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+        // Third line: Temple Name
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Shri Samarth Ramdas Swami Math, Khatgaon,', pageWidth / 2, startY + 16, { align: 'center' });
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+        // Fourth line: Address
+        pdf.setFontSize(10);
+        pdf.text('Ta. Karjat Ji. Ahilyanagar-414402, Maharashtra', pageWidth / 2, startY + 24, { align: 'center' });
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
+        // Report title
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Dengi Pawati', pageWidth / 2, startY + 38, { align: 'center' });
+
+        // Add a line separator
+        pdf.setLineWidth(0.5);
+        pdf.setDrawColor(0, 0, 0);
+        pdf.line(margin, startY + 45, pageWidth - margin, startY + 45);
+
+        return startY + 50; // Return Y position for content to start
+      };
+
+      // Helper function to add a new page with header
+      const addNewPage = () => {
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        currentY = addTempleHeader();
+      };
+
+      // Add main header on first page
+      currentY = addTempleHeader();
+
+      // Add generation date and summary below header
+      const today = new Date().toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Dinank: ${today}`, margin, currentY + 5);
+      pdf.text(`Ekun Record: ${receiptData.length}`, pageWidth - 60, currentY + 5);
+
+      const totalAmount = receiptData.reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0);
+      pdf.text(`Ekun Rakkam: Rs${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, margin, currentY + 12);
+
+      currentY += 20;
+
+      // Table configuration with transliterated Marathi headers
+      const rowHeight = 8;
+      const headerHeight = 10;
+      const columns = [
+        { title: 'A.Kr.', width: 15 },
+        { title: 'Pawati Kr.', width: 25 },
+        { title: 'Dengidar Nav', width: 35 },
+        { title: 'Durdhvani', width: 25 },
+        { title: 'Avadhi', width: 20 },
+        { title: 'Rakkam', width: 25 },
+        { title: 'Deyak Prakar', width: 22 },
+        { title: 'Bank', width: 25 },
+        { title: 'Prarambh Dinank', width: 22 },
+        { title: 'Samapti Dinank', width: 22 },
+        { title: 'Sthiti', width: 18 }
+      ];
+
+      // Draw table header
+      const drawTableHeader = (startY) => {
+        pdf.setFillColor(68, 114, 196);
+        pdf.rect(margin, startY, pageWidth - 2 * margin, headerHeight, 'F');
+
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+
+        let xPosition = margin + 2;
+        columns.forEach((col) => {
+          pdf.text(col.title, xPosition, startY + 7);
+          xPosition += col.width;
+        });
+
+        return startY + headerHeight;
+      };
+
+      // Draw table rows
+      const drawTableRow = (data, yPosition, isAlternate = false) => {
+        if (isAlternate) {
+          pdf.setFillColor(245, 245, 245);
+          pdf.rect(margin, yPosition, pageWidth - 2 * margin, rowHeight, 'F');
+        }
+
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+
+        let xPosition = margin + 2;
+        data.forEach((cell, index) => {
+          const text = String(cell || '').substring(0, 20); // Truncate if too long
+          pdf.text(text, xPosition, yPosition + 6);
+          xPosition += columns[index].width;
+        });
+
+        return yPosition + rowHeight;
+      };
+
+      // Start table
+      currentY = drawTableHeader(currentY);
+
+      // Add data rows
+      receiptData.forEach((item, index) => {
+        // Check if we need a new page
+        if (currentY + rowHeight > pageHeight - 30) {
+          addNewPage();
+          currentY = drawTableHeader(currentY);
+        }
+
+        const rowData = [
+          (index + 1).toString(),
+          item.ReceiptNo || 'N/A',
+          (item.DonarName || item.DengidarName || 'N/A').substring(0, 15),
+          item.DengidarPhone || 'N/A',
+          (item.DurationMonths || 'N/A').toString(),
+          item.Amount ? `₹${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : '₹0',
+          item.PaymentType || 'N/A',
+          (item.BankName || 'N/A').substring(0, 12),
+          formatDate(item.StartDate),
+          formatDate(item.EndDate),
+          item.Status || 'Active'
+        ];
+
+        currentY = drawTableRow(rowData, currentY, index % 2 === 1);
+      });
+
+      // Add summary section
+      currentY += 20;
+      if (currentY + 60 > pageHeight - 30) {
+        addNewPage();
       }
 
-      pdf.save('temple-master.pdf');
-    });
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Saransh', margin, currentY);
+      currentY += 10;
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+
+      // Payment type breakdown
+      const paymentTypes = receiptData.reduce((acc, item) => {
+        const type = item.PaymentType || 'Unknown';
+        acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      }, {});
+
+      pdf.text('Deyak Prakar Vivarani:', margin, currentY);
+      currentY += 7;
+
+      Object.entries(paymentTypes).forEach(([type, count]) => {
+        pdf.text(`• ${type}: ${count} pawati`, margin + 5, currentY);
+        currentY += 5;
+      });
+
+      // Status breakdown
+      currentY += 5;
+      const activeCount = receiptData.filter((item) => item.Status !== 'Expired').length;
+      const expiredCount = receiptData.length - activeCount;
+
+      pdf.text('Sthiti Vivarani:', margin, currentY);
+      currentY += 7;
+      pdf.text(`• Sakriya: ${activeCount} pawati`, margin + 5, currentY);
+      currentY += 5;
+      pdf.text(`• Samapti: ${expiredCount} pawati`, margin + 5, currentY);
+
+      // Add page numbers to all pages
+      const totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(`Page ${i} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
+      }
+
+      // Footer on last page
+      pdf.setPage(totalPages);
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text('This is a computer-generated report. For queries, contact temple administration.', pageWidth / 2, pageHeight - 5, {
+        align: 'center'
+      });
+
+      // Generate filename and save
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+      const filename = `GoSeva_Receipts_${timestamp}.pdf`;
+
+      pdf.save(filename);
+
+      // Success notification
+      alert(
+        `✅ PDF Export Successful!\n\n` +
+          `📄 File: ${filename}\n` +
+          `📊 Records Exported: ${receiptData.length}\n` +
+          `💰 Total Amount: ₹${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n` +
+          `📅 Generated: ${today}`
+      );
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      alert(`❌ PDF Export Failed!\n\nError: ${error.message}\nPlease try again or contact support.`);
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
 
   const validate = () => {
     const newErrors = {};
     if (!formData.DengidarId) newErrors.DengidarId = 'Please search and select a devotee first';
-    if (!formData.SevaTypeId) newErrors.SevaTypeId = 'Seva type is required';
     if (!formData.Amount) newErrors.Amount = 'Amount is required';
     if (!formData.PaymentType) newErrors.PaymentType = 'Payment type is required';
-    if (!formData.SevaDate) newErrors.SevaDate = 'Seva date is required';
-
-    // Conditional validation for UPI
-    if (formData.PaymentType === 'upi') {
-      if (!formData.TransactionId) newErrors.TransactionId = 'Transaction ID is required for UPI';
-      if (!formData.BankName) newErrors.BankName = 'Bank name is required for UPI';
-    }
+    if (!formData.DurationMonths) newErrors.DurationMonths = 'Duration in months is required';
 
     return newErrors;
   };
@@ -348,22 +644,17 @@ function DengiPawati() {
       try {
         const receiptData = {
           DengidarId: formData.DengidarId,
-          SevaTypeId: formData.SevaTypeId,
-          SevaFor: formData.SevaFor,
-          SevaDate: formData.SevaDate,
+          DurationMonths: parseInt(formData.DurationMonths, 10) || 0,
           PaymentType: formData.PaymentType,
           BankName: formData.BankName || null,
-          DDNo: formData.DDNo || null,
-          ChequeNo: formData.ChequeNo || null,
           Amount: parseFloat(formData.Amount),
-          Note: formData.Note || null,
-          TransactionId: formData.TransactionId || null
+          Note: formData.Note || null
         };
 
         let response;
         if (isEditing && editingReceiptId) {
           // Update existing receipt
-          response = await axios.put(`https://api.mytemplesoftware.in/api/dengidar-receipt/${editingReceiptId}`, receiptData, {
+          response = await axios.put(`https://api.mytemplesoftware.in/api/goseva/${editingReceiptId}`, receiptData, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
               'Content-Type': 'application/json'
@@ -371,7 +662,7 @@ function DengiPawati() {
           });
         } else {
           // Create new receipt
-          response = await axios.post('https://api.mytemplesoftware.in/api/dengidar-receipt', receiptData, {
+          response = await axios.post('https://api.mytemplesoftware.in/api/goseva', receiptData, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
               'Content-Type': 'application/json'
@@ -390,17 +681,11 @@ function DengiPawati() {
           // Reset only receipt fields, keep devotee data
           setFormData({
             ...formData,
-            ReceiptNumber: '',
-            SevaTypeId: '',
-            SevaFor: '',
-            SevaDate: '',
+            DurationMonths: '',
             PaymentType: '',
             BankName: '',
-            DDNo: '',
-            ChequeNo: '',
             Amount: '',
-            Note: '',
-            TransactionId: ''
+            Note: ''
           });
           setIsEditing(false);
           setEditingReceiptId(null);
@@ -429,7 +714,7 @@ function DengiPawati() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`https://api.mytemplesoftware.in/api/dengidar-receipt/${id}`, {
+      const response = await axios.delete(`https://api.mytemplesoftware.in/api/goseva/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           'Content-Type': 'application/json'
@@ -457,7 +742,7 @@ function DengiPawati() {
         <Card>
           <Card.Header>
             <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
-              {isEditing ? 'पावती संपादन' : 'देणगीदार पावती'}
+              {isEditing ? 'पावती संपादन' : 'गोसेवा पावती'}
             </Card.Title>
           </Card.Header>
           <Card.Body className="p-0">
@@ -610,16 +895,9 @@ function DengiPawati() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="SevaTypeId">सेवेचे प्रकार *</label>
-                  <select name="SevaTypeId" value={formData.SevaTypeId} onChange={handleChange}>
-                    <option value="">सेवेचे प्रकार निवडा</option>
-                    {sevaList.map((seva) => (
-                      <option key={seva.Id} value={seva.Id}>
-                        {seva.SevaName}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.SevaTypeId && <span className="error">{errors.SevaTypeId}</span>}
+                  <label htmlFor="DurationMonths">अवधी (महिने) *</label>
+                  <input type="number" name="DurationMonths" value={formData.DurationMonths} onChange={handleChange} />
+                  {errors.DurationMonths && <span className="error">{errors.DurationMonths}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="Amount">रक्कम *</label>
@@ -631,65 +909,12 @@ function DengiPawati() {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="PaymentType">देयक प्रकार *</label>
-                  <select name="PaymentType" value={formData.PaymentType} onChange={handleChange}>
-                    <option value="">देयक प्रकार निवडा</option>
-                    <option value="cash">रोख</option>
-                    <option value="upi">यूपीआय</option>
-                    <option value="cheque">चेक</option>
-                    <option value="dd">डीडी</option>
-                    <option value="gift">उपहार</option>
-                  </select>
+                  <input type="text" name="PaymentType" value={formData.PaymentType} onChange={handleChange} />
                   {errors.PaymentType && <span className="error">{errors.PaymentType}</span>}
                 </div>
                 <div className="form-group">
-                  <label htmlFor="SevaFor">सेवा कोणासाठी</label>
-                  <input type="text" name="SevaFor" value={formData.SevaFor} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* Conditional fields for UPI */}
-              {formData.PaymentType === 'upi' && (
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="TransactionId">ट्रान्झॅक्शन आयडी *</label>
-                    <input type="text" name="TransactionId" value={formData.TransactionId} onChange={handleChange} />
-                    {errors.TransactionId && <span className="error">{errors.TransactionId}</span>}
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="BankName">बँकेचे नाव *</label>
-                    <input type="text" name="BankName" value={formData.BankName} onChange={handleChange} />
-                    {errors.BankName && <span className="error">{errors.BankName}</span>}
-                  </div>
-                </div>
-              )}
-
-              {/* Conditional fields for Cheque/DD */}
-              {(formData.PaymentType === 'cheque' || formData.PaymentType === 'dd') && (
-                <div className="form-row">
-                  {formData.PaymentType === 'dd' && (
-                    <div className="form-group">
-                      <label htmlFor="DDNo">डीडी क्रमांक</label>
-                      <input type="text" name="DDNo" value={formData.DDNo} onChange={handleChange} />
-                    </div>
-                  )}
-                  {formData.PaymentType === 'cheque' && (
-                    <div className="form-group">
-                      <label htmlFor="ChequeNo">चेक क्रमांक</label>
-                      <input type="text" name="ChequeNo" value={formData.ChequeNo} onChange={handleChange} />
-                    </div>
-                  )}
-                  <div className="form-group">
-                    <label htmlFor="BankName">बँकेचे नाव</label>
-                    <input type="text" name="BankName" value={formData.BankName} onChange={handleChange} />
-                  </div>
-                </div>
-              )}
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="SevaDate">सेवा तारीख *</label>
-                  <input type="date" name="SevaDate" value={formData.SevaDate} onChange={handleChange} />
-                  {errors.SevaDate && <span className="error">{errors.SevaDate}</span>}
+                  <label htmlFor="BankName">बँकेचे नाव</label>
+                  <input type="text" name="BankName" value={formData.BankName} onChange={handleChange} />
                 </div>
               </div>
 
@@ -713,15 +938,57 @@ function DengiPawati() {
         <Card>
           <Card.Header>
             <Row>
-              <Col md={6}>
+              <Col md={4}>
                 <Card.Title as="h5">पावती यादी</Card.Title>
+                <small className="text-muted">
+                  Total: {receiptData.length} receipts | Amount: ₹
+                  {receiptData
+                    .reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0)
+                    .toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </small>
               </Col>
-              <Col md={6} className="d-flex justify-content-end">
-                <Button variant="success" onClick={handleExportToExcel} className="me-2">
-                  Excel
+              <Col md={8} className="d-flex justify-content-end align-items-center">
+                <Button
+                  variant="success"
+                  onClick={handleExportToExcel}
+                  className="me-2 d-flex align-items-center"
+                  disabled={isExportingExcel || isExportingPDF || receiptData.length === 0}
+                  style={{ minWidth: '120px' }}
+                >
+                  {isExportingExcel ? (
+                    <>
+                      <div
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ width: '16px', height: '16px' }}
+                      ></div>
+                      Exporting...
+                    </>
+                  ) : (
+                    <>📊 Excel ({receiptData.length})</>
+                  )}
                 </Button>
-                <Button variant="danger" onClick={handleExportToPDF}>
-                  PDF
+                <Button
+                  variant="danger"
+                  onClick={handleExportToPDF}
+                  className="d-flex align-items-center"
+                  disabled={isExportingExcel || isExportingPDF || receiptData.length === 0}
+                  style={{ minWidth: '120px' }}
+                >
+                  {isExportingPDF ? (
+                    <>
+                      <div
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ width: '16px', height: '16px' }}
+                      ></div>
+                      Exporting...
+                    </>
+                  ) : (
+                    <>📄 PDF ({receiptData.length})</>
+                  )}
                 </Button>
               </Col>
             </Row>
@@ -734,10 +1001,11 @@ function DengiPawati() {
                     <tr>
                       <th>पावती क्रमांक</th>
                       <th>देणगीदार नाव</th>
-                      <th>सेवा प्रकार</th>
+                      <th>अवधि (महिने)</th>
                       <th>रक्कम</th>
                       <th>देयक प्रकार</th>
-                      <th>सेवा तारीख</th>
+                      <th>सुरुवात तारीख</th>
+                      <th>समाप्ती तारीख</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -745,12 +1013,13 @@ function DengiPawati() {
                     {Array.isArray(receiptData) &&
                       receiptData.map((item) => (
                         <tr key={item.Id}>
-                          <td>{item.ReceiptNumber}</td>
-                          <td>{item.FullName || 'N/A'}</td>
-                          <td>{item.SevaName || 'N/A'}</td>
+                          <td>{item.ReceiptNo}</td>
+                          <td>{item.DonarName || item.DengidarName || 'N/A'}</td>
+                          <td>{item.DurationMonths || 'N/A'}</td>
                           <td>₹{item.Amount}</td>
                           <td>{item.PaymentType}</td>
-                          <td>{item.SevaDate ? new Date(item.SevaDate).toLocaleDateString() : 'N/A'}</td>
+                          <td>{item.StartDate ? new Date(item.StartDate).toLocaleDateString() : 'N/A'}</td>
+                          <td>{item.EndDate ? new Date(item.EndDate).toLocaleDateString() : 'N/A'}</td>
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
                               Edit
@@ -787,4 +1056,4 @@ function DengiPawati() {
   );
 }
 
-export default DengiPawati;
+export default GoSevaReceipt;

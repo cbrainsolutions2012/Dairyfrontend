@@ -1,0 +1,22 @@
+/* Devanagari Font CSS for PDF Export */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+
+/* Ensure the font is loaded for canvas text rendering */
+.devanagari-font {
+  font-family: 'Noto Sans Devanagari', 'Arial Unicode MS', 'Mangal', sans-serif;
+}
+
+/* Font preload for better performance */
+.font-preloader {
+  font-family: 'Noto Sans Devanagari', 'Arial Unicode MS', 'Mangal', sans-serif;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  visibility: hidden;
+  font-size: 1px;
+}
+
+/* Test text to ensure font loading */
+.font-preloader::before {
+  content: 'गो सेवा पावती अहवाल देणगीदार नाव रक्कम';
+}
