@@ -21,6 +21,7 @@ function DengiPawati() {
   const [itemsPerPage] = useState(10);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReceiptId, setEditingReceiptId] = useState(null);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(null);
 
   const [formData, setFormData] = useState({
     // Devotee fields
@@ -541,6 +542,46 @@ function DengiPawati() {
     return pages;
   };
 
+  const handleSendWhatsApp = async (receipt) => {
+    setSendingWhatsApp(receipt.Id); // Optional: show loading state for this row
+    try {
+      // Use the receipt's MobileNumber as the WhatsApp number
+      let number = receipt.MobileNumber ? receipt.MobileNumber.replace(/\D/g, '') : ''; // Clean the number
+
+      if (!number) {
+        alert('No mobile number found for this receipt.');
+        setSendingWhatsApp(null);
+        return;
+      }
+
+      // Always add 91 at the start, regardless of whether it already starts with 91
+      number = '91' + number;
+
+      // Call your backend API (adjust the URL if needed)
+      const res = await axios.post(
+        'https://api.mytemplesoftware.in/api/whatsapp/send-receipt',
+        {
+          number,
+          receipt
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (res.data.success) {
+        alert('WhatsApp message sent successfully!');
+      } else {
+        alert('Failed to send WhatsApp message: ' + (res.data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      alert('Error sending WhatsApp message: ' + (error.response?.data?.message || error.message));
+    }
+    setSendingWhatsApp(null);
+  };
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -848,6 +889,9 @@ function DengiPawati() {
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
                               Edit
+                            </Button>
+                            <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsApp(item)}>
+                              {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
                             </Button>
                             <Button
                               variant="danger"

@@ -21,6 +21,7 @@ function GoSevaReceipt() {
   const [editingReceiptId, setEditingReceiptId] = useState(null);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(null); // Track sending state for WhatsApp
 
   const [formData, setFormData] = useState({
     // Devotee fields
@@ -803,6 +804,55 @@ function GoSevaReceipt() {
     return pages;
   };
 
+  const handleSendWhatsapp = async (receipt) => {
+    try {
+      setSendingWhatsApp(receipt.Id);
+      // Use the donor's WhatsApp number (with country code, e.g., '91...')
+      let number = receipt.DengidarPhone || receipt.MobileNumber;
+      if (!number) {
+        alert('No WhatsApp number found for this donor.');
+        setSendingWhatsApp(null);
+        return;
+      }
+      number = '91' + number;
+
+      const startdate = receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : '';
+      const enddate = receipt.EndDate ? new Date(receipt.EndDate).toISOString().split('T')[0] : '';
+
+      // Prepare the payload as per your backend API
+      const payload = {
+        number,
+        receipt: {
+          DonarName: receipt.DonarName,
+          Amount: receipt.Amount,
+          DurationMonths: receipt.DurationMonths,
+          StartDate: startdate,
+          EndDate: enddate,
+          PaymentType: receipt.PaymentType
+        }
+      };
+
+      setSendingWhatsApp(receipt.Id);
+      const res = await axios.post('https://api.mytemplesoftware.in/api/goseva/send-whatsapp', payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.data.success) {
+        alert('WhatsApp message sent successfully!');
+      } else {
+        alert('Failed to send WhatsApp message.');
+      }
+    } catch (error) {
+      console.error('Error sending WhatsApp:', error);
+      alert('Error sending WhatsApp message.');
+      setSendingWhatsApp(null);
+    } finally {
+      setSendingWhatsApp(null);
+    }
+  };
+
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -1104,6 +1154,9 @@ function GoSevaReceipt() {
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
                               Edit
+                            </Button>
+                            <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsapp(item)}>
+                              {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
                             </Button>
                             <Button
                               variant="danger"

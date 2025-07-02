@@ -109,6 +109,11 @@ export const routes = [
       },
       {
         exact: 'true',
+        path: '/whatsappinstance',
+        element: lazy(() => import('./views/WhatsappInstance/WhatsappInstance'))
+      },
+      {
+        exact: 'true',
         path: '/pooja',
         element: lazy(() => import('./views/Employee Master/pooja/Pooja'))
       },

@@ -42,6 +42,13 @@ const menuItems = {
           icon: 'fa-solid fa-hand-holding-dollar',
           url: '/dengipawti'
         },
+        {
+          id: 'whatsappinstance',
+          title: 'व्हाट्सअॅप इन्स्टन्स',
+          type: 'item',
+          icon: 'fa-solid fa-hand-holding-dollar',
+          url: '/whatsappinstance'
+        },
 
         {
           id: 'gosevareceipt',

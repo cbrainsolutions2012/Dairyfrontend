@@ -92,15 +92,15 @@ function EditDevotee() {
   const validate = () => {
     const newErrors = {};
     if (!formData.FullName) newErrors.FullName = 'Full Name is required';
-    if (!formData.City) newErrors.City = 'City is required';
-    if (!formData.Address) newErrors.Address = 'Address is required';
+    // if (!formData.City) newErrors.City = 'City is required';
+    // if (!formData.Address) newErrors.Address = 'Address is required';
     if (!formData.MobileNumber) newErrors.MobileNumber = 'Mobile Number is required';
-    if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
-    if (!formData.PanCard) newErrors.PanCard = 'PAN Card is required';
-    if (!formData.AdharCard) newErrors.AdharCard = 'Adhaar No. is required'; // Fixed field name
-    if (!formData.GotraTypeId) newErrors.GotraTypeId = 'Gotra type is required';
-    if (!formData.DOB) newErrors.DOB = 'Date of Birth is required';
-    if (!formData.RegisterDate) newErrors.RegisterDate = 'Date is required';
+    // if (!formData.EmailId) newErrors.EmailId = 'Email ID is required';
+    // if (!formData.PanCard) newErrors.PanCard = 'PAN Card is required';
+    // if (!formData.AdharCard) newErrors.AdharCard = 'Adhaar No. is required'; // Fixed field name
+    // if (!formData.GotraTypeId) newErrors.GotraTypeId = 'Gotra type is required';
+    // if (!formData.DOB) newErrors.DOB = 'Date of Birth is required';
+    // if (!formData.RegisterDate) newErrors.RegisterDate = 'Date is required';
     return newErrors;
   };
 

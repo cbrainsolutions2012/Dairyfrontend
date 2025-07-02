@@ -17,9 +17,32 @@ import axios from 'axios';
 const DashAnalytics = () => {
   const tableRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [tableData, setTableData] = useState([]);
+  // const [tableData, setTableData] = useState([]);
   const [dashboardData, setDashboardData] = useState({});
 
+  const [reminderData, setReminderData] = useState([]);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(null);
+
+  const fetchReminders = async () => {
+    try {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/goseva/reminder?days=60', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.data.success) {
+        setReminderData(res.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+      setReminderData([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchReminders();
+  }, []);
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -28,12 +51,51 @@ const DashAnalytics = () => {
     console.log('Search term:', searchTerm);
   };
 
-  const fetchTableData = async () => {
+  // const fetchTableData = async () => {
+  //   try {
+  //     const res = await axios.get('http://api.mytemplesoftware.in/api/admin/employee_registration/');
+  //     console.log(res.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  const handleSendWhatsapp = async (receipt) => {
+    setSendingWhatsApp(receipt.Id);
+    let number = receipt.DengidarPhone || receipt.MobileNumber;
+    if (!number) {
+      alert('No WhatsApp number found for this donor.');
+      return;
+    }
+    number = '91' + number;
+    const date = receipt.EndDate ? new Date(receipt.EndDate).toISOString().split('T')[0] : '';
+    const payload = {
+      number,
+      receipt: {
+        DonarName: receipt.DonarName,
+        Amount: receipt.Amount,
+        DurationMonths: receipt.DurationMonths,
+        StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : '',
+        EndDate: date,
+        PaymentType: receipt.PaymentType
+      }
+    };
     try {
-      const res = await axios.get('http://api.mytemplesoftware.in/api/admin/employee_registration/');
-      console.log(res.data);
+      const res = await axios.post('https://api.mytemplesoftware.in/api/goseva/send-expiry-reminder-whatsapp', payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.data.success) {
+        alert('WhatsApp message sent successfully!');
+      } else {
+        alert('Failed to send WhatsApp message.');
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Error sending WhatsApp:', error);
+      alert('Error sending WhatsApp message.');
+    } finally {
+      setSendingWhatsApp(null);
     }
   };
 
@@ -283,32 +345,41 @@ const DashAnalytics = () => {
                   <Table responsive ref={tableRef}>
                     <thead>
                       <tr>
-                        <th>Temple Name</th>
-                        <th>Reg. No.</th>
-                        <th>City</th>
-                        <th>Contact No.</th>
-                        <th>PAN Card No.</th>
-                        <th>Start Date</th>
-                        <th>Amount</th>
-                        <th>Contact Name</th>
+                        <th>देणगीदार नाव</th>
+                        <th>पावती क्रमांक</th>
+                        <th>शहर</th>
+                        <th>देणगीदार फोन</th>
+                        <th>पावती दिनांक</th>
+                        <th>रक्कम</th>
+                        <th>नोंदणीकर्ता</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>08-11-2016</td>
-                        <td>786</td>
-                        <td>485</td>
-                        <td>769</td>
-                        <td>45,3%</td>
-                        <td>6,7%</td>
-                        <td>8,56</td>
-                        <td>10:55</td>
-                        <td>
-                          <Button variant="danger">Delete</Button>
-                        </td>
-                      </tr>
-                      {/* More rows */}
+                      {reminderData.length === 0 ? (
+                        <tr>
+                          <td colSpan="9" className="text-center">
+                            No expiring receipts found
+                          </td>
+                        </tr>
+                      ) : (
+                        reminderData.map((item) => (
+                          <tr key={item.Id}>
+                            <td>{item.DonarName || item.DengidarName || 'N/A'}</td>
+                            <td>{item.ReceiptNo}</td>
+                            <td>{item.City || 'N/A'}</td>
+                            <td>{item.DengidarPhone || 'N/A'}</td>
+                            <td>{item.StartDate ? new Date(item.StartDate).toLocaleDateString() : 'N/A'}</td>
+                            <td>₹{item.Amount}</td>
+                            <td>{item.CreatedByName || 'N/A'}</td>
+                            <td>
+                              <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsapp(item)}>
+                                {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </Table>
                 </PerfectScrollbar>

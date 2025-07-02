@@ -304,6 +304,7 @@ function DonateMaster() {
       } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to register devotee. Please try again.');
+        setErrors({});
       }
       console.log(formData);
     } else {
