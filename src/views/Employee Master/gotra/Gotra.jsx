@@ -64,7 +64,8 @@ const Gotra = () => {
         });
         if (res.status === 201) {
           alert('Gotra added successfully');
-          setTableData((prevData) => [...prevData, res.data.gotra]);
+          // Refresh the table data by fetching from API again
+          fetchTableData();
         }
       } catch (error) {
         console.error('There is an error submitting form data');
@@ -134,7 +135,7 @@ const Gotra = () => {
     // Convert the modified table to a workbook and export
 
     const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    writeFile(wb, 'Gotra_Data.xlsx');
   };
 
   const handleExportToPDF = () => {
@@ -184,7 +185,7 @@ const Gotra = () => {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('Gotra_Data.pdf');
     });
   };
 

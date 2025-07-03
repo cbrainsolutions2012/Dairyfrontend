@@ -667,6 +667,23 @@ function GoSevaReceipt() {
     e.preventDefault();
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
+      if (formData.MobileNumber && !/^\d{10}$/.test(formData.MobileNumber)) {
+        alert('Mobile Number must be 10 digits');
+        return;
+      }
+      if (formData.PanCard && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.PanCard)) {
+        alert('PAN Card must be 10 characters');
+        return;
+      }
+      if (formData.AdharCard && !/^\d{12}$/.test(formData.AdharCard)) {
+        alert('Aadhar Card must be 12 digits');
+        return;
+      }
+      if (formData.EmailId && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.EmailId)) {
+        alert('Invalid Email ID format');
+        return;
+      }
+
       try {
         const receiptData = {
           DengidarId: formData.DengidarId,

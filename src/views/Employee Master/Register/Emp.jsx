@@ -282,6 +282,25 @@ function Emp() {
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
       // Handle form submission
+
+      if (formData.MobileNumber && formData.MobileNumber.toString().length !== 10 && formData.MobileNumber.toString().length !== 12) {
+        alert('Mobile Number must be 10, 12 digits');
+        return;
+      }
+
+      if (formData.Adharcard && formData.Adharcard.toString().length !== 12) {
+        alert('Adhar Card must be 12 digits');
+        return;
+      }
+      if (formData.PanCard && formData.PanCard.toString().length !== 10) {
+        alert('PAN Card must be 10 digits');
+        return;
+      }
+      if (formData.EmailId && !/\S+@\S+\.\S+/.test(formData.EmailId)) {
+        alert('Please enter a valid Email ID');
+        return;
+      }
+
       try {
         const response = await axios.post(`https://api.mytemplesoftware.in/api/employees`, formData, {
           headers: {

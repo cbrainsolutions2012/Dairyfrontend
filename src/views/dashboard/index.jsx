@@ -195,7 +195,7 @@ const DashAnalytics = () => {
     // Convert the modified table to a workbook and export
 
     const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    writeFile(wb, 'data.xlsx');
   };
 
   const handleExportToPDF = () => {
@@ -245,7 +245,7 @@ const DashAnalytics = () => {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('data.pdf');
     });
   };
   return (
@@ -467,7 +467,7 @@ const DashAnalytics = () => {
                       {birthdayData.length === 0 ? (
                         <tr>
                           <td colSpan="9" className="text-center">
-                            No expiring receipts found
+                            No Birthdays Today
                           </td>
                         </tr>
                       ) : (

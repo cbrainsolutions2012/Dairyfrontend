@@ -27,7 +27,7 @@ function TotalEmployee() {
 
     // Convert the modified table to a workbook and export
     const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    writeFile(wb, 'TotalEmployee_Data.xlsx');
   };
 
   const handleExportToPDF = () => {
@@ -65,7 +65,7 @@ function TotalEmployee() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('TotalEmployee_Data.pdf');
     });
   };
 

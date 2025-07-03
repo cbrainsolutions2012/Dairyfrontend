@@ -214,7 +214,7 @@ function Cashbook() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('cashbook.pdf');
     });
   };
 

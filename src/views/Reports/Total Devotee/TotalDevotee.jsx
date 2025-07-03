@@ -113,7 +113,7 @@ function TotalDevotee() {
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
-      pdf.save('temple-master.pdf');
+      pdf.save('TotalDevotee_Data.pdf');
     });
   };
 

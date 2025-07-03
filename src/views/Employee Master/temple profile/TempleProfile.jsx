@@ -86,7 +86,7 @@ function TempleProfile() {
     // Convert the modified table to a workbook and export
 
     const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    writeFile(wb, 'Temple_Data.xlsx');
   };
 
   const handleExportToPDF = () => {
@@ -136,7 +136,7 @@ function TempleProfile() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('Temple_Data.pdf');
     });
   };
 

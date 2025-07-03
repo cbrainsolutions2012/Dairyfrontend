@@ -150,7 +150,7 @@ function IncomeForm() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('Income_Data.pdf');
     });
   };
 

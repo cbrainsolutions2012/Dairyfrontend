@@ -246,7 +246,7 @@ function DonateMaster() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('Devotee_Data.pdf');
     });
   };
 
@@ -270,6 +270,31 @@ function DonateMaster() {
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
       // Handle form submission
+
+      if (
+        formData.MobileNumber &&
+        formData.MobileNumber.length !== 10 &&
+        formData.MobileNumber.length !== 12 &&
+        !/^\d+$/.test(formData.MobileNumber)
+      ) {
+        alert('Mobile Number must be 10 or 12 digits');
+        return;
+      }
+
+      if (formData.AdharCard && formData.AdharCard.length !== 12) {
+        alert('Adhaar Number must be 12 digits'); // Fixed field name
+        return;
+      }
+
+      if (formData.PanCard && formData.PanCard.length !== 10) {
+        alert('PAN Card Number must be 10 characters');
+        return;
+      }
+      if (formData.EmailId && !/\S+@\S+\.\S+/.test(formData.EmailId)) {
+        alert('Please enter a valid Email ID');
+        return;
+      }
+
       try {
         const response = await axios.post('https://api.mytemplesoftware.in/api/dengidar', formData, {
           headers: {

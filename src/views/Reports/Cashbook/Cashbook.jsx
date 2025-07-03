@@ -66,7 +66,7 @@ function Cashbook() {
     // Convert the modified table to a workbook and export
 
     const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'temple-master.xlsx');
+    writeFile(wb, 'Cashbook_Data.xlsx');
   };
 
   const handleExportToPDF = () => {
@@ -116,7 +116,7 @@ function Cashbook() {
         heightLeft -= pageHeight;
       }
 
-      pdf.save('temple-master.pdf');
+      pdf.save('Cashbook_Data.pdf');
     });
   };
 
