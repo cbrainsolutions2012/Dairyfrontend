@@ -42,13 +42,13 @@ const menuItems = {
           icon: 'fa-solid fa-hand-holding-dollar',
           url: '/dengipawti'
         },
-        {
-          id: 'whatsappinstance',
-          title: 'व्हाट्सअॅप इन्स्टन्स',
-          type: 'item',
-          icon: 'fa-solid fa-hand-holding-dollar',
-          url: '/whatsappinstance'
-        },
+        // {
+        //   id: 'whatsappinstance',
+        //   title: 'व्हाट्सअॅप इन्स्टन्स',
+        //   type: 'item',
+        //   icon: 'fa-solid fa-hand-holding-dollar',
+        //   url: '/whatsappinstance'
+        // },
 
         {
           id: 'gosevareceipt',
@@ -120,35 +120,41 @@ const menuItems = {
           type: 'collapse',
           icon: 'fa-solid fa-flag',
           children: [
-            {
-              id: 'totalEmp',
-              title: 'एकूण कर्मचारी',
-              type: 'item',
-              url: '/reports/totalemp'
-            },
-            {
-              id: 'totalDonar',
-              title: 'एकूण दाता',
-              type: 'item',
-              url: '/reports/totaldonar'
-            },
+            // {
+            //   id: 'totalEmp',
+            //   title: 'एकूण कर्मचारी',
+            //   type: 'item',
+            //   url: '/reports/totalemp'
+            // },
+            // {
+            //   id: 'totalDonar',
+            //   title: 'एकूण दाता',
+            //   type: 'item',
+            //   url: '/reports/totaldonar'
+            // },
             {
               id: 'totalDevotee',
-              title: 'एकूण भक्त',
+              title: 'देणगीदार',
               type: 'item',
               url: '/reports/totaldevotee'
             },
             {
-              id: 'dailytran',
-              title: 'दैनंदिन व्यवहार',
+              id: 'totalDevotee',
+              title: 'देणगीदार पावती',
               type: 'item',
-              url: '/reports/dailytran'
+              url: '/reports/totaldevoteepawti'
             },
+            // {
+            //   id: 'dailytran',
+            //   title: 'दैनंदिन व्यवहार',
+            //   type: 'item',
+            //   url: '/reports/dailytran'
+            // },
             {
-              id: 'cashbook',
-              title: 'रोख नोंदवही',
+              id: 'gosevareceiptpawti',
+              title: 'गोसेवा पावती',
               type: 'item',
-              url: '/reports/cashbook'
+              url: '/reports/totalgosevareceiptpawti'
             },
             {
               id: 'reportsincome',

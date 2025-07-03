@@ -4,92 +4,89 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import '../common.scss';
 
-function TotalDevotee() {
+function DevoteePawti() {
   const tableRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({ sdate: '', edate: '' });
   const [errors, setErrors] = useState({});
-  const [devoteeData, setDevoteeData] = useState([]);
+  const [receiptData, setReceiptData] = useState([]);
   const [loading, setLoading] = useState(false);
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1);
   };
 
-  // Fetch devotee report data from API
-  const fetchDevoteeData = async () => {
+  // Fetch devotee receipts report data from API
+  const fetchReceiptData = async () => {
     if (!formData.sdate || !formData.edate) return;
     setLoading(true);
     try {
       const res = await fetch(
-        `https://api.mytemplesoftware.in/api/reports/dengidar?startDate=${formData.sdate}&endDate=${formData.edate}`,
+        `https://api.mytemplesoftware.in/api/reports/dengidar-receipts?startDate=${formData.sdate}&endDate=${formData.edate}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Ensure you have the token stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         }
       );
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
-        setDevoteeData(data.data);
+        setReceiptData(data.data);
       } else {
-        setDevoteeData([]);
+        setReceiptData([]);
       }
     } catch (err) {
-      setDevoteeData([]);
+      setReceiptData([]);
     }
     setLoading(false);
   };
 
-  const handleSearch = () => {
-    // Optionally filter by searchTerm if needed
-  };
-
-  // Export devoteeData to Excel with Marathi headers
+  // Export to Excel with Marathi headers
   const handleExportToExcel = () => {
-    if (!devoteeData || devoteeData.length === 0) {
+    if (!receiptData || receiptData.length === 0) {
       alert('डेटा उपलब्ध नाही');
       return;
     }
-    const excelData = devoteeData.map((item, idx) => ({
+    const excelData = receiptData.map((item, idx) => ({
       अनुक्रमांक: idx + 1,
-      'पूर्ण नाव': item.FullName || '',
-      'संपर्क क्रमांक': item.MobileNumber || '',
-      शहर: item.City || '',
-      पत्ता: item.Address || '',
-      'गोत्र नाव': item.GotraName || '',
-      'रजिस्टर तारीख': item.RegisterDate ? new Date(item.RegisterDate).toLocaleDateString('en-IN') : '',
-      'कर्मचारी नाव': item.CreatedByName || '',
-      'एकूण पावत्या': item.totalReceipts || 0,
-      'एकूण रक्कम': item.totalAmount || '0.00'
+      'पावती क्रमांक': item.ReceiptNumber || '',
+      'देणगीदार नाव': item.DengidarName || '',
+      'संपर्क क्रमांक': item.DengidarPhone || '',
+      शहर: item.DengidarCity || '',
+      'सेवा प्रकार': item.SevaName || '',
+      'सेवा कोणासाठी': item.SevaFor || '',
+      'सेवा तारीख': item.SevaDate ? new Date(item.SevaDate).toLocaleDateString('en-IN') : '',
+      'देयक प्रकार': item.PaymentType || '',
+      रक्कम: item.Amount || '',
+      नोट: item.Note || '',
+      'कर्मचारी नाव': item.CreatedByName || ''
     }));
     const wb = utils.book_new();
     const ws = utils.json_to_sheet(excelData);
     ws['!cols'] = [
       { wch: 8 }, // अनुक्रमांक
-      { wch: 20 }, // पूर्ण नाव
+      { wch: 15 }, // पावती क्रमांक
+      { wch: 20 }, // देणगीदार नाव
       { wch: 15 }, // संपर्क क्रमांक
       { wch: 15 }, // शहर
-      { wch: 30 }, // पत्ता
-      { wch: 15 }, // गोत्र नाव
-      { wch: 15 }, // रजिस्टर तारीख
-      { wch: 20 }, // कर्मचारी नाव
-      { wch: 12 }, // एकूण पावत्या
-      { wch: 15 } // एकूण रक्कम
+      { wch: 15 }, // सेवा प्रकार
+      { wch: 20 }, // सेवा कोणासाठी
+      { wch: 15 }, // सेवा तारीख
+      { wch: 12 }, // देयक प्रकार
+      { wch: 12 }, // रक्कम
+      { wch: 20 }, // नोट
+      { wch: 20 } // कर्मचारी नाव
     ];
-    utils.book_append_sheet(wb, ws, 'एकूण भक्त अहवाल');
-    writeFile(wb, `एकूण_भक्त_अहवाल_${formData.sdate}_to_${formData.edate}.xlsx`);
+    utils.book_append_sheet(wb, ws, 'देणगीदार पावती अहवाल');
+    writeFile(wb, `देणगीदार_पावती_अहवाल_${formData.sdate}_to_${formData.edate}.xlsx`);
   };
 
   const handleExportToPDF = () => {
-    // ...existing code...
     const table = tableRef.current;
     if (!table) return;
     const clonedTable = table.cloneNode(true);
@@ -113,7 +110,7 @@ function TotalDevotee() {
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
-      pdf.save('temple-master.pdf');
+      pdf.save('देणगीदार-पावती.pdf');
     });
   };
 
@@ -132,19 +129,20 @@ function TotalDevotee() {
     e.preventDefault();
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
-      await fetchDevoteeData();
+      await fetchReceiptData();
     } else {
       setErrors(formErrors);
     }
   };
 
-  // Filtered and paginated data
-  const filteredData = devoteeData.filter(
+  // Pagination logic
+  const filteredData = receiptData.filter(
     (item) =>
       !searchTerm ||
-      (item.FullName && item.FullName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.MobileNumber && item.MobileNumber.includes(searchTerm)) ||
-      (item.City && item.City.toLowerCase().includes(searchTerm.toLowerCase()))
+      (item.DengidarName && item.DengidarName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (item.DengidarPhone && item.DengidarPhone.includes(searchTerm)) ||
+      (item.DengidarCity && item.DengidarCity.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (item.SevaName && item.SevaName.toLowerCase().includes(searchTerm.toLowerCase()))
   );
   const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -178,10 +176,10 @@ function TotalDevotee() {
     <React.Fragment>
       <Row>
         <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
-          <Card style={{ width: '600px' }}>
+          <Card style={{ width: '700px' }}>
             <Card.Header>
               <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
-                एकूण भक्त अहवाल
+                देणगीदार पावती अहवाल
               </Card.Title>
             </Card.Header>
             <Card.Body className="p-0">
@@ -215,7 +213,7 @@ function TotalDevotee() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">एकूण भक्त अहवाल</Card.Title>
+                <Card.Title as="h5">देणगीदार पावती अहवाल</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />
@@ -235,27 +233,29 @@ function TotalDevotee() {
                   <thead>
                     <tr>
                       <th>अनुक्रमांक</th>
-                      <th>पूर्ण नाव</th>
+                      <th>पावती क्रमांक</th>
+                      <th>देणगीदार नाव</th>
                       <th>संपर्क क्रमांक</th>
                       <th>शहर</th>
-                      <th>पत्ता</th>
-                      <th>गोत्र नाव</th>
-                      <th>रजिस्टर तारीख</th>
+                      <th>सेवा प्रकार</th>
+                      <th>सेवा कोणासाठी</th>
+                      <th>सेवा तारीख</th>
+                      <th>देयक प्रकार</th>
+                      <th>रक्कम</th>
+                      <th>नोट</th>
                       <th>कर्मचारी नाव</th>
-                      <th>एकूण पावत्या</th>
-                      <th>एकूण रक्कम</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan="10" className="text-center">
+                        <td colSpan="12" className="text-center">
                           लोड होत आहे...
                         </td>
                       </tr>
                     ) : currentData.length === 0 ? (
                       <tr>
-                        <td colSpan="10" className="text-center">
+                        <td colSpan="12" className="text-center">
                           डेटा उपलब्ध नाही
                         </td>
                       </tr>
@@ -263,15 +263,17 @@ function TotalDevotee() {
                       currentData.map((item, idx) => (
                         <tr key={item.Id}>
                           <td>{startIndex + idx + 1}</td>
-                          <td>{item.FullName}</td>
-                          <td>{item.MobileNumber}</td>
-                          <td>{item.City}</td>
-                          <td>{item.Address}</td>
-                          <td>{item.GotraName}</td>
-                          <td>{item.RegisterDate ? new Date(item.RegisterDate).toLocaleDateString('en-IN') : ''}</td>
+                          <td>{item.ReceiptNumber}</td>
+                          <td>{item.DengidarName}</td>
+                          <td>{item.DengidarPhone}</td>
+                          <td>{item.DengidarCity}</td>
+                          <td>{item.SevaName}</td>
+                          <td>{item.SevaFor}</td>
+                          <td>{item.SevaDate ? new Date(item.SevaDate).toLocaleDateString('en-IN') : ''}</td>
+                          <td>{item.PaymentType}</td>
+                          <td>{item.Amount}</td>
+                          <td>{item.Note}</td>
                           <td>{item.CreatedByName}</td>
-                          <td>{item.totalReceipts}</td>
-                          <td>{item.totalAmount}</td>
                         </tr>
                       ))
                     )}
@@ -321,4 +323,4 @@ function TotalDevotee() {
   );
 }
 
-export default TotalDevotee;
+export default DevoteePawti;

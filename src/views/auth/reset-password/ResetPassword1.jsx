@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // react-bootstrap
 import { Card, Row, Col } from 'react-bootstrap';
@@ -8,14 +8,14 @@ import { Card, Row, Col } from 'react-bootstrap';
 import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
 
 // assets
-import logoDark from '../../../assets/images/logo-dark.png';
+// import logoDark from '../../../assets/images/logo-dark.png';
 import axios from 'axios';
 
 // ==============================|| RESET PASSWORD 1 ||============================== //
 
 const ResetPassword1 = () => {
-  const [old_password, setOldPassword] = useState('');
-  const [new_password, setNewPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -24,15 +24,29 @@ const ResetPassword1 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (new_password != confirmPassword) {
+    if (newPassword != confirmPassword) {
       setError('New password do not match');
       return;
     }
 
     try {
-      const res = await axios.post('http://api.mytemplesoftware.in/api/admin/admin_change_password/', { old_password, new_password });
+      const res = await axios.post(
+        'https://api.mytemplesoftware.in/api/auth/change-password',
 
-      if (res.status === 201) {
+        {
+          oldPassword,
+          newPassword,
+          confirmPassword
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      if (res.status === 200) {
         setSuccess('Password Changed Successfully.');
         setError('');
 
@@ -67,7 +81,7 @@ const ResetPassword1 = () => {
                         type="password"
                         className="form-control"
                         placeholder="Old password"
-                        value={old_password}
+                        value={oldPassword}
                         onChange={(e) => setOldPassword(e.target.value)}
                         required
                       />
@@ -77,7 +91,7 @@ const ResetPassword1 = () => {
                         type="password"
                         className="form-control"
                         placeholder="New password"
-                        value={new_password}
+                        value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
                       />

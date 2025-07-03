@@ -290,19 +290,7 @@ function Emp() {
           }
         });
         console.log(response);
-        setFormData({
-          FullName: '',
-          MobileNumber: '',
-          Username: '',
-          Password: '',
-          Pancard: '',
-          Dob: '',
-          EmailId: '',
-          City: '',
-          Address: '',
-          WorkingArea: '',
-          Adharcard: ''
-        });
+
         setApiError('');
         if (response.status === 201) {
           setTimeout(() => {

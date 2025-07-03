@@ -177,16 +177,16 @@ export const routes = [
         path: '/expenses',
         element: lazy(() => import('./views/Employee Master/expenses form/ExpenseForm'))
       },
-      {
-        exact: 'true',
-        path: '/reports/totalemp',
-        element: lazy(() => import('./views/Reports/Total Employee/TotalEmployee'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/totaldonar',
-        element: lazy(() => import('./views/Reports/Total Donar/TotalDonar'))
-      },
+      // {
+      //   exact: 'true',
+      //   path: '/reports/totalemp',
+      //   element: lazy(() => import('./views/Reports/Total Employee/TotalEmployee'))
+      // },
+      // {
+      //   exact: 'true',
+      //   path: '/reports/totaldonar',
+      //   element: lazy(() => import('./views/Reports/Total Donar/TotalDonar'))
+      // },
       {
         exact: 'true',
         path: '/reports/totaldevotee',
@@ -194,9 +194,19 @@ export const routes = [
       },
       {
         exact: 'true',
-        path: '/reports/dailytran',
-        element: lazy(() => import('./views/Reports/Daily Transaction/DailyTransaction'))
+        path: '/reports/totaldevoteepawti',
+        element: lazy(() => import('./views/Reports/DevoteePawati/DevoteePawti'))
       },
+      {
+        exact: 'true',
+        path: '/reports/totalgosevareceiptpawti',
+        element: lazy(() => import('./views/Reports/GoSevaReceipt/GoSevaReceipt'))
+      },
+      // {
+      //   exact: 'true',
+      //   path: '/reports/dailytran',
+      //   element: lazy(() => import('./views/Reports/Daily Transaction/DailyTransaction'))
+      // },
       {
         exact: 'true',
         path: '/reports/cashbook',

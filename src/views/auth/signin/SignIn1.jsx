@@ -12,7 +12,7 @@ import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
 import AuthLogin from './JWTLogin';
 
 // assets
-import logoDark from '../../../assets/images/auth/image.png';
+import logoDark from '../../../assets/images/auth/Khatgaon.jpeg';
 
 // ==============================|| SIGN IN 1 ||============================== //
 

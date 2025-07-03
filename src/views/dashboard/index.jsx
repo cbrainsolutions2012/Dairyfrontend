@@ -23,9 +23,63 @@ const DashAnalytics = () => {
   const [reminderData, setReminderData] = useState([]);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(null);
 
+  const [birthdayData, setBirthdayData] = useState([]);
+  const [sendingBirthdayWhatsApp, setSendingBirthdayWhatsApp] = useState(null);
+
+  const fetchBirthdayData = async () => {
+    try {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/dengidar/birthdays/today', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.data.success) {
+        setBirthdayData(res.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching birthday data:', error);
+    }
+  };
+  useEffect(() => {
+    fetchBirthdayData();
+  }, []);
+
+  const handleBirthdaySendWhatsapp = async (receipt) => {
+    setSendingBirthdayWhatsApp(receipt.Id);
+    let number = receipt.MobileNumber;
+    if (!number) {
+      alert('No WhatsApp number found for this donor.');
+      return;
+    }
+    number = '91' + number;
+    const payload = {
+      number,
+      name: receipt.FullName || 'N/A'
+    };
+    try {
+      const res = await axios.post('https://api.mytemplesoftware.in/api/dengidar/birthdays/send-whatsapp', payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.data.success) {
+        alert('WhatsApp message sent successfully!');
+      } else {
+        alert('Failed to send WhatsApp message.');
+      }
+    } catch (error) {
+      console.error('Error sending WhatsApp:', error);
+      alert('Error sending WhatsApp message.');
+    } finally {
+      setSendingBirthdayWhatsApp(null);
+    }
+  };
+
   const fetchReminders = async () => {
     try {
-      const res = await axios.get('https://api.mytemplesoftware.in/api/goseva/reminder?days=60', {
+      const res = await axios.get('https://api.mytemplesoftware.in/api/goseva/reminder?days=7', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           'Content-Type': 'application/json'
@@ -323,18 +377,12 @@ const DashAnalytics = () => {
             <Card.Header>
               <Row>
                 <Col md={6}>
-                  <Card.Title as="h5">Temple Master</Card.Title>
+                  <Card.Title as="h5">Goseva Receipt Reminder</Card.Title>
                 </Col>
                 <Col md={6} className="d-flex justify-content-end">
                   <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
                   <Button variant="primary" onClick={handleSearch} className="me-2">
                     Search
-                  </Button>
-                  <Button variant="success" onClick={handleExportToExcel} className="me-2">
-                    Excel
-                  </Button>
-                  <Button variant="danger" onClick={handleExportToPDF}>
-                    PDF
                   </Button>
                 </Col>
               </Row>
@@ -388,7 +436,63 @@ const DashAnalytics = () => {
           </Card>
         </Col>
 
-        <Col md={12} xl={6}>
+        <Col sm={12}>
+          <Card>
+            <Card.Header>
+              <Row>
+                <Col md={6}>
+                  <Card.Title as="h5">Birthday Reminder</Card.Title>
+                </Col>
+                <Col md={6} className="d-flex justify-content-end">
+                  <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
+                  <Button variant="primary" onClick={handleSearch} className="me-2">
+                    Search
+                  </Button>
+                </Col>
+              </Row>
+            </Card.Header>
+            <Card.Body className="p-0">
+              <div className="table-card" style={{ height: '362px' }}>
+                <PerfectScrollbar>
+                  <Table responsive ref={tableRef}>
+                    <thead>
+                      <tr>
+                        <th>देणगीदार नाव</th>
+                        <th>शहर</th>
+                        <th>देणगीदार फोन</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {birthdayData.length === 0 ? (
+                        <tr>
+                          <td colSpan="9" className="text-center">
+                            No expiring receipts found
+                          </td>
+                        </tr>
+                      ) : (
+                        birthdayData.map((item) => (
+                          <tr key={item.Id}>
+                            <td>{item.FullName || item.DengidarName || 'N/A'}</td>
+                            <td>{item.City || 'N/A'}</td>
+                            <td>{item.MobileNumber || 'N/A'}</td>
+                            <td>
+                              <Button variant="success" size="sm" className="me-2" onClick={() => handleBirthdaySendWhatsapp(item)}>
+                                {sendingBirthdayWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </Table>
+                </PerfectScrollbar>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* <Col md={12} xl={6}>
           <Card>
             <Card.Header>
               <h5>Unique Visitor</h5>
@@ -471,7 +575,7 @@ const DashAnalytics = () => {
               </Card>
             </Col>
           </Row>
-        </Col>
+        </Col> */}
 
         {/* <Col lg={4} md={12}>
           <SocialCard
