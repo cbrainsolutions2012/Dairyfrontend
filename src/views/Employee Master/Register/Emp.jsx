@@ -283,8 +283,8 @@ function Emp() {
     if (Object.keys(formErrors).length === 0) {
       // Handle form submission
 
-      if (formData.MobileNumber && formData.MobileNumber.toString().length !== 10 && formData.MobileNumber.toString().length !== 12) {
-        alert('Mobile Number must be 10, 12 digits');
+      if (formData.MobileNumber && formData.MobileNumber.toString().length !== 10) {
+        alert('Mobile Number must be 10 digits');
         return;
       }
 

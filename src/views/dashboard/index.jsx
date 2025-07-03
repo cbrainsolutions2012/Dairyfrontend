@@ -248,8 +248,27 @@ const DashAnalytics = () => {
       pdf.save('data.pdf');
     });
   };
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = user?.IsAdmin === 1;
+
   return (
     <React.Fragment>
+      {/* Welcome Message - Show different message based on role */}
+      <Row className="mb-3">
+        <Col>
+          <Card>
+            <Card.Body>
+              <h4>
+                Welcome, {user?.Username}!<span className="badge bg-primary ms-2"></span>
+              </h4>
+              {/* {isAdmin && <p className="text-muted">You have full access to all temple operations.</p>} */}
+              {/* {isEmployee && <p className="text-muted">You can manage daily operations and devotee services.</p>} */}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
       <Row>
         {/* order cards */}
 
@@ -261,8 +280,6 @@ const DashAnalytics = () => {
                 class: 'bg-c-blue',
                 icon: 'fa-solid fa-user-tie',
                 primaryText: dashboardData?.totalEmployees || '0'
-                // secondaryText: 'Completed Orders',
-                // extraText: '351'
               }}
             />
           </Link>
@@ -290,12 +307,11 @@ const DashAnalytics = () => {
                 class: 'bg-c-yellow',
                 icon: 'fa-solid fa-building-columns',
                 primaryText: dashboardData?.thisMonthIncome || '0'
-                // secondaryText: 'This Month',
-                // extraText: ''
               }}
             />
           </Link>
         </Col>
+
         <Col md={6} xl={3}>
           <Link to={'/expenses'}>
             <OrderCard
@@ -319,8 +335,6 @@ const DashAnalytics = () => {
                 class: 'bg-c-purple',
                 icon: 'fa-solid fa-hands-praying',
                 primaryText: dashboardData?.totalSevaTypes || '0'
-                // secondaryText: 'This Month',
-                // extraText: ''
               }}
             />
           </Link>

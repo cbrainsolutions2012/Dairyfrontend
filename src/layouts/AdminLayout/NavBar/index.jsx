@@ -43,22 +43,22 @@ const NavBar = () => {
   return (
     <header className={headerClass.join(' ')} style={{ zIndex: 1009 }}>
       <div className="m-header d-flex align-items-center">
-        <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={navToggleHandler}>
+        <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={navToggleHandler} style={{ zIndex: 1009 }}>
           <span />
         </Link>
-        <Link to="/dashboard" className="b-brand d-flex align-items-center">
+        {/* <Link to="/dashboard" className="b-brand d-flex align-items-center">
           <h5 className="d-none d-lg-block mb-0" style={{ color: 'white' }}>
             Admin
           </h5>
-        </Link>
+        </Link> */}
         <Link to="#" className={moreClass.join(' ')} onClick={() => setMoreToggle(!moreToggle)}>
           <i className="feather icon-more-vertical" />
         </Link>
       </div>
       <div className="d-flex justify-content-center align-items-center w-100 position-absolute">
-        <h6 className="mb-0" style={{ color: 'white' }}>
-          दान Temple Management Software
-        </h6>
+        <h5 className="mb-0" style={{ color: 'white' }}>
+          श्री समर्थ रामदास स्वामी मठ ,खातगाव
+        </h5>
       </div>
       <div className={collapseClass.join(' ')} style={{ justifyContent: 'end' }}>
         <NavLeft />

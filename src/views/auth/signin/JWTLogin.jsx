@@ -45,8 +45,8 @@ const JWTLogin = () => {
     <Formik
       initialValues={{
         // role: '', // This is for the select dropdown
-        Username: '',
-        Password: '',
+        Username: 'testuser',
+        Password: '123456',
         submit: null
       }}
       validationSchema={Yup.object().shape({
@@ -69,9 +69,9 @@ const JWTLogin = () => {
             {touched.role && errors.role && <small className="text-danger form-text">{errors.role}</small>}
           </div> */}
           <div className="form-group mb-3">
+            <label htmlFor="Username">Email Address / Username</label>
             <input
               className="form-control"
-              label="Email Address / Username"
               name="Username"
               onBlur={handleBlur}
               onChange={handleChange}
@@ -81,9 +81,9 @@ const JWTLogin = () => {
             {touched.Username && errors.Username && <small className="text-danger form-text">{errors.Username}</small>}
           </div>
           <div className="form-group mb-4">
+            <label htmlFor="Password">Password</label>
             <input
               className="form-control"
-              label="Password"
               name="Password"
               onBlur={handleBlur}
               onChange={handleChange}

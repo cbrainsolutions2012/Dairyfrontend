@@ -271,13 +271,8 @@ function DonateMaster() {
     if (Object.keys(formErrors).length === 0) {
       // Handle form submission
 
-      if (
-        formData.MobileNumber &&
-        formData.MobileNumber.length !== 10 &&
-        formData.MobileNumber.length !== 12 &&
-        !/^\d+$/.test(formData.MobileNumber)
-      ) {
-        alert('Mobile Number must be 10 or 12 digits');
+      if (formData.MobileNumber && formData.MobileNumber.length !== 10 && !/^\d+$/.test(formData.MobileNumber)) {
+        alert('Mobile Number must be 10 digits');
         return;
       }
 

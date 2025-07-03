@@ -11,7 +11,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import ChatList from './ChatList';
 
 // assets
-import avatar1 from '../../../../assets/images/auth/image.png';
+import avatar1 from '../../../../assets/images/auth/Khatgaon.jpeg';
 import avatar2 from '../../../../assets/images/user/avatar-2.jpg';
 import avatar3 from '../../../../assets/images/user/avatar-3.jpg';
 import avatar4 from '../../../../assets/images/user/avatar-4.jpg';
@@ -58,7 +58,7 @@ const NavRight = () => {
   return (
     <React.Fragment>
       <ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto">
-        <ListGroup.Item as="li" bsPrefix=" ">
+        {/* <ListGroup.Item as="li" bsPrefix=" ">
           <Dropdown align="end">
             <Dropdown.Toggle as={Link} variant="link" to="#" id="dropdown-basic">
               <i className="feather icon-bell icon" />
@@ -143,7 +143,7 @@ const NavRight = () => {
               </span>
             </Dropdown.Toggle>
           </Dropdown>
-        </ListGroup.Item>
+        </ListGroup.Item> */}
         <ListGroup.Item as="li" bsPrefix=" ">
           <Dropdown align="end" className="drp-user">
             <Dropdown.Toggle as={Link} variant="link" to="#" id="dropdown-basic">
