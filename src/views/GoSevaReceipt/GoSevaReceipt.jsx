@@ -1132,6 +1132,58 @@ function GoSevaReceipt() {
     }
   };
 
+  // Add this state variable with your other useState declarations
+  const [sendingPDF, setSendingPDF] = useState(null); // Track PDF sending state
+
+  // Add this function to handle PDF WhatsApp sending
+  const handleSendPDF = async (receipt) => {
+    try {
+      setSendingPDF(receipt.Id);
+
+      // Use the donor's WhatsApp number (with country code)
+      let number = receipt.DengidarPhone || receipt.MobileNumber;
+      if (!number) {
+        alert('No WhatsApp number found for this donor.');
+        setSendingPDF(null);
+        return;
+      }
+      number = '91' + number;
+
+      // Prepare the payload for PDF generation
+      const payload = {
+        number,
+        receipt: {
+          ReceiptNumber: receipt.ReceiptNo,
+          Name: receipt.DonarName || receipt.DengidarName,
+          Amount: receipt.Amount,
+          DurationMonths: receipt.DurationMonths,
+          StartDate: receipt.StartDate,
+          EndDate: receipt.EndDate,
+          PaymentType: receipt.PaymentType,
+          PanCard: receipt.PanCard || 'N/A'
+        }
+      };
+
+      const res = await axios.post('https://api.mytemplesoftware.in/api/goseva/whatsapp-pdf', payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.data.success) {
+        alert('PDF receipt sent successfully via WhatsApp!');
+      } else {
+        alert('Failed to send PDF receipt.');
+      }
+    } catch (error) {
+      console.error('Error sending PDF receipt:', error);
+      alert('Error sending PDF receipt: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setSendingPDF(null);
+    }
+  };
+
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -1444,6 +1496,16 @@ function GoSevaReceipt() {
                             </Button>
                             <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsapp(item)}>
                               {sendingWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
+                            </Button>
+
+                            <Button
+                              variant="warning"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => handleSendPDF(item)}
+                              disabled={sendingPDF === item.Id}
+                            >
+                              {sendingPDF === item.Id ? 'Sending...' : '📄 PDF'}
                             </Button>
                             <Button
                               variant="danger"

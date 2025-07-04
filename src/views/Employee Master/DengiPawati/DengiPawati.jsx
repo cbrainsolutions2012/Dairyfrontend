@@ -599,6 +599,65 @@ function DengiPawati() {
     }
     setSendingWhatsApp(null);
   };
+
+  const handleSendPDF = async (receipt) => {
+    setSendingWhatsApp(receipt.Id); // Reuse the same loading state
+    try {
+      // Use the receipt's MobileNumber as the WhatsApp number
+      let number = receipt.MobileNumber ? receipt.MobileNumber.replace(/\D/g, '') : '';
+
+      if (!number) {
+        alert('No mobile number found for this receipt.');
+        setSendingWhatsApp(null);
+        return;
+      }
+
+      // Always add 91 at the start
+      number = '91' + number;
+
+      // Prepare receipt data for PDF generation
+      const receiptData = {
+        ReceiptNumber: receipt.ReceiptNumber,
+        FullName: receipt.FullName,
+        PanCard: receipt.PanCard || '',
+        SevaName: receipt.SevaName,
+        Amount: receipt.Amount,
+        PaymentType: receipt.PaymentType,
+        SevaDate: receipt.SevaDate,
+        SevaFor: receipt.SevaFor || '',
+        BankName: receipt.BankName || '',
+        ChequeNo: receipt.ChequeNo || '',
+        DDNo: receipt.DDNo || '',
+        TransactionId: receipt.TransactionId || '',
+        Note: receipt.Note || ''
+      };
+
+      // Call your PDF WhatsApp API
+      const res = await axios.post(
+        'https://api.mytemplesoftware.in/api/dengidar-receipt/whatsapp-pdf',
+        {
+          number,
+          receipt: receiptData
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (res.data.success) {
+        alert('PDF receipt sent successfully via WhatsApp!');
+      } else {
+        alert('Failed to send PDF receipt: ' + (res.data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error sending PDF receipt:', error);
+      alert('Error sending PDF receipt: ' + (error.response?.data?.error || error.message));
+    }
+    setSendingWhatsApp(null);
+  };
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -912,19 +971,40 @@ function DengiPawati() {
                           <td>{item.SevaDate ? new Date(item.SevaDate).toLocaleDateString() : 'N/A'}</td>
                           <td>{item.CreatedByName}</td>
                           <td>
-                            <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
+                            <Button
+                              variant="info"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => handleEditReceipt(item.Id)}
+                              title="Edit Receipt"
+                            >
                               <FaEdit />
                             </Button>
-                            <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsApp(item)}>
+
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => handleSendWhatsApp(item)}
+                              disabled={sendingWhatsApp === item.Id}
+                              title="Send Text Receipt"
+                            >
                               {sendingWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
                             </Button>
+
                             <Button
-                              variant="danger"
+                              variant="warning"
                               size="sm"
-                              onClick={() => {
-                                confirmDelete(item.Id);
-                              }}
+                              className="me-2"
+                              onClick={() => handleSendPDF(item)}
+                              disabled={sendingWhatsApp === item.Id}
+                              title="Send PDF Receipt"
+                              style={{ backgroundColor: '#ff6b35', borderColor: '#ff6b35', color: 'white' }}
                             >
+                              {sendingWhatsApp === item.Id ? 'PDF...' : '📄'}
+                            </Button>
+
+                            <Button variant="danger" size="sm" onClick={() => confirmDelete(item.Id)} title="Delete Receipt">
                               <FaTrashAlt />
                             </Button>
                           </td>
