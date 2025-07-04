@@ -272,7 +272,7 @@ function GoSevaReceipt() {
         Phone: item.DengidarPhone || 'N/A',
         Address: item.DengidarAddress || 'N/A',
         'Duration (Months)': item.DurationMonths || 'N/A',
-        'Amount (₹)': item.Amount ? `₹${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '₹0.00',
+        'Amount (₹)': item.Amount ? `${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '0.00',
         'Payment Type': item.PaymentType || 'N/A',
         'Bank Name': item.BankName || 'N/A',
         'Start Date': formatDate(item.StartDate),
