@@ -266,7 +266,15 @@ const Gotra = () => {
           <Card.Body className="p-0">
             <div className="table-card" style={{ height: '362px' }}>
               <PerfectScrollbar>
-                <Table responsive ref={tableRef} className="mb-0 text-center">
+                <Table
+                  responsive
+                  ref={tableRef}
+                  className="table-bordered mb-0 text-center"
+                  style={{
+                    border: '1px solid #dee2e6',
+                    borderCollapse: 'collapse'
+                  }}
+                >
                   <thead>
                     <tr>
                       <th>गोत्र नाव</th>

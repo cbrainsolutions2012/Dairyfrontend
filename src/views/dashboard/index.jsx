@@ -405,7 +405,15 @@ const DashAnalytics = () => {
             <Card.Body className="p-0">
               <div className="table-card" style={{ height: '362px' }}>
                 <PerfectScrollbar>
-                  <Table responsive ref={tableRef}>
+                  <Table
+                    responsive
+                    ref={tableRef}
+                    className="table-bordered"
+                    style={{
+                      border: '1px solid #dee2e6',
+                      borderCollapse: 'collapse'
+                    }}
+                  >
                     <thead>
                       <tr>
                         <th>देणगीदार नाव</th>
@@ -469,7 +477,15 @@ const DashAnalytics = () => {
             <Card.Body className="p-0">
               <div className="table-card" style={{ height: '362px' }}>
                 <PerfectScrollbar>
-                  <Table responsive ref={tableRef}>
+                  <Table
+                    responsive
+                    ref={tableRef}
+                    className="table-bordered"
+                    style={{
+                      border: '1px solid #dee2e6',
+                      borderCollapse: 'collapse'
+                    }}
+                  >
                     <thead>
                       <tr>
                         <th>देणगीदार नाव</th>

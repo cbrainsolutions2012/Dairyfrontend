@@ -28,7 +28,10 @@ function EditEmp() {
   const [apiError, setApiError] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Convert PAN card input to uppercase
+    const finalValue = name === 'Pancard' ? value.toUpperCase() : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
 
   const fetchFormData = async (id) => {

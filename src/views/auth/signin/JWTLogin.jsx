@@ -23,11 +23,18 @@ const JWTLogin = () => {
           }
         }
       );
+      // Check if user is admin (handle both boolean false and numeric 0)
+      if (response.data.user.IsAdmin === false || response.data.user.IsAdmin === 0) {
+        setErrors({ submit: 'You are not authorized to access this application.' });
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return;
+      } else {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-
-      navigate('/dashboard');
+        navigate('/dashboard');
+      }
     } catch (error) {
       if (error.response) {
         setErrors({ submit: error.response.data.message || 'Something went wrong' });
@@ -45,8 +52,8 @@ const JWTLogin = () => {
     <Formik
       initialValues={{
         // role: '', // This is for the select dropdown
-        Username: 'testuser',
-        Password: '123456',
+        Username: '',
+        Password: '',
         submit: null
       }}
       validationSchema={Yup.object().shape({

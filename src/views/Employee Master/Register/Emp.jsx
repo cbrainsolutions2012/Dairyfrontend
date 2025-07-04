@@ -41,7 +41,10 @@ function Emp() {
   const [apiError, setApiError] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Convert PAN card input to uppercase
+    const finalValue = name === 'Pancard' ? value.toUpperCase() : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
 
   const validate = () => {
@@ -489,10 +492,19 @@ function Emp() {
           <Card.Body className="p-0">
             <div className="table-card" style={{ height: '362px' }}>
               <PerfectScrollbar options={{ suppressScrollX: true, wheelPropagation: false }}>
-                <Table responsive ref={tableRef}>
-                  <thead>
+                <Table
+                  responsive
+                  ref={tableRef}
+                  className="table-bordered"
+                  style={{
+                    border: '2px solid #dee2e6',
+                    borderCollapse: 'collapse'
+                  }}
+                >
+                  <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
                     <tr>
                       <th>पूर्ण नाव</th>
+                      <th>युजरनेम</th>
                       <th>मोबाईल क्रमांक</th>
                       <th>पॅनकार्ड</th>
                       <th>जन्मतारीख</th>
@@ -509,6 +521,7 @@ function Emp() {
                       currentItems.map((item) => (
                         <tr key={item.Id}>
                           <td>{item.FullName}</td>
+                          <td>{item.Username}</td>
                           <td>{item.MobileNumber}</td>
                           <td>{item.Pancard}</td>
                           <td>{new Date(item.Dob).toLocaleDateString('en-IN')}</td>

@@ -34,7 +34,10 @@ function DonateMaster() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Convert PAN card input to uppercase
+    const finalValue = name === 'PanCard' ? value.toUpperCase() : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -486,7 +489,15 @@ function DonateMaster() {
           <Card.Body className="p-0">
             <div className="table-card" style={{ height: '362px' }}>
               <PerfectScrollbar>
-                <Table responsive ref={tableRef}>
+                <Table
+                  responsive
+                  ref={tableRef}
+                  className="table-bordered"
+                  style={{
+                    border: '2px solid #dee2e6',
+                    borderCollapse: 'collapse'
+                  }}
+                >
                   <thead>
                     <tr>
                       <th>आयडी</th>

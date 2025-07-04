@@ -30,7 +30,10 @@ function TempleProfile() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Convert PAN card input to uppercase
+    const finalValue = name === 'Pancard' ? value.toUpperCase() : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -340,7 +343,15 @@ function TempleProfile() {
           <Card.Body className="p-0">
             <div className="table-card" style={{ height: '362px' }}>
               <PerfectScrollbar>
-                <Table responsive ref={tableRef}>
+                <Table
+                  responsive
+                  ref={tableRef}
+                  className="table-bordered"
+                  style={{
+                    border: '1px solid #dee2e6',
+                    borderCollapse: 'collapse'
+                  }}
+                >
                   <thead>
                     <tr>
                       <th>आयडी</th>
