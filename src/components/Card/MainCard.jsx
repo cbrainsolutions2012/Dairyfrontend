@@ -66,7 +66,7 @@ const MainCard = (props) => {
 
   cardHeader = (
     <Card.Header>
-      <Card.Title as="h5">{title}</Card.Title>
+      <Card.Title as="h4">{title}</Card.Title>
       {cardHeaderRight}
     </Card.Header>
   );

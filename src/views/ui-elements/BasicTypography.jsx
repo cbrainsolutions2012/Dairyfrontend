@@ -12,7 +12,7 @@ const BasicTypography = () => {
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Headings</Card.Title>
+              <Card.Title as="h4">Headings</Card.Title>
             </Card.Header>
             <Card.Body>
               <h1>This is a Heading 1</h1>
@@ -52,7 +52,7 @@ const BasicTypography = () => {
           </Card>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Display Headings</Card.Title>
+              <Card.Title as="h4">Display Headings</Card.Title>
             </Card.Header>
             <Card.Body>
               <h1 className="display-1">Display 1</h1>
@@ -65,7 +65,7 @@ const BasicTypography = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Inline Text Elements</Card.Title>
+              <Card.Title as="h4">Inline Text Elements</Card.Title>
             </Card.Header>
             <Card.Body>
               <Card.Text className="lead m-t-0">Your title goes here</Card.Text>
@@ -85,7 +85,7 @@ const BasicTypography = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Contextual Text Colors</Card.Title>
+              <Card.Title as="h4">Contextual Text Colors</Card.Title>
             </Card.Header>
             <Card.Body>
               <Card.Text className="text-muted mb-1">Fusce dapibus, tellus ac cursus commodo, tortor mauris nibh.</Card.Text>
@@ -101,7 +101,7 @@ const BasicTypography = () => {
         <Col md={6} xl={4}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Unordered</Card.Title>
+              <Card.Title as="h4">Unordered</Card.Title>
             </Card.Header>
             <Card.Body>
               <ul>
@@ -128,7 +128,7 @@ const BasicTypography = () => {
         <Col md={6} xl={4}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Ordered</Card.Title>
+              <Card.Title as="h4">Ordered</Card.Title>
             </Card.Header>
             <Card.Body>
               <ol>
@@ -155,7 +155,7 @@ const BasicTypography = () => {
         <Col md={6} xl={4}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Unstyled</Card.Title>
+              <Card.Title as="h4">Unstyled</Card.Title>
             </Card.Header>
             <Card.Body>
               <ul className="list-unstyled">
@@ -182,7 +182,7 @@ const BasicTypography = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Blockquotes</Card.Title>
+              <Card.Title as="h4">Blockquotes</Card.Title>
             </Card.Header>
             <Card.Body>
               <Card.Text className="text-muted m-b-30">Your awesome text goes here.</Card.Text>
@@ -211,7 +211,7 @@ const BasicTypography = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Horizontal Description</Card.Title>
+              <Card.Title as="h4">Horizontal Description</Card.Title>
             </Card.Header>
             <Card.Body>
               <dl className="dl-horizontal row">

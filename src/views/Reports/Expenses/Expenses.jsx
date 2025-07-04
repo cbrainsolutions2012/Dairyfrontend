@@ -174,7 +174,7 @@ function Expenses() {
         <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
           <Card style={{ width: '700px' }}>
             <Card.Header>
-              <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+              <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
                 खर्च अहवाल
               </Card.Title>
             </Card.Header>
@@ -209,7 +209,7 @@ function Expenses() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">खर्च अहवाल</Card.Title>
+                <Card.Title as="h4">खर्च अहवाल</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />

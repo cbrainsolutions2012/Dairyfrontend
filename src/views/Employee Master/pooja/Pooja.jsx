@@ -7,6 +7,7 @@ import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
 function Pooja() {
   const token = localStorage.getItem('token');
@@ -213,7 +214,7 @@ function Pooja() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               सेवा नोंदणी
             </Card.Title>
           </Card.Header>
@@ -241,7 +242,7 @@ function Pooja() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">सेवा यादी</Card.Title>
+                <Card.Title as="h4">सेवा यादी</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -274,10 +275,10 @@ function Pooja() {
                           <td>{item.SevaName}</td>
                           <td>
                             <Button className="me-2" variant="primary" onClick={() => navigate(`/editseva/${item.Id}`)}>
-                              Edit
+                              <FaEdit />
                             </Button>
                             <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

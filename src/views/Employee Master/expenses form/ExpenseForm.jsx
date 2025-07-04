@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../commonemp.scss';
 import axios from 'axios';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
 function ExpenseForm() {
   const tableRef = useRef(null);
@@ -352,7 +353,7 @@ function ExpenseForm() {
       <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
         <Card style={{ width: '600px' }}>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               {isEditing ? 'खर्च संपादन' : 'खर्च प्रकार'}
             </Card.Title>
           </Card.Header>
@@ -440,7 +441,7 @@ function ExpenseForm() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">खर्च</Card.Title>
+                <Card.Title as="h4">खर्च</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />
@@ -480,11 +481,11 @@ function ExpenseForm() {
                           <td>{item.Note || 'N/A'}</td>
                           <td>{item.CreatedByUsername || 'N/A'}</td>
                           <td>
-                            <Button variant="info" size="sm" className="me-2" onClick={() => handleEditExpense(item.Id)}>
-                              Edit
+                            <Button variant="primary" size="sm" className="me-2" onClick={() => handleEditExpense(item.Id)}>
+                              <FaEdit />
                             </Button>
                             <Button variant="danger" size="sm" onClick={() => handleDeleteExpense(item.Id)}>
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

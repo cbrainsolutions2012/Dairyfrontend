@@ -5,6 +5,10 @@ import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+// You can also import from other icon sets:
+// import { MdEdit, MdDelete } from 'react-icons/md';
+// import { BsPencil, BsTrash } from 'react-icons/bs';
 import '../commonemp.scss';
 import { useNavigate } from 'react-router';
 
@@ -373,7 +377,7 @@ function Emp() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               नवीन कर्मचारी नोंदणी
             </Card.Title>
           </Card.Header>
@@ -468,7 +472,7 @@ function Emp() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">कर्मचारी नोंदणी</Card.Title>
+                <Card.Title as="h4">कर्मचारी नोंदणी</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -514,11 +518,17 @@ function Emp() {
                           <td>{item.WorkingArea}</td>
                           <td>{item.Adharcard}</td>
                           <td>
-                            <Button variant="primary" onClick={() => navigate(`/editemp/${item.Id}`)}>
-                              Edit
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => navigate(`/editemp/${item.Id}`)}
+                              className="me-2"
+                              title="Edit Employee"
+                            >
+                              <FaEdit />
                             </Button>
-                            <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
-                              Delete
+                            <Button variant="danger" size="sm" onClick={() => confirmDelete(item.Id)} title="Delete Employee">
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

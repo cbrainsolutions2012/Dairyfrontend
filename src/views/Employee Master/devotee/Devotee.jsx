@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import '../commonemp.scss';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router';
 
 function DonateMaster() {
@@ -379,7 +380,7 @@ function DonateMaster() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               देणगीदार नोंदणी
             </Card.Title>
           </Card.Header>
@@ -468,7 +469,7 @@ function DonateMaster() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">देणगीदार नोंदणी </Card.Title>
+                <Card.Title as="h4">देणगीदार नोंदणी </Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -517,11 +518,11 @@ function DonateMaster() {
                           <td>{item.EmailId}</td>
                           <td>
                             {/* <Button className="me-2">Edit</Button> */}
-                            <Button variant="warning" className="me-2" onClick={() => navigate(`/editdevotee/${item.Id}`)}>
-                              Edit
+                            <Button variant="info" className="me-2" onClick={() => navigate(`/editdevotee/${item.Id}`)}>
+                              <FaEdit />
                             </Button>
                             <Button variant="danger" className="me-2" onClick={() => confirmDelete(item.Id)}>
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

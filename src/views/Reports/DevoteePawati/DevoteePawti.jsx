@@ -178,7 +178,7 @@ function DevoteePawti() {
         <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
           <Card style={{ width: '700px' }}>
             <Card.Header>
-              <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+              <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
                 देणगीदार पावती अहवाल
               </Card.Title>
             </Card.Header>
@@ -213,7 +213,7 @@ function DevoteePawti() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">देणगीदार पावती अहवाल</Card.Title>
+                <Card.Title as="h4">देणगीदार पावती अहवाल</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />

@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import axios from 'axios';
 import '../commonemp.scss';
 import { useNavigate } from 'react-router';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Import icons for edit and delete buttons
 
 function TempleProfile() {
   const navigate = useNavigate();
@@ -241,7 +242,7 @@ function TempleProfile() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               ट्रस्ट ची माहिती
             </Card.Title>
           </Card.Header>
@@ -320,7 +321,7 @@ function TempleProfile() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">ट्रस्ट ची माहिती</Card.Title>
+                <Card.Title as="h4">ट्रस्ट ची माहिती</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -372,10 +373,10 @@ function TempleProfile() {
                         <td>{item.Address}</td>
                         <td>
                           <Button className="me-2" variant="primary" onClick={() => navigate(`/edittemple/${item.Id}`)}>
-                            Edit
+                            <FaEdit />
                           </Button>
                           <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
-                            Delete
+                            <FaTrashAlt />
                           </Button>
                         </td>
                       </tr>

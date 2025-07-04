@@ -104,7 +104,7 @@ function DailyTransaction() {
         <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
           <Card style={{ width: '600px' }}>
             <Card.Header>
-              <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+              <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
                 दैनंदिन व्यवहार अहवाल
               </Card.Title>
             </Card.Header>
@@ -146,7 +146,7 @@ function DailyTransaction() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">दैनंदिन व्यवहार अहवाल</Card.Title>
+                <Card.Title as="h4">दैनंदिन व्यवहार अहवाल</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />

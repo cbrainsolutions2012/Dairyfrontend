@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../commonemp.scss';
 import axios from 'axios';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
 function IncomeForm() {
   const tableRef = useRef(null);
@@ -379,7 +380,7 @@ function IncomeForm() {
       <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
         <Card style={{ width: '600px' }}>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               {isEditing ? 'उत्पन्न संपादन' : 'उत्पन्न प्रकार'}
             </Card.Title>
           </Card.Header>
@@ -467,7 +468,7 @@ function IncomeForm() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">उत्पन्न</Card.Title>
+                <Card.Title as="h4">उत्पन्न</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />
@@ -517,11 +518,11 @@ function IncomeForm() {
                           <td>{item.Note || 'N/A'}</td>
                           <td>{item.CreatedByName || 'N/A'}</td>
                           <td>
-                            <Button variant="info" size="sm" className="me-2" onClick={() => handleEditIncome(item.Id)}>
-                              Edit
+                            <Button variant="primary" size="sm" className="me-2" onClick={() => handleEditIncome(item.Id)}>
+                              <FaEdit />
                             </Button>
                             <Button variant="danger" size="sm" onClick={() => handleDeleteIncome(item.Id)}>
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

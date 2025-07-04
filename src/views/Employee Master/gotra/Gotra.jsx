@@ -7,6 +7,7 @@ import { writeFile, utils } from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Import icons for edit and delete buttons
 
 const Gotra = () => {
   // console.log(tr_number);
@@ -26,9 +27,9 @@ const Gotra = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleSearch = () => {
-    console.log('Search term:', searchTerm);
-  };
+  // const handleSearch = () => {
+  //   console.log('Search term:', searchTerm);
+  // };
 
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState({});
@@ -219,7 +220,7 @@ const Gotra = () => {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               गोत्र नोंदणी
             </Card.Title>
           </Card.Header>
@@ -246,7 +247,7 @@ const Gotra = () => {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">गोत्र यादी</Card.Title>
+                <Card.Title as="h4">गोत्र यादी</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -280,10 +281,10 @@ const Gotra = () => {
                           <td>
                             {/* <Button className="me-2">Edit</Button> */}
                             <Button className="me-2" variant="primary" onClick={() => navigate(`/editgotra/${item.Id}`)}>
-                              Edit
+                              <FaEdit />
                             </Button>
                             <Button variant="danger" onClick={() => confirmDelete(item.Id)}>
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

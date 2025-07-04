@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../commonemp.scss';
+import { FaEdit, FaTrashAlt, FaWhatsapp } from 'react-icons/fa';
 
 function DengiPawati() {
   const tableRef = useRef(null);
@@ -604,7 +605,7 @@ function DengiPawati() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               {isEditing ? 'पावती संपादन' : 'देणगीदार पावती'}
             </Card.Title>
           </Card.Header>
@@ -862,7 +863,7 @@ function DengiPawati() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">पावती यादी</Card.Title>
+                <Card.Title as="h4">पावती यादी</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -904,10 +905,10 @@ function DengiPawati() {
                           <td>{item.CreatedByName}</td>
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
-                              Edit
+                              <FaEdit />
                             </Button>
                             <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsApp(item)}>
-                              {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                              {sendingWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
                             </Button>
                             <Button
                               variant="danger"
@@ -916,7 +917,7 @@ function DengiPawati() {
                                 confirmDelete(item.Id);
                               }}
                             >
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

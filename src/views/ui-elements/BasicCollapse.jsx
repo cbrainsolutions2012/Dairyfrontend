@@ -94,7 +94,7 @@ const BasicCollapse = () => {
                 <Collapse in={isMultiTarget.some((target) => target === 'target1')}>
                   <div id="target1">
                     <Card.Header>
-                      <Card.Title as="h5">First Element</Card.Title>
+                      <Card.Title as="h4">First Element</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <Card.Text>
@@ -111,7 +111,7 @@ const BasicCollapse = () => {
                 <Collapse in={isMultiTarget.some((target) => target === 'target2')}>
                   <div id="target2">
                     <Card.Header>
-                      <Card.Title as="h5">Second Element</Card.Title>
+                      <Card.Title as="h4">Second Element</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <Card.Text>
@@ -130,7 +130,7 @@ const BasicCollapse = () => {
           <hr />
           <Card className="mt-2">
             <Card.Header>
-              <Card.Title as="h5">
+              <Card.Title as="h4">
                 <Link
                   to="#"
                   onClick={() => setAccordionKey(accordionKey !== 1 ? 1 : 0)}
@@ -158,7 +158,7 @@ const BasicCollapse = () => {
           </Card>
           <Card className="mt-2">
             <Card.Header>
-              <Card.Title as="h5">
+              <Card.Title as="h4">
                 <Link
                   to="#"
                   onClick={() => setAccordionKey(accordionKey !== 2 ? 2 : 0)}
@@ -186,7 +186,7 @@ const BasicCollapse = () => {
           </Card>
           <Card className="mt-2">
             <Card.Header>
-              <Card.Title as="h5">
+              <Card.Title as="h4">
                 <Link
                   to="#"
                   onClick={() => setAccordionKey(accordionKey !== 3 ? 3 : 0)}

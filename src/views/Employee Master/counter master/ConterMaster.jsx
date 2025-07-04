@@ -145,7 +145,7 @@ function ConterMaster() {
       <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
         <Card style={{ width: '600px' }}>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               काउंटर नोंदणी
             </Card.Title>
           </Card.Header>
@@ -192,7 +192,7 @@ function ConterMaster() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">Temple Master</Card.Title>
+                <Card.Title as="h4">Temple Master</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />

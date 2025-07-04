@@ -32,7 +32,7 @@ const BasicTooltipsPopovers = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Tooltip</Card.Title>
+              <Card.Title as="h4">Tooltip</Card.Title>
             </Card.Header>
             <Card.Body className="tooltip-sm">
               <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-top`}>Tooltip on top</Tooltip>}>
@@ -71,7 +71,7 @@ const BasicTooltipsPopovers = () => {
         <Col md={6}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">Popover</Card.Title>
+              <Card.Title as="h4">Popover</Card.Title>
             </Card.Header>
             <Card.Body className="popover-sm">
               <OverlayTrigger trigger="click" placement="right" overlay={popover}>

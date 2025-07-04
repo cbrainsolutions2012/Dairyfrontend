@@ -58,7 +58,7 @@ function Donar() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               दाता माहिती
             </Card.Title>
           </Card.Header>

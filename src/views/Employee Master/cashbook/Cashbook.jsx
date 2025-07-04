@@ -230,7 +230,7 @@ function Cashbook() {
         <Card.Header>
           <Row>
             <Col md={6}>
-              <Card.Title as="h5">रोख नोंदवही</Card.Title>
+              <Card.Title as="h4">रोख नोंदवही</Card.Title>
             </Col>
             <Col md={6} className="d-flex justify-content-end">
               <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} className="me-2" />

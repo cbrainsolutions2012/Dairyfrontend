@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../views/commonemp.scss';
+import { FaEdit, FaTrashAlt, FaWhatsapp } from 'react-icons/fa';
 
 function GoSevaReceipt() {
   const tableRef = useRef(null);
@@ -432,7 +433,7 @@ function GoSevaReceipt() {
 
         pdf.setFontSize(10);
         pdf.setFont('helvetica', 'normal');
-        pdf.text('Nyasachi Sthapana 2011', pageWidth - margin, startY, { align: 'right' });
+        pdf.text('Establishment 2011', pageWidth - margin, startY, { align: 'right' });
 
         // Second line: Trust Name
         pdf.setFontSize(12);
@@ -451,7 +452,7 @@ function GoSevaReceipt() {
         // Report title
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('Dengi Pawati', pageWidth / 2, startY + 38, { align: 'center' });
+        pdf.text('Goseva Receipt', pageWidth / 2, startY + 38, { align: 'center' });
 
         // Add a line separator
         pdf.setLineWidth(0.5);
@@ -482,11 +483,11 @@ function GoSevaReceipt() {
       pdf.setTextColor(0, 0, 0);
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'normal');
-      pdf.text(`Dinank: ${today}`, margin, currentY + 5);
-      pdf.text(`Ekun Record: ${receiptData.length}`, pageWidth - 60, currentY + 5);
+      pdf.text(`Date: ${today}`, margin, currentY + 5);
+      pdf.text(`Total Record: ${receiptData.length}`, pageWidth - 60, currentY + 5);
 
       const totalAmount = receiptData.reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0);
-      pdf.text(`Ekun Rakkam: Rs${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, margin, currentY + 12);
+      pdf.text(`Total Amount: Rs${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, margin, currentY + 12);
 
       currentY += 20;
 
@@ -494,17 +495,16 @@ function GoSevaReceipt() {
       const rowHeight = 8;
       const headerHeight = 10;
       const columns = [
-        { title: 'A.Kr.', width: 15 },
-        { title: 'Pawati Kr.', width: 25 },
-        { title: 'Dengidar Nav', width: 35 },
-        { title: 'Durdhvani', width: 25 },
-        { title: 'Avadhi', width: 20 },
-        { title: 'Rakkam', width: 25 },
-        { title: 'Deyak Prakar', width: 22 },
+        { title: 'No.', width: 15 },
+        { title: 'Donor Name', width: 35 },
+        { title: 'Contact', width: 25 },
+        { title: 'Duration', width: 20 },
+        { title: 'Amount', width: 25 },
+        { title: 'Payment Type', width: 22 },
         { title: 'Bank', width: 25 },
-        { title: 'Prarambh Dinank', width: 22 },
-        { title: 'Samapti Dinank', width: 22 },
-        { title: 'Sthiti', width: 18 }
+        { title: 'Start Date', width: 22 },
+        { title: 'End Date', width: 22 },
+        { title: 'Status', width: 18 }
       ];
 
       // Draw table header
@@ -559,7 +559,6 @@ function GoSevaReceipt() {
 
         const rowData = [
           (index + 1).toString(),
-          item.ReceiptNo || 'N/A',
           (item.DonarName || item.DengidarName || 'N/A').substring(0, 15),
           item.DengidarPhone || 'N/A',
           (item.DurationMonths || 'N/A').toString(),
@@ -582,7 +581,7 @@ function GoSevaReceipt() {
 
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Saransh', margin, currentY);
+      pdf.text('Summary', margin, currentY);
       currentY += 10;
 
       pdf.setFontSize(10);
@@ -595,11 +594,11 @@ function GoSevaReceipt() {
         return acc;
       }, {});
 
-      pdf.text('Deyak Prakar Vivarani:', margin, currentY);
+      pdf.text('Payment Type Breakdown:', margin, currentY);
       currentY += 7;
 
       Object.entries(paymentTypes).forEach(([type, count]) => {
-        pdf.text(`• ${type}: ${count} pawati`, margin + 5, currentY);
+        pdf.text(`• ${type}: ${count} receipts`, margin + 5, currentY);
         currentY += 5;
       });
 
@@ -608,11 +607,11 @@ function GoSevaReceipt() {
       const activeCount = receiptData.filter((item) => item.Status !== 'Expired').length;
       const expiredCount = receiptData.length - activeCount;
 
-      pdf.text('Sthiti Vivarani:', margin, currentY);
+      pdf.text('Status Breakdown:', margin, currentY);
       currentY += 7;
-      pdf.text(`• Sakriya: ${activeCount} pawati`, margin + 5, currentY);
+      pdf.text(`• Active: ${activeCount} receipts`, margin + 5, currentY);
       currentY += 5;
-      pdf.text(`• Samapti: ${expiredCount} pawati`, margin + 5, currentY);
+      pdf.text(`• Expired: ${expiredCount} receipts`, margin + 5, currentY);
 
       // Add page numbers to all pages
       const totalPages = pdf.internal.getNumberOfPages();
@@ -652,6 +651,269 @@ function GoSevaReceipt() {
       setIsExportingPDF(false);
     }
   };
+
+  // const handleExportToPDF = async () => {
+  //   if (!Array.isArray(receiptData) || receiptData.length === 0) {
+  //     alert('No data available to export');
+  //     return;
+  //   }
+
+  //   setIsExportingPDF(true);
+  //   try {
+  //     // Create PDF document
+  //     const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape orientation for better table fit
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+  //     const pageHeight = pdf.internal.pageSize.getHeight();
+  //     const margin = 10;
+  //     let currentY = 50;
+
+  //     // Helper function to format dates
+  //     const formatDate = (dateString) => {
+  //       if (!dateString) return 'N/A';
+  //       try {
+  //         return new Date(dateString).toLocaleDateString('en-IN', {
+  //           day: '2-digit',
+  //           month: '2-digit',
+  //           year: 'numeric'
+  //         });
+  //       } catch {
+  //         return 'Invalid Date';
+  //       }
+  //     };
+
+  //     // Helper function to add temple header (used on all pages)
+  //     const addTempleHeader = () => {
+  //       const startY = 10;
+  //       pdf.setTextColor(0, 0, 0);
+  //       pdf.setFont('helvetica', 'normal');
+
+  //       // First line: Temple Name (center), Establishment Year (right)
+  //       pdf.setFontSize(14);
+  //       pdf.setFont('helvetica', 'bold');
+  //       pdf.text('|| Shriram Samarth ||', pageWidth / 2, startY, { align: 'center' });
+
+  //       pdf.setFontSize(10);
+  //       pdf.setFont('helvetica', 'normal');
+  //       pdf.text('Nyasachi Sthapana 2011', pageWidth - margin, startY, { align: 'right' });
+
+  //       // Second line: Trust Name
+  //       pdf.setFontSize(12);
+  //       pdf.setFont('helvetica', 'bold');
+  //       pdf.text('Anandi - Narayan Krupa Nyas', pageWidth / 2, startY + 8, { align: 'center' });
+
+  //       // Third line: Temple Name
+  //       pdf.setFontSize(11);
+  //       pdf.setFont('helvetica', 'normal');
+  //       pdf.text('Shri Samarth Ramdas Swami Math, Khatgaon,', pageWidth / 2, startY + 16, { align: 'center' });
+
+  //       // Fourth line: Address
+  //       pdf.setFontSize(10);
+  //       pdf.text('Ta. Karjat Ji. Ahilyanagar-414402, Maharashtra', pageWidth / 2, startY + 24, { align: 'center' });
+
+  //       // Report title
+  //       pdf.setFontSize(16);
+  //       pdf.setFont('helvetica', 'bold');
+  //       pdf.text('Dengi Pawati', pageWidth / 2, startY + 38, { align: 'center' });
+
+  //       // Add a line separator
+  //       pdf.setLineWidth(0.5);
+  //       pdf.setDrawColor(0, 0, 0);
+  //       pdf.line(margin, startY + 45, pageWidth - margin, startY + 45);
+
+  //       return startY + 50; // Return Y position for content to start
+  //     };
+
+  //     // Helper function to add a new page with header
+  //     const addNewPage = () => {
+  //       pdf.addPage();
+  //       currentY = addTempleHeader();
+  //     };
+
+  //     // Add main header on first page
+  //     currentY = addTempleHeader();
+
+  //     // Add generation date and summary below header
+  //     const today = new Date().toLocaleDateString('en-IN', {
+  //       day: '2-digit',
+  //       month: '2-digit',
+  //       year: 'numeric',
+  //       hour: '2-digit',
+  //       minute: '2-digit'
+  //     });
+
+  //     pdf.setTextColor(0, 0, 0);
+  //     pdf.setFontSize(9);
+  //     pdf.setFont('helvetica', 'normal');
+  //     pdf.text(`Dinank: ${today}`, margin, currentY + 5);
+  //     pdf.text(`Ekun Record: ${receiptData.length}`, pageWidth - 60, currentY + 5);
+
+  //     const totalAmount = receiptData.reduce((sum, item) => sum + (parseFloat(item.Amount) || 0), 0);
+  //     pdf.text(`Ekun Rakkam: Rs${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, margin, currentY + 12);
+
+  //     currentY += 20;
+
+  //     // Table configuration with transliterated Marathi headers
+  //     const rowHeight = 8;
+  //     const headerHeight = 10;
+  //     const columns = [
+  //       { title: 'A.Kr.', width: 15 },
+  //       { title: 'Pawati Kr.', width: 25 },
+  //       { title: 'Dengidar Nav', width: 35 },
+  //       { title: 'Durdhvani', width: 25 },
+  //       { title: 'Avadhi', width: 20 },
+  //       { title: 'Rakkam', width: 25 },
+  //       { title: 'Deyak Prakar', width: 22 },
+  //       { title: 'Bank', width: 25 },
+  //       { title: 'Prarambh Dinank', width: 22 },
+  //       { title: 'Samapti Dinank', width: 22 },
+  //       { title: 'Sthiti', width: 18 }
+  //     ];
+
+  //     // Draw table header
+  //     const drawTableHeader = (startY) => {
+  //       pdf.setFillColor(68, 114, 196);
+  //       pdf.rect(margin, startY, pageWidth - 2 * margin, headerHeight, 'F');
+
+  //       pdf.setTextColor(255, 255, 255);
+  //       pdf.setFontSize(9);
+  //       pdf.setFont('helvetica', 'bold');
+
+  //       let xPosition = margin + 2;
+  //       columns.forEach((col) => {
+  //         pdf.text(col.title, xPosition, startY + 7);
+  //         xPosition += col.width;
+  //       });
+
+  //       return startY + headerHeight;
+  //     };
+
+  //     // Draw table rows
+  //     const drawTableRow = (data, yPosition, isAlternate = false) => {
+  //       if (isAlternate) {
+  //         pdf.setFillColor(245, 245, 245);
+  //         pdf.rect(margin, yPosition, pageWidth - 2 * margin, rowHeight, 'F');
+  //       }
+
+  //       pdf.setTextColor(0, 0, 0);
+  //       pdf.setFontSize(8);
+  //       pdf.setFont('helvetica', 'normal');
+
+  //       let xPosition = margin + 2;
+  //       data.forEach((cell, index) => {
+  //         const text = String(cell || '').substring(0, 20); // Truncate if too long
+  //         pdf.text(text, xPosition, yPosition + 6);
+  //         xPosition += columns[index].width;
+  //       });
+
+  //       return yPosition + rowHeight;
+  //     };
+
+  //     // Start table
+  //     currentY = drawTableHeader(currentY);
+
+  //     // Add data rows
+  //     receiptData.forEach((item, index) => {
+  //       // Check if we need a new page
+  //       if (currentY + rowHeight > pageHeight - 30) {
+  //         addNewPage();
+  //         currentY = drawTableHeader(currentY);
+  //       }
+
+  //       const rowData = [
+  //         (index + 1).toString(),
+  //         item.ReceiptNo || 'N/A',
+  //         (item.DonarName || item.DengidarName || 'N/A').substring(0, 15),
+  //         item.DengidarPhone || 'N/A',
+  //         (item.DurationMonths || 'N/A').toString(),
+  //         item.Amount ? `₹${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : '₹0',
+  //         item.PaymentType || 'N/A',
+  //         (item.BankName || 'N/A').substring(0, 12),
+  //         formatDate(item.StartDate),
+  //         formatDate(item.EndDate),
+  //         item.Status || 'Active'
+  //       ];
+
+  //       currentY = drawTableRow(rowData, currentY, index % 2 === 1);
+  //     });
+
+  //     // Add summary section
+  //     currentY += 20;
+  //     if (currentY + 60 > pageHeight - 30) {
+  //       addNewPage();
+  //     }
+
+  //     pdf.setFontSize(12);
+  //     pdf.setFont('helvetica', 'bold');
+  //     pdf.text('Saransh', margin, currentY);
+  //     currentY += 10;
+
+  //     pdf.setFontSize(10);
+  //     pdf.setFont('helvetica', 'normal');
+
+  //     // Payment type breakdown
+  //     const paymentTypes = receiptData.reduce((acc, item) => {
+  //       const type = item.PaymentType || 'Unknown';
+  //       acc[type] = (acc[type] || 0) + 1;
+  //       return acc;
+  //     }, {});
+
+  //     pdf.text('Deyak Prakar Vivarani:', margin, currentY);
+  //     currentY += 7;
+
+  //     Object.entries(paymentTypes).forEach(([type, count]) => {
+  //       pdf.text(`• ${type}: ${count} pawati`, margin + 5, currentY);
+  //       currentY += 5;
+  //     });
+
+  //     // Status breakdown
+  //     currentY += 5;
+  //     const activeCount = receiptData.filter((item) => item.Status !== 'Expired').length;
+  //     const expiredCount = receiptData.length - activeCount;
+
+  //     pdf.text('Sthiti Vivarani:', margin, currentY);
+  //     currentY += 7;
+  //     pdf.text(`• Sakriya: ${activeCount} pawati`, margin + 5, currentY);
+  //     currentY += 5;
+  //     pdf.text(`• Samapti: ${expiredCount} pawati`, margin + 5, currentY);
+
+  //     // Add page numbers to all pages
+  //     const totalPages = pdf.internal.getNumberOfPages();
+  //     for (let i = 1; i <= totalPages; i++) {
+  //       pdf.setPage(i);
+  //       pdf.setFontSize(8);
+  //       pdf.setFont('helvetica', 'normal');
+  //       pdf.text(`Page ${i} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
+  //     }
+
+  //     // Footer on last page
+  //     pdf.setPage(totalPages);
+  //     pdf.setFontSize(8);
+  //     pdf.setFont('helvetica', 'italic');
+  //     pdf.text('This is a computer-generated report. For queries, contact temple administration.', pageWidth / 2, pageHeight - 5, {
+  //       align: 'center'
+  //     });
+
+  //     // Generate filename and save
+  //     const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+  //     const filename = `GoSeva_Receipts_${timestamp}.pdf`;
+
+  //     pdf.save(filename);
+
+  //     // Success notification
+  //     alert(
+  //       `✅ PDF Export Successful!\n\n` +
+  //         `📄 File: ${filename}\n` +
+  //         `📊 Records Exported: ${receiptData.length}\n` +
+  //         `💰 Total Amount: ₹${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n` +
+  //         `📅 Generated: ${today}`
+  //     );
+  //   } catch (error) {
+  //     console.error('Error exporting to PDF:', error);
+  //     alert(`❌ PDF Export Failed!\n\nError: ${error.message}\nPlease try again or contact support.`);
+  //   } finally {
+  //     setIsExportingPDF(false);
+  //   }
+  // };
 
   const validate = () => {
     const newErrors = {};
@@ -715,10 +977,7 @@ function GoSevaReceipt() {
         }
 
         if (response.data.success) {
-          const receiptNumber = response.data.data?.ReceiptNumber || formData.ReceiptNumber || 'N/A';
-          const message = isEditing
-            ? `Receipt updated successfully! Receipt Number: ${receiptNumber}`
-            : `Receipt generated successfully! Receipt Number: ${receiptNumber}`;
+          const message = isEditing ? `Receipt updated successfully!` : `Receipt generated successfully!`;
 
           alert(message);
 
@@ -876,7 +1135,7 @@ function GoSevaReceipt() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               {isEditing ? 'पावती संपादन' : 'गोसेवा पावती'}
             </Card.Title>
           </Card.Header>
@@ -1078,7 +1337,7 @@ function GoSevaReceipt() {
           <Card.Header>
             <Row>
               <Col md={4}>
-                <Card.Title as="h5">पावती यादी</Card.Title>
+                <Card.Title as="h4">पावती यादी</Card.Title>
                 <small className="text-muted">
                   Total: {receiptData.length} receipts | Amount: ₹
                   {receiptData
@@ -1170,10 +1429,10 @@ function GoSevaReceipt() {
                           <td>{item.CreatedByName}</td>
                           <td>
                             <Button variant="info" size="sm" className="me-2" onClick={() => handleEditReceipt(item.Id)}>
-                              Edit
+                              <FaEdit />
                             </Button>
                             <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsapp(item)}>
-                              {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                              {sendingWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
                             </Button>
                             <Button
                               variant="danger"
@@ -1182,7 +1441,7 @@ function GoSevaReceipt() {
                                 confirmDelete(item.Id);
                               }}
                             >
-                              Delete
+                              <FaTrashAlt />
                             </Button>
                           </td>
                         </tr>

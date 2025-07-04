@@ -36,7 +36,7 @@ function Donation() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               सेवेचे प्रकार
             </Card.Title>
           </Card.Header>

@@ -11,6 +11,7 @@ import uniqueVisitorChart from './chart/analytics-unique-visitor-chart';
 import customerChart from './chart/analytics-cuatomer-chart';
 import customerChart1 from './chart/analytics-cuatomer-chart-1';
 import axios from 'axios';
+import { FaWhatsapp } from 'react-icons/fa';
 
 // ==============================|| DASHBOARD ANALYTICS ||============================== //
 
@@ -391,7 +392,7 @@ const DashAnalytics = () => {
             <Card.Header>
               <Row>
                 <Col md={6}>
-                  <Card.Title as="h5">Goseva Receipt Reminder</Card.Title>
+                  <Card.Title as="h4">Goseva Receipt Reminder</Card.Title>
                 </Col>
                 <Col md={6} className="d-flex justify-content-end">
                   <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -436,7 +437,7 @@ const DashAnalytics = () => {
                             <td>{item.CreatedByName || 'N/A'}</td>
                             <td>
                               <Button variant="success" size="sm" className="me-2" onClick={() => handleSendWhatsapp(item)}>
-                                {sendingWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                                {sendingWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
                               </Button>
                             </td>
                           </tr>
@@ -455,7 +456,7 @@ const DashAnalytics = () => {
             <Card.Header>
               <Row>
                 <Col md={6}>
-                  <Card.Title as="h5">Birthday Reminder</Card.Title>
+                  <Card.Title as="h4">Birthday Reminder</Card.Title>
                 </Col>
                 <Col md={6} className="d-flex justify-content-end">
                   <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} className="me-2" />
@@ -492,7 +493,7 @@ const DashAnalytics = () => {
                             <td>{item.MobileNumber || 'N/A'}</td>
                             <td>
                               <Button variant="success" size="sm" className="me-2" onClick={() => handleBirthdaySendWhatsapp(item)}>
-                                {sendingBirthdayWhatsApp === item.Id ? 'Sending...' : 'Send WhatsApp'}
+                                {sendingBirthdayWhatsApp === item.Id ? 'Sending...' : <FaWhatsapp />}
                               </Button>
                             </td>
                           </tr>

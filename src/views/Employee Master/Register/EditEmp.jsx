@@ -113,7 +113,7 @@ function EditEmp() {
       <Col sm={12}>
         <Card>
           <Card.Header>
-            <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
               नवीन कर्मचारी नोंदणी
             </Card.Title>
           </Card.Header>

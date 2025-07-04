@@ -180,7 +180,7 @@ function GoSevaReceipt() {
         <Col sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
           <Card style={{ width: '800px' }}>
             <Card.Header>
-              <Card.Title as="h5" style={{ display: 'flex', justifyContent: 'center' }}>
+              <Card.Title as="h4" style={{ display: 'flex', justifyContent: 'center' }}>
                 गोसेवा पावती अहवाल
               </Card.Title>
             </Card.Header>
@@ -215,7 +215,7 @@ function GoSevaReceipt() {
           <Card.Header>
             <Row>
               <Col md={6}>
-                <Card.Title as="h5">गोसेवा पावती अहवाल</Card.Title>
+                <Card.Title as="h4">गोसेवा पावती अहवाल</Card.Title>
               </Col>
               <Col md={6} className="d-flex justify-content-end">
                 <Form.Control type="text" value={searchTerm} placeholder="Search" onChange={handleSearchChange} />
