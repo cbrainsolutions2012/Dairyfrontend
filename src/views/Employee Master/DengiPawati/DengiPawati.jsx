@@ -625,6 +625,7 @@ function DengiPawati() {
         PaymentType: receipt.PaymentType,
         SevaDate: receipt.SevaDate,
         SevaFor: receipt.SevaFor || '',
+        GotraName: receipt.GotraName || '',
         BankName: receipt.BankName || '',
         ChequeNo: receipt.ChequeNo || '',
         DDNo: receipt.DDNo || '',

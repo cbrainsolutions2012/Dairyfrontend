@@ -523,7 +523,7 @@ function DonateMaster() {
                           <td>{item.MobileNumber}</td>
                           <td>{item.PanCard}</td>
                           <td>{item.AdharCard}</td>
-                          <td>{getGotraNameById(item.GotraTypeId)}</td>
+                          <td>{item.GotraName}</td>
                           <td>{item.City}</td>
                           <td>{item.Address}</td>
                           <td>{item.EmailId}</td>
