@@ -55,7 +55,7 @@ function GoSevaReceipt() {
     const excelData = receiptData.map((item, idx) => ({
       अनुक्रमांक: idx + 1,
       'पावती क्रमांक': item.ReceiptNo || '',
-      'देणगीदार नाव': item.DonarName || '',
+      'देणगीदार नाव': item.DengidarName || '',
       'संपर्क क्रमांक': item.DengidarPhone || '',
       शहर: item.DengidarCity || '',
       रक्कम: item.Amount || '',
@@ -275,7 +275,7 @@ function GoSevaReceipt() {
                         <tr key={item.Id}>
                           <td>{startIndex + idx + 1}</td>
                           <td>{item.ReceiptNo}</td>
-                          <td>{item.DonarName}</td>
+                          <td>{item.DengidarName}</td>
                           <td>{item.DengidarPhone}</td>
                           <td>{item.DengidarCity}</td>
                           <td>{item.Amount}</td>

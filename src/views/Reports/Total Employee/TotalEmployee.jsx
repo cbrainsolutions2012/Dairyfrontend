@@ -19,15 +19,26 @@ function TotalEmployee() {
   };
 
   const handleExportToExcel = () => {
-    console.log('excel');
     const table = tableRef.current;
-    if (!table) return;
+    if (!table) {
+      alert('No table data found to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    try {
+      // Convert the table directly to a workbook
+      const wb = utils.table_to_book(table);
 
-    // Convert the modified table to a workbook and export
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'TotalEmployee_Data.xlsx');
+      // Add timestamp to filename
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+      const filename = `Total_Employee_Report_${timestamp}.xlsx`;
+
+      writeFile(wb, filename);
+      alert(`Excel file exported successfully as ${filename}`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('Failed to export Excel file. Please try again.');
+    }
   };
 
   const handleExportToPDF = () => {

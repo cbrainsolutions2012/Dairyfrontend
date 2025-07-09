@@ -54,7 +54,10 @@ function DengiPawati() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Convert PAN card input to uppercase
+    const finalValue = name === 'PanCard' ? value.toUpperCase() : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
   const handleSearchChange = (e) => {
     const value = e.target.value;

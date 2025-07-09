@@ -60,10 +60,7 @@ function Income() {
       वर्णन: item.Description || '',
       रक्कम: item.Amount || '',
       'बँकेचे नाव': item.BankName || '',
-      काउंटर: item.CounterName || '',
-      'Transaction Type': item.TransactionType || '',
-      'Reference Id': item.ReferenceId || '',
-      'Reference Table': item.ReferenceTable || ''
+      'Transaction Type': item.TransactionType || ''
     }));
     const wb = utils.book_new();
     const ws = utils.json_to_sheet(excelData);
@@ -74,10 +71,7 @@ function Income() {
       { wch: 30 }, // वर्णन
       { wch: 12 }, // रक्कम
       { wch: 20 }, // बँकेचे नाव
-      { wch: 15 }, // काउंटर
-      { wch: 15 }, // Transaction Type
-      { wch: 12 }, // Reference Id
-      { wch: 15 } // Reference Table
+      { wch: 15 } // Transaction Type
     ];
     utils.book_append_sheet(wb, ws, 'उत्पन्न अहवाल');
     writeFile(wb, `उत्पन्न_अहवाल_${formData.sdate}_to_${formData.edate}.xlsx`);

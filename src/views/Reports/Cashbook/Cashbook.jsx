@@ -44,29 +44,25 @@ function Cashbook() {
 
   const handleExportToExcel = () => {
     const table = tableRef.current;
-    if (!table) return;
+    if (!table) {
+      alert('No table data found to export');
+      return;
+    }
 
-    const clonedTable = table.cloneNode(true);
+    try {
+      // Convert the table directly to a workbook since there's no Action column to remove
+      const wb = utils.table_to_book(table);
 
-    // Remove the "Action" column from the cloned table
+      // Add timestamp to filename
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+      const filename = `Cashbook_Report_${timestamp}.xlsx`;
 
-    const headers = clonedTable.querySelectorAll('th');
-    const rows = clonedTable.querySelectorAll('tr');
-    const actionIndex = headers.length - 1;
-
-    headers[actionIndex].remove(); // header remove
-
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll('td');
-      if (cells[actionIndex]) {
-        cells[actionIndex].remove();
-      }
-    });
-
-    // Convert the modified table to a workbook and export
-
-    const wb = utils.table_to_book(clonedTable);
-    writeFile(wb, 'Cashbook_Data.xlsx');
+      writeFile(wb, filename);
+      alert(`Excel file exported successfully as ${filename}`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('Failed to export Excel file. Please try again.');
+    }
   };
 
   const handleExportToPDF = () => {

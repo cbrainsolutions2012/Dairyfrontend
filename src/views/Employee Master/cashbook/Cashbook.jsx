@@ -129,15 +129,19 @@ function Cashbook() {
       return;
     }
 
-    // Prepare data for Excel export
+    // Debug: Log the first item to see available fields
+    console.log('Sample cashbook data item:', filteredData[0]);
+    console.log('Available fields:', Object.keys(filteredData[0] || {}));
+
+    // Prepare data for Excel export with better field mapping
     const excelData = filteredData.map((item, index) => ({
       'Sr.No': index + 1,
       अनुक्रमांक: item.Id || '',
-      नाव: item.Description || '',
-      दिनांक: item.Date ? formatDate(item.Date) : '',
-      रक्कम: item.Amount ? `₹${item.Amount}` : '',
-      'व्यवहार प्रकार': item.AmountType || '',
-      'बँक नाव': item.BankName || ''
+      नाव: item.Description || item.PartyName || item.Name || item.TransactionDescription || '',
+      दिनांक: item.Date ? formatDate(item.Date) : item.TransactionDate ? formatDate(item.TransactionDate) : '',
+      रक्कम: item.Amount ? `₹${parseFloat(item.Amount).toFixed(2)}` : '₹0.00',
+      'व्यवहार प्रकार': item.AmountType || item.TransactionType || item.Type || '',
+      'बँक नाव': item.BankName || item.Bank || ''
     }));
 
     // Create workbook and worksheet
@@ -148,10 +152,10 @@ function Cashbook() {
     const colWidths = [
       { wch: 8 }, // Sr.No
       { wch: 12 }, // ID
-      { wch: 25 }, // Description/Name
+      { wch: 30 }, // Description/Name (increased width)
       { wch: 12 }, // Date
       { wch: 15 }, // Amount
-      { wch: 15 }, // Amount Type
+      { wch: 18 }, // Amount Type
       { wch: 20 } // Bank Name
     ];
     ws['!cols'] = colWidths;
@@ -159,9 +163,10 @@ function Cashbook() {
     // Add worksheet to workbook
     utils.book_append_sheet(wb, ws, 'Cashbook Data');
 
-    // Generate filename with current date
-    const currentDate = new Date().toISOString().split('T')[0];
-    const filename = `Cashbook_Data_${currentDate}.xlsx`;
+    // Generate filename with current date and time
+    const now = new Date();
+    const timestamp = now.toISOString().split('T')[0];
+    const filename = `Cashbook_Data_${timestamp}.xlsx`;
 
     // Save the file
     writeFile(wb, filename);
@@ -270,7 +275,7 @@ function Cashbook() {
                   {currentItems.map((item, index) => (
                     <tr key={index}>
                       <td>{item.Id}</td>
-                      <td>{item.Description}</td>
+                      <td>{item.PartyName}</td>
                       <td>{formatDate(item.Date)}</td>
                       <td>₹{item.Amount}</td>
                       <td>{item.AmountType}</td>
