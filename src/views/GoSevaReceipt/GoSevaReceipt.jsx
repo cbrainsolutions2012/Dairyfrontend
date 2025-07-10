@@ -1106,7 +1106,7 @@ function GoSevaReceipt() {
       const payload = {
         number,
         receipt: {
-          DonarName: receipt.DonarName,
+          DengidarName: receipt.DengidarName,
           Amount: receipt.Amount,
           DurationMonths: receipt.DurationMonths,
           StartDate: startdate,
@@ -1158,7 +1158,7 @@ function GoSevaReceipt() {
         number,
         receipt: {
           ReceiptNumber: receipt.ReceiptNo,
-          Name: receipt.DonarName || receipt.DengidarName,
+          Name: receipt.DengidarName || receipt.DonarName,
           Amount: receipt.Amount,
           DurationMonths: receipt.DurationMonths,
           StartDate: receipt.StartDate,
