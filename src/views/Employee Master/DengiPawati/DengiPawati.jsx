@@ -481,10 +481,13 @@ function DengiPawati() {
       } catch (error) {
         console.error('Error submitting receipt:', error);
         const action = isEditing ? 'update' : 'generate';
+        if (error.response?.status === 409) {
+          alert(error.response.data.message || `Receipt already exists. Please check the details and try again.`);
+          return;
+        }
         if (error.response && error.response.data && error.response.data.message) {
           alert(`Failed to ${action} receipt: ${error.response.data.message}`);
-        } else {
-          alert(`Failed to ${action} receipt. Please try again.`);
+          return;
         }
       }
     } else {
