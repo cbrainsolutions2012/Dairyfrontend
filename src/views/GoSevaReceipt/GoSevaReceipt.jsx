@@ -41,9 +41,12 @@ function GoSevaReceipt() {
     DurationMonths: '',
     PaymentType: '',
     BankName: '',
+    DDNo: '',
+    ChequeNo: '',
     Amount: '',
     Note: '',
-    StartDate: ''
+    StartDate: '',
+    TransactionId: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -93,9 +96,12 @@ function GoSevaReceipt() {
       DurationMonths: '',
       PaymentType: '',
       BankName: '',
+      DDNo: '',
+      ChequeNo: '',
       Amount: '',
       Note: '',
-      StartDate: ''
+      StartDate: '',
+      TransactionId: ''
     });
     setSearchTerm('');
     setDevoteeFound(false);
@@ -134,9 +140,12 @@ function GoSevaReceipt() {
           DurationMonths: receipt.DurationMonths,
           PaymentType: receipt.PaymentType,
           BankName: receipt.BankName || '',
+          DDNo: receipt.DDNo || '',
+          ChequeNo: receipt.ChequeNo || '',
           Amount: receipt.Amount,
           Note: receipt.Note || '',
-          StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : ''
+          StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : '',
+          TransactionId: receipt.TransactionId || ''
         });
         setDevoteeFound(true);
         setIsEditing(true);
@@ -278,6 +287,9 @@ function GoSevaReceipt() {
         'Amount (₹)': item.Amount ? `${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '0.00',
         'Payment Type': item.PaymentType || 'N/A',
         'Bank Name': item.BankName || 'N/A',
+        'DD No.': item.DDNo || 'N/A',
+        'Cheque No.': item.ChequeNo || 'N/A',
+        'Transaction ID': item.TransactionId || 'N/A',
         'Start Date': formatDate(item.StartDate),
         'End Date': formatDate(item.EndDate),
         Status: item.Status || 'Active',
@@ -302,6 +314,9 @@ function GoSevaReceipt() {
         { wch: 15 }, // Amount
         { wch: 15 }, // Payment Type
         { wch: 20 }, // Bank Name
+        { wch: 15 }, // DD No.
+        { wch: 15 }, // Cheque No.
+        { wch: 20 }, // Transaction ID
         { wch: 12 }, // Start Date
         { wch: 12 }, // End Date
         { wch: 10 }, // Status
@@ -498,16 +513,17 @@ function GoSevaReceipt() {
       const rowHeight = 8;
       const headerHeight = 10;
       const columns = [
-        { title: 'No.', width: 15 },
-        { title: 'Donor Name', width: 35 },
-        { title: 'Contact', width: 25 },
-        { title: 'Duration', width: 20 },
-        { title: 'Amount', width: 25 },
-        { title: 'Payment Type', width: 22 },
-        { title: 'Bank', width: 25 },
-        { title: 'Start Date', width: 22 },
-        { title: 'End Date', width: 22 },
-        { title: 'Status', width: 18 }
+        { title: 'No.', width: 12 },
+        { title: 'Donor Name', width: 30 },
+        { title: 'Contact', width: 22 },
+        { title: 'Duration', width: 18 },
+        { title: 'Amount', width: 22 },
+        { title: 'Payment Type', width: 20 },
+        { title: 'Bank', width: 22 },
+        { title: 'DD/Cheque/TxnID', width: 25 },
+        { title: 'Start Date', width: 20 },
+        { title: 'End Date', width: 20 },
+        { title: 'Status', width: 16 }
       ];
 
       // Draw table header
@@ -568,6 +584,7 @@ function GoSevaReceipt() {
           item.Amount ? `₹${parseFloat(item.Amount).toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : '₹0',
           item.PaymentType || 'N/A',
           (item.BankName || 'N/A').substring(0, 12),
+          (item.DDNo || item.ChequeNo || item.TransactionId || 'N/A').substring(0, 15),
           formatDate(item.StartDate),
           formatDate(item.EndDate),
           item.Status || 'Active'
@@ -925,6 +942,12 @@ function GoSevaReceipt() {
     if (!formData.PaymentType) newErrors.PaymentType = 'Payment type is required';
     if (!formData.DurationMonths) newErrors.DurationMonths = 'Duration in months is required';
 
+    // Conditional validation based on payment type
+    if (formData.PaymentType === 'upi') {
+      if (!formData.TransactionId) newErrors.TransactionId = 'Transaction ID is required for UPI';
+      if (!formData.BankName) newErrors.BankName = 'Bank name is required for UPI';
+    }
+
     return newErrors;
   };
 
@@ -955,9 +978,12 @@ function GoSevaReceipt() {
           DurationMonths: parseInt(formData.DurationMonths, 10) || 0,
           PaymentType: formData.PaymentType,
           BankName: formData.BankName || null,
+          DDNo: formData.DDNo || null,
+          ChequeNo: formData.ChequeNo || null,
           Amount: parseFloat(formData.Amount),
           Note: formData.Note || null,
-          StartDate: formData.StartDate
+          StartDate: formData.StartDate,
+          TransactionId: formData.TransactionId || null
         };
 
         let response;
@@ -990,9 +1016,12 @@ function GoSevaReceipt() {
             DurationMonths: '',
             PaymentType: '',
             BankName: '',
+            DDNo: '',
+            ChequeNo: '',
             Amount: '',
             Note: '',
-            StartDate: ''
+            StartDate: '',
+            TransactionId: ''
           });
           setIsEditing(false);
           setEditingReceiptId(null);
@@ -1164,7 +1193,13 @@ function GoSevaReceipt() {
           StartDate: receipt.StartDate,
           EndDate: receipt.EndDate,
           PaymentType: receipt.PaymentType,
-          PanCard: receipt.PanCard || 'N/A'
+          PanCard: receipt.PanCard || 'N/A',
+          ChequeNo: receipt.ChequeNo || 'N/A',
+          DDNo: receipt.DDNo || 'N/A',
+          BankName: receipt.BankName || 'N/A',
+          Note: receipt.Note || 'N/A',
+          TransactionId: receipt.TransactionId || 'N/A',
+          Date: receipt.Date
         }
       };
 
@@ -1362,14 +1397,53 @@ function GoSevaReceipt() {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="PaymentType">देयक प्रकार *</label>
-                  <input type="text" name="PaymentType" value={formData.PaymentType} onChange={handleChange} />
+                  <select name="PaymentType" value={formData.PaymentType} onChange={handleChange}>
+                    <option value="">देयक प्रकार निवडा</option>
+                    <option value="cash">रोख</option>
+                    <option value="upi">यूपीआय</option>
+                    <option value="cheque">चेक</option>
+                    <option value="dd">डीडी</option>
+                    <option value="gift">उपहार</option>
+                  </select>
                   {errors.PaymentType && <span className="error">{errors.PaymentType}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="BankName">बँकेचे नाव</label>
                   <input type="text" name="BankName" value={formData.BankName} onChange={handleChange} />
+                  {errors.BankName && <span className="error">{errors.BankName}</span>}
                 </div>
               </div>
+
+              {/* Conditional fields for UPI */}
+              {formData.PaymentType === 'upi' && (
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="TransactionId">ट्रान्झॅक्शन आयडी *</label>
+                    <input type="text" name="TransactionId" value={formData.TransactionId} onChange={handleChange} />
+                    {errors.TransactionId && <span className="error">{errors.TransactionId}</span>}
+                  </div>
+                  <div className="form-group">{/* Empty div for spacing */}</div>
+                </div>
+              )}
+
+              {/* Conditional fields for Cheque/DD */}
+              {(formData.PaymentType === 'cheque' || formData.PaymentType === 'dd') && (
+                <div className="form-row">
+                  {formData.PaymentType === 'dd' && (
+                    <div className="form-group">
+                      <label htmlFor="DDNo">डीडी क्रमांक</label>
+                      <input type="text" name="DDNo" value={formData.DDNo} onChange={handleChange} />
+                    </div>
+                  )}
+                  {formData.PaymentType === 'cheque' && (
+                    <div className="form-group">
+                      <label htmlFor="ChequeNo">चेक क्रमांक</label>
+                      <input type="text" name="ChequeNo" value={formData.ChequeNo} onChange={handleChange} />
+                    </div>
+                  )}
+                  <div className="form-group">{/* Empty div for spacing when only one field is shown */}</div>
+                </div>
+              )}
 
               <div className="form-row">
                 <div className="form-group">
@@ -1476,6 +1550,7 @@ function GoSevaReceipt() {
                       <th>अवधि (महिने)</th>
                       <th>रक्कम</th>
                       <th>देयक प्रकार</th>
+                      <th>देयक तपशील</th>
                       <th>सुरुवात तारीख</th>
                       <th>समाप्ती तारीख</th>
                       <th>निर्माता</th>
@@ -1491,6 +1566,13 @@ function GoSevaReceipt() {
                           <td>{item.DurationMonths || 'N/A'}</td>
                           <td>₹{item.Amount}</td>
                           <td>{item.PaymentType}</td>
+                          <td>
+                            {item.PaymentType === 'dd' && item.DDNo && `DD: ${item.DDNo}`}
+                            {item.PaymentType === 'cheque' && item.ChequeNo && `Cheque: ${item.ChequeNo}`}
+                            {item.PaymentType === 'upi' && item.TransactionId && `TxnID: ${item.TransactionId}`}
+                            {item.BankName && ` (${item.BankName})`}
+                            {!item.DDNo && !item.ChequeNo && !item.TransactionId && 'N/A'}
+                          </td>
                           <td>{item.StartDate ? new Date(item.StartDate).toLocaleDateString() : 'N/A'}</td>
                           <td>{item.EndDate ? new Date(item.EndDate).toLocaleDateString() : 'N/A'}</td>
                           <td>{item.CreatedByName}</td>
@@ -1525,7 +1607,7 @@ function GoSevaReceipt() {
                       ))}
                     {currentData.length === 0 && (
                       <tr>
-                        <td colSpan="9" className="text-center">
+                        <td colSpan="10" className="text-center">
                           No receipts found
                         </td>
                       </tr>
