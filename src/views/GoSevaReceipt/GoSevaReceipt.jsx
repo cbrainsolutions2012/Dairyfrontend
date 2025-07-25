@@ -1223,6 +1223,335 @@ function GoSevaReceipt() {
     }
   };
 
+  // Add this function to handle printing receipt
+  const handlePrintReceipt = (receipt) => {
+    const receiptHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+            
+            body {
+                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background: #f5f5f5;
+                color: #333;
+            }
+            
+            .receipt-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                position: relative;
+            }
+            
+            .registration-info {
+                position: absolute;
+                top: 10px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #666;
+                z-index: 2;
+            }
+            
+            .reg-left {
+                left: 15px;
+            }
+            
+            .reg-right {
+                right: 15px;
+            }
+            
+            .header {
+                background: #ff6b35 !important;
+                background: linear-gradient(135deg, #ff6b35, #f7931e) !important;
+                color: white !important;
+                padding: 30px;
+                text-align: center;
+                position: relative;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="3" fill="white" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="white" opacity="0.1"/></svg>');
+            }
+            
+            .header h1 {
+                margin: 0;
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 10px;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .temple-name {
+                font-size: 18px;
+                margin: 10px 0;
+                font-weight: 600;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .temple-address {
+                font-size: 14px;
+                opacity: 0.9;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .receipt-content {
+                padding: 30px;
+            }
+            
+            .receipt-number {
+                text-align: center;
+                background: #f8f9fa;
+                padding: 15px;
+                margin: -30px -30px 30px -30px;
+                border-bottom: 3px solid #ff6b35 !important;
+            }
+            
+            .receipt-number h2 {
+                margin: 0;
+                color: #ff6b35 !important;
+                font-size: 24px;
+                font-weight: 700;
+            }
+            
+            .receipt-details {
+                display: grid;
+                gap: 20px;
+            }
+            
+            .detail-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .detail-row:last-child {
+                border-bottom: none;
+                border-top: 2px solid #ff6b35 !important;
+                margin-top: 20px;
+                padding-top: 20px;
+            }
+            
+            .label {
+                font-weight: 600;
+                color: #555;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .label::before {
+                content: '';
+                width: 8px;
+                height: 8px;
+                background: #ff6b35 !important;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+            
+            .value {
+                font-weight: 700;
+                color: #333;
+                font-size: 16px;
+                text-align: right;
+            }
+            
+            .footer {
+                background: #f8f9fa !important;
+                padding: 25px 30px;
+                text-align: center;
+                margin: 30px -30px -30px -30px;
+            }
+            
+            .thank-you {
+                color: #ff6b35 !important;
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+            
+            .contact-info {
+                font-size: 14px;
+                color: #666;
+                line-height: 1.6;
+            }
+            
+            .divider {
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+                margin: 20px 0;
+            }
+            
+            @media print {
+                body { 
+                    background: white; 
+                    padding: 0; 
+                }
+                .receipt-container { 
+                    box-shadow: none; 
+                    border-radius: 0; 
+                }
+                .header {
+                    background: #ff6b35 !important;
+                    color: white !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+                .header * {
+                    color: white !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="receipt-container">
+            <!-- Registration Information -->
+            <div class="registration-info reg-left">Reg.No-ई-5652 पुणे</div>
+            <div class="registration-info reg-right">स्थापना : 2011</div>
+            
+            <div class="header">
+                <h1>|| श्रीराम समर्थ ||</h1>
+                <div class="temple-name">आनंदी नारायण कृपा न्यास</div>
+                <div class="temple-name">श्री समर्थ रामदास स्वामी मठ</div>
+                <div class="temple-address">
+                    खातगाव, ता. कर्जत, जि. अहिल्यानगर-414402<br>
+                    महाराष्ट्र, भारत
+                </div>
+            </div>
+            
+            <div class="receipt-content">
+                <div class="receipt-number">
+                    <h2>गो सेवा पावती</h2>
+                </div>
+                
+                <div class="receipt-details">
+                    <div class="detail-row">
+                        <span class="label">पावती क्रमांक</span>
+                        <span class="value">${receipt.ReceiptNo || 'N/A'}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">नाव</span>
+                        <span class="value">${receipt.DengidarName || receipt.DonarName || 'N/A'}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">कालावधी (महिने)</span>
+                        <span class="value">${receipt.DurationMonths || 'N/A'} महिने</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">सुरुवात तारीख</span>
+                        <span class="value">${receipt.StartDate ? new Date(receipt.StartDate).toLocaleDateString('hi-IN') : 'N/A'}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">समाप्ती तारीख</span>
+                        <span class="value">${receipt.EndDate ? new Date(receipt.EndDate).toLocaleDateString('hi-IN') : 'N/A'}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">देयक प्रकार</span>
+                        <span class="value">${receipt.PaymentType || 'N/A'}</span>
+                    </div>
+                    
+                    ${
+                      receipt.DDNo
+                        ? `<div class="detail-row">
+                        <span class="label">DD क्रमांक</span>
+                        <span class="value">${receipt.DDNo}</span>
+                    </div>`
+                        : ''
+                    }
+                    
+                    ${
+                      receipt.TransactionId
+                        ? `<div class="detail-row">
+                        <span class="label">Transaction ID</span>
+                        <span class="value">${receipt.TransactionId}</span>
+                    </div>`
+                        : ''
+                    }
+                    
+                    ${
+                      receipt.ChequeNo
+                        ? `<div class="detail-row">
+                        <span class="label">चेक क्रमांक</span>
+                        <span class="value">${receipt.ChequeNo}</span>
+                    </div>`
+                        : ''
+                    }
+                    
+                    <div class="detail-row">
+                        <span class="label">पावती तारीख</span>
+                        <span class="value">${receipt.CreatedDate ? new Date(receipt.CreatedDate).toLocaleDateString('hi-IN') : new Date().toLocaleDateString('hi-IN')}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="label">पॅन कार्ड</span>
+                        <span class="value">${receipt.PanCard || 'N/A'}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="label">एकूण रक्कम</span>
+                        <span class="value">₹${receipt.Amount || '0'}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div class="thank-you">🙏 गो सेवेबद्दल मनःपूर्वक धन्यवाद! 🙏</div>
+                <div class="thank-you">|| जय जय रघुवीर समर्थ ||</div>
+                
+                <div class="divider"></div>
+                
+                <div class="contact-info">
+                    <strong>संपर्क माहिती:</strong><br>
+                    📞 दूरध्वनी: 9421177821<br>
+                    📱 WhatsApp: 9146855691<br>
+                    <br>
+                    <em>या पावतीला कायदेशीर वैधता आहे</em><br>
+                    <em>Donations are Eligible for Tax Deductions under Section 80G vide of the Income Tax Act</em><br>
+                    <em>Approval No. PNA/CIT-I/ATG/48/2012-2013/1285  PAN No. AADTA0772C</em>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(receiptHtml);
+    printWindow.document.close();
+
+    // Wait for the content to load, then print
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+  };
+
   return (
     <React.Fragment>
       {/* <Row> */}
@@ -1571,7 +1900,7 @@ function GoSevaReceipt() {
                             {item.PaymentType === 'cheque' && item.ChequeNo && `Cheque: ${item.ChequeNo}`}
                             {item.PaymentType === 'upi' && item.TransactionId && `TxnID: ${item.TransactionId}`}
                             {item.BankName && ` (${item.BankName})`}
-                            {!item.DDNo && !item.ChequeNo && !item.TransactionId && 'N/A'}
+                            {!item.DDNo && !item.ChequeNo && !item.TransactionId && ''}
                           </td>
                           <td>{item.StartDate ? new Date(item.StartDate).toLocaleDateString() : 'N/A'}</td>
                           <td>{item.EndDate ? new Date(item.EndDate).toLocaleDateString() : 'N/A'}</td>
@@ -1593,7 +1922,19 @@ function GoSevaReceipt() {
                             >
                               {sendingPDF === item.Id ? 'Sending...' : '📄 PDF'}
                             </Button>
+
                             <Button
+                              variant="primary"
+                              size="sm"
+                              className="me-2 mt-2"
+                              onClick={() => handlePrintReceipt(item)}
+                              title="Print Receipt"
+                            >
+                              🖨️ Print
+                            </Button>
+
+                            <Button
+                              className="mt-2"
                               variant="danger"
                               size="sm"
                               onClick={() => {
