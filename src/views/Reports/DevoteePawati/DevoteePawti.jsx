@@ -245,6 +245,7 @@ function DevoteePawti() {
                       <th>देणगीदार नाव</th>
                       <th>संपर्क क्रमांक</th>
                       <th>शहर</th>
+                      <th>देणगीदार पत्ता</th>
                       <th>सेवा प्रकार</th>
                       <th>सेवा कोणासाठी</th>
                       <th>सेवा तारीख</th>
@@ -275,6 +276,7 @@ function DevoteePawti() {
                           <td>{item.DengidarName}</td>
                           <td>{item.DengidarPhone}</td>
                           <td>{item.DengidarCity}</td>
+                          <td>{item.DengidarAddress}</td>
                           <td>{item.SevaName}</td>
                           <td>{item.SevaFor}</td>
                           <td>{item.SevaDate ? new Date(item.SevaDate).toLocaleDateString('en-IN') : ''}</td>

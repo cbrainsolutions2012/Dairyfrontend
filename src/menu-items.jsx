@@ -79,6 +79,30 @@ const menuItems = {
           url: '/templereg'
         },
 
+        {
+          id: 'cowregister',
+          title: 'गाय नोंदणी',
+          type: 'item',
+          icon: 'fa-solid fa-gopuram',
+          url: '/cowregister'
+        },
+
+        {
+          id: 'cowmanagement',
+          title: 'गाय व्यवस्थापन',
+          type: 'item',
+          icon: 'fa-solid fa-gopuram',
+          url: '/cowmanagement'
+        },
+
+        {
+          id: 'cowprescription',
+          title: 'गाय पर्ची',
+          type: 'item',
+          icon: 'fa-solid fa-gopuram',
+          url: '/cowprescription'
+        },
+
         // {
         //   id: 'counterMaster',
         //   title: 'काउंटर नोंदणी',

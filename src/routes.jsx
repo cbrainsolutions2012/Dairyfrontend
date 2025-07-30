@@ -142,6 +142,24 @@ export const routes = [
         path: '/templereg',
         element: lazy(() => import('./views/Employee Master/temple profile/TempleProfile'))
       },
+
+      {
+        exact: 'true',
+        path: '/cowregister',
+        element: lazy(() => import('./views/Cow/Cow'))
+      },
+
+      {
+        exact: 'true',
+        path: '/cowmanagement',
+        element: lazy(() => import('./views/CowManagement/CowManagement'))
+      },
+      {
+        exact: 'true',
+        path: '/cowprescription',
+        element: lazy(() => import('./views/CowPrescription/CowPrescription.jsx'))
+      },
+
       {
         exact: 'true',
         path: '/edittemple/:id',
