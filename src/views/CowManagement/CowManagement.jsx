@@ -331,12 +331,12 @@ const CowManagement = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="MorningFood">सकाळचे खाद्य (किलो)</label>
-                  <input type="number" step="0.1" name="MorningFood" value={formData.MorningFood} onChange={handleChange} />
+                  <input type="text" name="MorningFood" value={formData.MorningFood} onChange={handleChange} />
                   {errors.MorningFood && <span className="error">{errors.MorningFood}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="EveningFood">संध्याकाळचे खाद्य (किलो)</label>
-                  <input type="number" step="0.1" name="EveningFood" value={formData.EveningFood} onChange={handleChange} />
+                  <input type="text" name="EveningFood" value={formData.EveningFood} onChange={handleChange} />
                   {errors.EveningFood && <span className="error">{errors.EveningFood}</span>}
                 </div>
               </div>
