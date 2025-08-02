@@ -78,6 +78,21 @@ export const routes = [
       },
       {
         exact: 'true',
+        path: '/attendance',
+        element: lazy(() => import('./views/Employee Master/Attendance/EmployeeAttendance'))
+      },
+      {
+        exact: 'true',
+        path: '/leave',
+        element: lazy(() => import('./views/Employee Master/Leave/EmployeeLeave'))
+      },
+      {
+        exact: 'true',
+        path: '/editattendance/:id',
+        element: lazy(() => import('./views/Employee Master/Attendance/EditAttendance'))
+      },
+      {
+        exact: 'true',
         path: '/editemp/:id',
         element: lazy(() => import('./views/Employee Master/Register/EditEmp'))
       },
@@ -239,6 +254,21 @@ export const routes = [
         exact: 'true',
         path: '/reports/expenses',
         element: lazy(() => import('./views/Reports/Expenses/Expenses'))
+      },
+      {
+        exact: 'true',
+        path: '/reports/attendance',
+        element: lazy(() => import('./views/Reports/Employee Attendance/AttendanceReport'))
+      },
+      {
+        exact: 'true',
+        path: '/reports/leave',
+        element: lazy(() => import('./views/Reports/Employee Leave/LeaveReport'))
+      },
+      {
+        exact: 'true',
+        path: '/reports/combined',
+        element: lazy(() => import('./views/Reports/Combined Employee/CombinedEmployeeReport'))
       },
       // {
       //   exact: 'true',

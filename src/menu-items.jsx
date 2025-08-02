@@ -29,6 +29,20 @@ const menuItems = {
           url: '/empmaster'
         },
         {
+          id: 'attendance',
+          title: 'कर्मचारी उपस्थिती',
+          type: 'item',
+          icon: 'fa-solid fa-clock',
+          url: '/attendance'
+        },
+        {
+          id: 'leave',
+          title: 'कर्मचारी रजा',
+          type: 'item',
+          icon: 'fa-solid fa-calendar-times',
+          url: '/leave'
+        },
+        {
           id: 'donvotee',
           title: 'देणगीदार',
           type: 'item',
@@ -191,6 +205,24 @@ const menuItems = {
               title: 'खर्च अहवाल',
               type: 'item',
               url: '/reports/expenses'
+            },
+            {
+              id: 'attendancereport',
+              title: 'कर्मचारी उपस्थिती अहवाल',
+              type: 'item',
+              url: '/reports/attendance'
+            },
+            {
+              id: 'leavereport',
+              title: 'कर्मचारी रजा अहवाल',
+              type: 'item',
+              url: '/reports/leave'
+            },
+            {
+              id: 'combinedreport',
+              title: 'एकत्रित कर्मचारी अहवाल',
+              type: 'item',
+              url: '/reports/combined'
             }
           ]
         }
