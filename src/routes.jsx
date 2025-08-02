@@ -86,11 +86,11 @@ export const routes = [
         path: '/leave',
         element: lazy(() => import('./views/Employee Master/Leave/EmployeeLeave'))
       },
-      {
-        exact: 'true',
-        path: '/editattendance/:id',
-        element: lazy(() => import('./views/Employee Master/Attendance/EditAttendance'))
-      },
+      // {
+      //   exact: 'true',
+      //   path: '/editattendance/:id',
+      //   element: lazy(() => import('./views/Employee Master/Attendance/EditAttendance'))
+      // },
       {
         exact: 'true',
         path: '/editemp/:id',

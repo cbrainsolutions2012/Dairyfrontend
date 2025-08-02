@@ -6,7 +6,6 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../common.scss';
-import '../../../assets/fonts/enhanced-devanagari.css';
 
 function CombinedEmployeeReport() {
   const tableRef = useRef(null);
