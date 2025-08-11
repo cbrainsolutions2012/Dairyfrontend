@@ -106,6 +106,11 @@ export const routes = [
         path: '/editdevotee/:id',
         element: lazy(() => import('./views/Employee Master/devotee/editDevotee'))
       },
+      {
+        exact: 'true',
+        path: '/stock',
+        element: lazy(() => import('./views/Employee Master/stock/StockManagement'))
+      },
 
       {
         exact: 'true',

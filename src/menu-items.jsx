@@ -50,6 +50,13 @@ const menuItems = {
           url: '/devotee'
         },
         {
+          id: 'stock',
+          title: 'स्टॉक व्यवस्थापन',
+          type: 'item',
+          icon: 'fa-solid fa-warehouse',
+          url: '/stock'
+        },
+        {
           id: 'dengipawti',
           title: 'देणगी पावती',
           type: 'item',
