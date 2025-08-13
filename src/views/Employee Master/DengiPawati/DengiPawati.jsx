@@ -192,7 +192,8 @@ function DengiPawati() {
           City: devotee.City,
           Address: devotee.Address,
           EmailId: devotee.EmailId,
-          DOB: devotee.DOB ? new Date(devotee.DOB).toISOString().split('T')[0] : ''
+          DOB: devotee.DOB ? new Date(devotee.DOB).toISOString().split('T')[0] : '',
+          SevaFor: devotee.FullName
         });
         setDevoteeFound(true);
         alert('Devotee found! Form populated with existing data.');
@@ -636,7 +637,8 @@ function DengiPawati() {
         ChequeNo: receipt.ChequeNo || '',
         DDNo: receipt.DDNo || '',
         TransactionId: receipt.TransactionId || '',
-        Note: receipt.Note || ''
+        Note: receipt.Note || '',
+        Address: receipt.Address || ''
       };
 
       // Call your PDF WhatsApp API

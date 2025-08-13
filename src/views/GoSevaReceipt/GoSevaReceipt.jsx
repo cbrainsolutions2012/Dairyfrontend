@@ -1199,7 +1199,8 @@ function GoSevaReceipt() {
           BankName: receipt.BankName || 'N/A',
           Note: receipt.Note || 'N/A',
           TransactionId: receipt.TransactionId || 'N/A',
-          Date: receipt.Date
+          Date: receipt.Date,
+          DengidarAddress: receipt.DengidarAddress || 'N/A'
         }
       };
 

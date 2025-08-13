@@ -355,7 +355,7 @@ function StockManagement() {
                 <div className="form-group">
                   <label htmlFor="Quantity">प्रमाण *</label>
                   <input
-                    type="number"
+                    type="text"
                     name="Quantity"
                     value={formData.Quantity}
                     onChange={handleChange}
