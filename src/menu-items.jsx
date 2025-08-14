@@ -124,6 +124,14 @@ const menuItems = {
           url: '/cowprescription'
         },
 
+        {
+          id: 'milkdistribution',
+          title: 'दूध वितरण',
+          type: 'item',
+          icon: 'fa-solid fa-glass-water',
+          url: '/milkdistribution'
+        },
+
         // {
         //   id: 'counterMaster',
         //   title: 'काउंटर नोंदणी',

@@ -179,6 +179,11 @@ export const routes = [
         path: '/cowprescription',
         element: lazy(() => import('./views/CowPrescription/CowPrescription.jsx'))
       },
+      {
+        exact: 'true',
+        path: '/milkdistribution',
+        element: lazy(() => import('./views/MilkDistribution/MilkDistribution'))
+      },
 
       {
         exact: 'true',
