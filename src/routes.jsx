@@ -184,6 +184,16 @@ export const routes = [
         path: '/milkdistribution',
         element: lazy(() => import('./views/MilkDistribution/MilkDistribution'))
       },
+      {
+        exact: 'true',
+        path: '/dairypayment',
+        element: lazy(() => import('./views/DairyPayment/DairyPayment'))
+      },
+      {
+        exact: 'true',
+        path: '/directdengidarreceipt',
+        element: lazy(() => import('./views/DirectDengidarReceipt/DirectDengidarReceipt'))
+      },
 
       {
         exact: 'true',
@@ -279,6 +289,16 @@ export const routes = [
         exact: 'true',
         path: '/reports/combined',
         element: lazy(() => import('./views/Reports/Combined Employee/CombinedEmployeeReport'))
+      },
+      {
+        exact: 'true',
+        path: '/reports/dairypayment',
+        element: lazy(() => import('./views/Reports/DairyPayment/DairyPayment'))
+      },
+      {
+        exact: 'true',
+        path: '/reports/milkdistribution',
+        element: lazy(() => import('./views/Reports/MilkDistribution/MilkDistribution'))
       },
       // {
       //   exact: 'true',

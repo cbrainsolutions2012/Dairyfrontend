@@ -132,6 +132,22 @@ const menuItems = {
           url: '/milkdistribution'
         },
 
+        {
+          id: 'dairypayment',
+          title: 'डेअरी पेमेंट',
+          type: 'item',
+          icon: 'fa-solid fa-money-bill-wave',
+          url: '/dairypayment'
+        },
+
+        {
+          id: 'directdengidarreceipt',
+          title: 'प्रत्यक्ष देणगीदार रसीद',
+          type: 'item',
+          icon: 'fa-solid fa-receipt',
+          url: '/directdengidarreceipt'
+        },
+
         // {
         //   id: 'counterMaster',
         //   title: 'काउंटर नोंदणी',
@@ -238,6 +254,20 @@ const menuItems = {
               title: 'एकत्रित कर्मचारी अहवाल',
               type: 'item',
               url: '/reports/combined'
+            },
+            {
+              id: 'dairypaymentreport',
+              title: 'डेअरी पेमेंट अहवाल',
+              type: 'item',
+              icon: 'fa fa-file-text-o',
+              url: '/reports/dairypayment'
+            },
+            {
+              id: 'milkdistributionreport',
+              title: 'दूध वितरण अहवाल',
+              type: 'item',
+              icon: 'fa fa-file-text-o',
+              url: '/reports/milkdistribution'
             }
           ]
         }
