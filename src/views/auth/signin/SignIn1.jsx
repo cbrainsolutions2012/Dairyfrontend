@@ -39,9 +39,9 @@ const Signin1 = () => {
             style={{ flex: 1, minWidth: 200, minHeight: 520, padding: 40 }}
           >
             <div className="w-100 text-center" style={{ maxWidth: 300, margin: '0 auto' }}>
-              <h3 className="mb-4 fw-bold" style={{ letterSpacing: 1 }}>
+              {/* <h3 className="mb-4 fw-bold" style={{ letterSpacing: 1 }}>
                 Admin
-              </h3>
+              </h3> */}
               <AuthLogin />
               <h5>
                 <b>Developed by Agastya Techasyst India PVT LTD</b>
