@@ -290,7 +290,7 @@ const DashAnalytics = () => {
           <Link to={'/sellers'}>
             <OrderCard
               params={{
-                title: 'देणगीदार',
+                title: 'विक्रेता',
                 class: 'bg-c-green',
                 icon: 'fa-solid fa-hand-holding-dollar',
                 primaryText: dashboardData?.totalSellers || '0'
