@@ -21,83 +21,83 @@ const DashAnalytics = () => {
   // const [tableData, setTableData] = useState([]);
   const [dashboardData, setDashboardData] = useState({});
 
-  const [reminderData, setReminderData] = useState([]);
-  const [sendingWhatsApp, setSendingWhatsApp] = useState(null);
+  // const [reminderData, setReminderData] = useState([]);
+  // const [sendingWhatsApp, setSendingWhatsApp] = useState(null);
 
-  const [birthdayData, setBirthdayData] = useState([]);
-  const [sendingBirthdayWhatsApp, setSendingBirthdayWhatsApp] = useState(null);
+  // const [birthdayData, setBirthdayData] = useState([]);
+  // const [sendingBirthdayWhatsApp, setSendingBirthdayWhatsApp] = useState(null);
 
-  const fetchBirthdayData = async () => {
-    try {
-      const res = await axios.get('https://api.mytemplesoftware.in/api/dengidar/birthdays/today', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res.data.success) {
-        setBirthdayData(res.data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching birthday data:', error);
-    }
-  };
-  useEffect(() => {
-    fetchBirthdayData();
-  }, []);
+  // const fetchBirthdayData = async () => {
+  //   try {
+  //     const res = await axios.get('https://api.mytemplesoftware.in/api/dengidar/birthdays/today', {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     if (res.data.success) {
+  //       setBirthdayData(res.data.data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching birthday data:', error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchBirthdayData();
+  // }, []);
 
-  const handleBirthdaySendWhatsapp = async (receipt) => {
-    setSendingBirthdayWhatsApp(receipt.Id);
-    let number = receipt.MobileNumber;
-    if (!number) {
-      alert('No WhatsApp number found for this donor.');
-      return;
-    }
-    number = '91' + number;
-    const payload = {
-      number,
-      name: receipt.FullName || 'N/A'
-    };
-    try {
-      const res = await axios.post('https://api.mytemplesoftware.in/api/dengidar/birthdays/send-whatsapp', payload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res.data.success) {
-        alert('WhatsApp message sent successfully!');
-      } else {
-        alert('Failed to send WhatsApp message.');
-      }
-    } catch (error) {
-      console.error('Error sending WhatsApp:', error);
-      alert('Error sending WhatsApp message.');
-    } finally {
-      setSendingBirthdayWhatsApp(null);
-    }
-  };
+  // const handleBirthdaySendWhatsapp = async (receipt) => {
+  //   setSendingBirthdayWhatsApp(receipt.Id);
+  //   let number = receipt.MobileNumber;
+  //   if (!number) {
+  //     alert('No WhatsApp number found for this donor.');
+  //     return;
+  //   }
+  //   number = '91' + number;
+  //   const payload = {
+  //     number,
+  //     name: receipt.FullName || 'N/A'
+  //   };
+  //   try {
+  //     const res = await axios.post('https://api.mytemplesoftware.in/api/dengidar/birthdays/send-whatsapp', payload, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     if (res.data.success) {
+  //       alert('WhatsApp message sent successfully!');
+  //     } else {
+  //       alert('Failed to send WhatsApp message.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error sending WhatsApp:', error);
+  //     alert('Error sending WhatsApp message.');
+  //   } finally {
+  //     setSendingBirthdayWhatsApp(null);
+  //   }
+  // };
 
-  const fetchReminders = async () => {
-    try {
-      const res = await axios.get('https://api.mytemplesoftware.in/api/goseva/reminder?days=7', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res.data.success) {
-        setReminderData(res.data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching reminders:', error);
-      setReminderData([]);
-    }
-  };
+  // const fetchReminders = async () => {
+  //   try {
+  //     const res = await axios.get('https://api.mytemplesoftware.in/api/goseva/reminder?days=7', {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     if (res.data.success) {
+  //       setReminderData(res.data.data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching reminders:', error);
+  //     setReminderData([]);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchReminders();
-  }, []);
+  // useEffect(() => {
+  //   fetchReminders();
+  // }, []);
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -114,49 +114,49 @@ const DashAnalytics = () => {
   //     console.log(error);
   //   }
   // };
-  const handleSendWhatsapp = async (receipt) => {
-    setSendingWhatsApp(receipt.Id);
-    let number = receipt.DengidarPhone || receipt.MobileNumber;
-    if (!number) {
-      alert('No WhatsApp number found for this donor.');
-      return;
-    }
-    number = '91' + number;
-    const date = receipt.EndDate ? new Date(receipt.EndDate).toISOString().split('T')[0] : '';
-    const payload = {
-      number,
-      receipt: {
-        DonarName: receipt.DonarName,
-        Amount: receipt.Amount,
-        DurationMonths: receipt.DurationMonths,
-        StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : '',
-        EndDate: date,
-        PaymentType: receipt.PaymentType
-      }
-    };
-    try {
-      const res = await axios.post('https://api.mytemplesoftware.in/api/goseva/send-expiry-reminder-whatsapp', payload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res.data.success) {
-        alert('WhatsApp message sent successfully!');
-      } else {
-        alert('Failed to send WhatsApp message.');
-      }
-    } catch (error) {
-      console.error('Error sending WhatsApp:', error);
-      alert('Error sending WhatsApp message.');
-    } finally {
-      setSendingWhatsApp(null);
-    }
-  };
+  // const handleSendWhatsapp = async (receipt) => {
+  //   setSendingWhatsApp(receipt.Id);
+  //   let number = receipt.DengidarPhone || receipt.MobileNumber;
+  //   if (!number) {
+  //     alert('No WhatsApp number found for this donor.');
+  //     return;
+  //   }
+  //   number = '91' + number;
+  //   const date = receipt.EndDate ? new Date(receipt.EndDate).toISOString().split('T')[0] : '';
+  //   const payload = {
+  //     number,
+  //     receipt: {
+  //       DonarName: receipt.DonarName,
+  //       Amount: receipt.Amount,
+  //       DurationMonths: receipt.DurationMonths,
+  //       StartDate: receipt.StartDate ? new Date(receipt.StartDate).toISOString().split('T')[0] : '',
+  //       EndDate: date,
+  //       PaymentType: receipt.PaymentType
+  //     }
+  //   };
+  //   try {
+  //     const res = await axios.post('https://api.mytemplesoftware.in/api/goseva/send-expiry-reminder-whatsapp', payload, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     if (res.data.success) {
+  //       alert('WhatsApp message sent successfully!');
+  //     } else {
+  //       alert('Failed to send WhatsApp message.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error sending WhatsApp:', error);
+  //     alert('Error sending WhatsApp message.');
+  //   } finally {
+  //     setSendingWhatsApp(null);
+  //   }
+  // };
 
   const fetchDashboardData = async () => {
     try {
-      const res = await axios.get('https://api.mytemplesoftware.in/api/auth/dashboard-stats', {
+      const res = await axios.get('https://dairyapi.demotest.in.net/api/dashboard/summary', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -274,26 +274,26 @@ const DashAnalytics = () => {
         {/* order cards */}
 
         <Col md={6} xl={3}>
-          <Link to={'/empmaster'}>
+          <Link to={'/buyers'}>
             <OrderCard
               params={{
-                title: 'कर्मचारी',
+                title: 'खरेदीदार',
                 class: 'bg-c-blue',
                 icon: 'fa-solid fa-user-tie',
-                primaryText: dashboardData?.totalEmployees || '0'
+                primaryText: dashboardData?.totalBuyers || '0'
               }}
             />
           </Link>
         </Col>
 
         <Col md={6} xl={3}>
-          <Link to={'/devotee'}>
+          <Link to={'/sellers'}>
             <OrderCard
               params={{
                 title: 'देणगीदार',
                 class: 'bg-c-green',
                 icon: 'fa-solid fa-hand-holding-dollar',
-                primaryText: dashboardData?.totalDengidar || '0'
+                primaryText: dashboardData?.totalSellers || '0'
                 // secondaryText: 'This Month',
                 // extraText: '213'
               }}
@@ -329,19 +329,17 @@ const DashAnalytics = () => {
         </Col>
 
         <Col md={6} xl={3}>
-          <Link to={'/pooja'}>
-            <OrderCard
-              params={{
-                title: 'सेवेचे प्रकार',
-                class: 'bg-c-purple',
-                icon: 'fa-solid fa-hands-praying',
-                primaryText: dashboardData?.totalSevaTypes || '0'
-              }}
-            />
-          </Link>
+          <OrderCard
+            params={{
+              title: 'नफा',
+              class: 'bg-c-purple',
+              icon: 'fa-solid fa-hands-praying',
+              primaryText: dashboardData?.thisMonthProfit || '0'
+            }}
+          />
         </Col>
 
-        <Col md={6} xl={3}>
+        {/*<Col md={6} xl={3}>
           <Link to={'/gotra'}>
             <OrderCard
               params={{
@@ -384,10 +382,10 @@ const DashAnalytics = () => {
               }}
             />
           </Link>
-        </Col>
+        </Col> */}
 
         {/* Employee Master Table */}
-        <Col sm={12}>
+        {/* <Col sm={12}>
           <Card>
             <Card.Header>
               <Row>
@@ -521,7 +519,7 @@ const DashAnalytics = () => {
               </div>
             </Card.Body>
           </Card>
-        </Col>
+        </Col> */}
 
         {/* <Col md={12} xl={6}>
           <Card>

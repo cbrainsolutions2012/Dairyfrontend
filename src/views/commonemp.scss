@@ -1,50 +1,94 @@
+// Enhanced Mobile-First Responsive Design for Dairy Management
 .register-form {
   max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
+  margin: 20px auto;
+  padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #f9f9f9;
 
   .form-row {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
 
     .form-group {
       flex: 1;
-      margin: 10px;
+      min-width: 250px;
 
       label {
         display: block;
         margin-bottom: 5px;
-        font-weight: bold;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
       }
 
       input,
       textarea,
       select {
         width: 100%;
-        padding: 8px;
+        padding: 12px;
         margin-bottom: 5px;
         border: 1px solid #ccc;
-        border-radius: 3px;
+        border-radius: 6px;
+        font-size: 16px; // Prevents zoom on mobile
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        &:disabled {
+          background-color: #e9ecef;
+          cursor: not-allowed;
+        }
+      }
+
+      // Total amount preview styling
+      .total-amount-preview {
+        padding: 12px;
+        background: #e8f5e8;
+        border: 2px solid #28a745;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #155724;
+        text-align: center;
+        margin-top: 5px;
+      }
+
+      // Special styling for mobile-friendly dropdowns
+      select {
+        background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 12px;
+        appearance: none;
       }
 
       .error {
-        color: red;
+        color: #dc3545;
         font-size: 0.875em;
+        margin-top: 2px;
+        display: block;
       }
     }
   }
 
   .fetch-btn {
-    padding: 8px 16px;
+    padding: 10px 16px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
+    min-height: 44px; // Mobile touch target
+    transition: background-color 0.3s ease;
 
     &:hover {
       background-color: #0056b3;
@@ -58,103 +102,522 @@
 
   .form-actions {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      min-height: 44px; // Mobile touch target
+      flex: 1;
+      min-width: 120px;
+      transition: all 0.3s ease;
 
       &:first-of-type {
         background-color: #28a745;
         color: white;
+
+        &:hover {
+          background-color: #218838;
+        }
       }
 
       &:last-of-type {
-        background-color: #dc3545;
+        background-color: #6c757d;
         color: white;
+
+        &:hover {
+          background-color: #5a6268;
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
       }
     }
   }
 }
 
-// Media queries for responsiveness
-@media (max-width: 1200px) {
-  .form-row {
-    flex-direction: row;
+// Mobile Table Enhancements
+.table-responsive {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    .form-group {
-      flex: 1 1 45%;
-      margin: 10px;
+  .table {
+    margin-bottom: 0;
+
+    th,
+    td {
+      padding: 12px 8px;
+      vertical-align: middle;
+      border-color: #dee2e6;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      min-height: 32px;
+      margin: 2px;
     }
   }
 }
 
-@media (max-width: 992px) {
-  .form-row {
-    flex-direction: row;
+// Search and Filter Bar
+.search-filter-bar {
+  .form-control {
+    font-size: 16px; // Prevents zoom on mobile
+    padding: 12px;
+    border-radius: 6px;
+  }
 
-    .form-group {
-      flex: 1 1 45%;
-      margin: 10px;
-    }
+  .btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 }
 
+// Pagination Mobile Friendly
+.pagination-controls {
+  .btn {
+    min-height: 40px;
+    min-width: 40px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+// Mobile-specific media queries
 @media (max-width: 768px) {
-  .form-row {
-    flex-direction: column;
+  .register-form {
+    margin: 10px;
+    padding: 15px;
 
-    .form-group {
-      margin: 10px 0;
+    .form-row {
+      flex-direction: column;
+      gap: 10px;
+
+      .form-group {
+        min-width: 100%;
+        margin: 0;
+      }
+    }
+
+    .form-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+        margin: 5px 0;
+        min-height: 48px; // Larger touch target on mobile
+      }
     }
   }
 
-  .form-actions {
-    flex-direction: column;
+  // Hide some table columns on mobile
+  .table-responsive {
+    font-size: 12px;
 
-    button {
-      width: 100%;
-      margin: 5px 0;
+    .table {
+      th:nth-child(n + 6),
+      td:nth-child(n + 6) {
+        display: none;
+      }
+
+      .btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        min-height: 28px;
+      }
     }
+  }
+
+  // Stack export buttons vertically on mobile
+  .export-buttons {
+    flex-direction: column !important;
+
+    .btn {
+      margin: 2px 0 !important;
+      width: 100%;
+    }
+  }
+
+  // Mobile search bar
+  .search-filter-bar {
+    flex-direction: column !important;
+    gap: 10px;
+
+    .form-control {
+      margin: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .btn {
+      width: 100%;
+      margin: 0 !important;
+    }
+  }
+
+  // Mobile pagination
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center !important;
+
+    .btn {
+      margin: 2px;
+      min-width: 36px;
+      padding: 6px 10px;
+    }
+  }
+
+  .pagination-info {
+    text-align: center;
+    margin-bottom: 10px;
   }
 }
 
 @media (max-width: 576px) {
-  .form-row {
-    flex-direction: column;
+  .register-form {
+    margin: 5px;
+    padding: 10px;
 
-    .form-group {
-      margin: 10px 0;
+    .form-row {
+      gap: 8px;
+    }
+
+    .form-actions {
+      button {
+        min-height: 50px; // Even larger touch targets
+        font-size: 18px;
+      }
     }
   }
 
-  .form-actions {
-    flex-direction: column;
+  // Very small screens - hide more columns
+  .table-responsive {
+    .table {
+      th:nth-child(n + 4),
+      td:nth-child(n + 4) {
+        display: none;
+      }
+    }
+  }
 
-    button {
-      width: 100%;
-      margin: 5px 0;
+  // Stack header elements
+  .card-header {
+    .row {
+      flex-direction: column !important;
+
+      .col-md-4,
+      .col-md-8 {
+        width: 100% !important;
+        margin-bottom: 10px;
+      }
     }
   }
 }
-@media (max-width: 320px) {
-  .form-row {
-    flex-direction: column;
 
-    .form-group {
-      margin: 10px 0;
+@media (max-width: 480px) {
+  .register-form {
+    margin: 2px;
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  // Ultra-minimal table for very small screens
+  .table-responsive {
+    .table {
+      th:nth-child(n + 3),
+      td:nth-child(n + 3) {
+        display: none;
+      }
+
+      th,
+      td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Special mobile card layout for very small screens
+@media (max-width: 400px) {
+  .mobile-card-view {
+    .table-responsive {
+      display: none;
     }
   }
 
-  .form-actions {
-    flex-direction: column;
+  .mobile-card-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    button {
-      width: 100%;
-      margin: 5px 0;
+    .card-header {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .card-body {
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+
+        .label {
+          font-weight: 500;
+          color: #6c757d;
+        }
+
+        .value {
+          color: #495057;
+        }
+      }
+    }
+
+    .card-actions {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #dee2e6;
+
+      .btn {
+        min-height: 40px;
+        margin: 2px;
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Mobile Cards Container and Individual Cards
+.mobile-cards-container {
+  padding: 15px;
+
+  .mobile-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .mobile-card-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .mobile-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #495057;
+        margin: 0;
+      }
+
+      .mobile-card-number {
+        background: #007bff;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+    }
+
+    .mobile-card-body {
+      padding: 15px;
+
+      .mobile-info-group {
+        margin-bottom: 12px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .mobile-info-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px solid #f1f3f4;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .mobile-info-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6c757d;
+            flex: 0 0 auto;
+            min-width: 80px;
+          }
+
+          .mobile-info-value {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+
+            &.highlight {
+              color: #007bff;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+
+    .mobile-card-actions {
+      padding: 15px;
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+      display: flex;
+      gap: 10px;
+
+      .mobile-action-btn {
+        flex: 1;
+        min-height: 44px;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+
+// Empty State Styles
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .empty-state-message {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #495057;
+  }
+
+  .empty-state-suggestion {
+    font-size: 14px;
+    color: #6c757d;
+  }
+}
+
+// Responsive Pagination Wrapper
+.pagination-wrapper {
+  padding: 20px;
+  border-top: 1px solid #dee2e6;
+  background: #f8f9fa;
+
+  .pagination-info {
+    text-align: center;
+    margin-bottom: 15px;
+
+    @media (min-width: 576px) {
+      text-align: left;
+      margin-bottom: 0;
+    }
+  }
+
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .pagination-btn {
+      min-height: 44px;
+      min-width: 80px;
+      font-weight: 500;
+
+      @media (max-width: 575px) {
+        min-width: 60px;
+        padding: 8px 12px;
+      }
+    }
+
+    .pagination-numbers {
+      display: flex;
+      gap: 4px;
+
+      .pagination-number {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Responsive breakpoint adjustments
+@media (min-width: 992px) {
+  .pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .pagination-info {
+      margin-bottom: 0;
     }
   }
 }

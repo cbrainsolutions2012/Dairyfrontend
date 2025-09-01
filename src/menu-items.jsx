@@ -22,361 +22,88 @@ const menuItems = {
       icon: 'icon-ui',
       children: [
         {
-          id: 'component',
-          title: 'नवीन कर्मचारी',
+          id: 'buyers',
+          title: 'Buyers',
           type: 'item',
-          icon: 'fa-solid fa-users',
-          url: '/empmaster'
+          icon: 'feather icon-users',
+          url: '/buyers'
         },
         {
-          id: 'attendance',
-          title: 'कर्मचारी उपस्थिती',
+          id: 'sellers',
+          title: 'Sellers',
           type: 'item',
-          icon: 'fa-solid fa-clock',
-          url: '/attendance'
+          icon: 'feather icon-users',
+          url: '/sellers'
         },
         {
-          id: 'leave',
-          title: 'कर्मचारी रजा',
+          id: 'milkstore',
+          title: 'Milk Store',
           type: 'item',
-          icon: 'fa-solid fa-calendar-times',
-          url: '/leave'
+          icon: 'feather icon-box',
+          url: '/milkstore'
         },
-        {
-          id: 'donvotee',
-          title: 'देणगीदार',
-          type: 'item',
-          icon: 'fa-solid fa-hand-holding-dollar',
-          url: '/devotee'
-        },
-        {
-          id: 'stock',
-          title: 'स्टॉक व्यवस्थापन',
-          type: 'item',
-          icon: 'fa-solid fa-warehouse',
-          url: '/stock'
-        },
-        {
-          id: 'dengipawti',
-          title: 'देणगी पावती',
-          type: 'item',
-          icon: 'fa-solid fa-hand-holding-dollar',
-          url: '/dengipawti'
-        },
-        // {
-        //   id: 'whatsappinstance',
-        //   title: 'व्हाट्सअॅप इन्स्टन्स',
-        //   type: 'item',
-        //   icon: 'fa-solid fa-hand-holding-dollar',
-        //   url: '/whatsappinstance'
-        // },
-
-        {
-          id: 'gosevareceipt',
-          title: 'गोसेवा पावती',
-          type: 'item',
-          icon: 'fa-solid fa-hand-holding-dollar',
-          url: '/gosevareceipt'
-        },
-        {
-          id: 'pooja',
-          title: 'सेवेचे प्रकार',
-          type: 'item',
-          icon: 'fa-solid fa-hands-praying',
-          url: '/pooja'
-        },
-        {
-          id: 'gotra',
-          title: 'गोत्र',
-          type: 'item',
-          icon: 'fa-solid fa-people-roof',
-          url: '/gotra'
-        },
-        {
-          id: 'temple',
-          title: 'मंदिर नोंदणी',
-          type: 'item',
-          icon: 'fa-solid fa-gopuram',
-          url: '/templereg'
-        },
-
-        {
-          id: 'cowregister',
-          title: 'गाय नोंदणी',
-          type: 'item',
-          icon: 'fa-solid fa-gopuram',
-          url: '/cowregister'
-        },
-
-        {
-          id: 'cowmanagement',
-          title: 'गाय व्यवस्थापन',
-          type: 'item',
-          icon: 'fa-solid fa-gopuram',
-          url: '/cowmanagement'
-        },
-
-        {
-          id: 'cowprescription',
-          title: 'गाय पर्ची',
-          type: 'item',
-          icon: 'fa-solid fa-gopuram',
-          url: '/cowprescription'
-        },
-
         {
           id: 'milkdistribution',
-          title: 'दूध वितरण',
+          title: 'Milk Distribution',
           type: 'item',
-          icon: 'fa-solid fa-glass-water',
+          icon: 'feather icon-box',
           url: '/milkdistribution'
         },
-
         {
-          id: 'dairypayment',
-          title: 'डेअरी पेमेंट',
+          id: 'buyers-payment',
+          title: 'Buyers Payment',
           type: 'item',
-          icon: 'fa-solid fa-money-bill-wave',
-          url: '/dairypayment'
+          icon: 'feather icon-credit-card',
+          url: '/buyers-payment'
         },
-
         {
-          id: 'directdengidarreceipt',
-          title: 'प्रत्यक्ष देणगीदार रसीद',
+          id: 'sellers-payment',
+          title: 'Sellers Payment',
           type: 'item',
-          icon: 'fa-solid fa-receipt',
-          url: '/directdengidarreceipt'
-        },
-
-        // {
-        //   id: 'counterMaster',
-        //   title: 'काउंटर नोंदणी',
-        //   type: 'item',
-        //   icon: 'fa-solid fa-circle-dollar-to-slot',
-        //   url: '/countermaster'
-        // },
-        // {
-        //   id: 'counterType',
-        //   title: 'काउंटर प्रकार',
-        //   type: 'item',
-        //   icon: 'fa-solid fa-circle-dollar-to-slot',
-        //   url: '/countertype'
-        // },
-        {
-          id: 'cashbook',
-          title: 'रोख नोंदवही',
-          type: 'item',
-          icon: 'fa-solid fa-file-invoice',
-          url: '/cashbook'
+          icon: 'feather icon-credit-card',
+          url: '/sellers-payment'
         },
         {
           id: 'income',
-          title: 'उत्पन्न',
+          title: 'Income',
           type: 'item',
-          icon: 'fa-solid fa-file-invoice',
+          icon: 'feather icon-credit-card',
           url: '/income'
         },
         {
           id: 'expenses',
-          title: 'खर्च',
+          title: 'Expenses',
           type: 'item',
-          icon: 'fa-solid fa-file-invoice',
+          icon: 'feather icon-credit-card',
           url: '/expenses'
-        },
-        {
-          id: 'reports',
-          title: 'अहवाल',
-          type: 'collapse',
-          icon: 'fa-solid fa-flag',
-          children: [
-            // {
-            //   id: 'totalEmp',
-            //   title: 'एकूण कर्मचारी',
-            //   type: 'item',
-            //   url: '/reports/totalemp'
-            // },
-            // {
-            //   id: 'totalDonar',
-            //   title: 'एकूण दाता',
-            //   type: 'item',
-            //   url: '/reports/totaldonar'
-            // },
-            {
-              id: 'totalDevotee',
-              title: 'देणगीदार',
-              type: 'item',
-              url: '/reports/totaldevotee'
-            },
-            {
-              id: 'totalDevotee',
-              title: 'देणगीदार पावती',
-              type: 'item',
-              url: '/reports/totaldevoteepawti'
-            },
-            // {
-            //   id: 'dailytran',
-            //   title: 'दैनंदिन व्यवहार',
-            //   type: 'item',
-            //   url: '/reports/dailytran'
-            // },
-            {
-              id: 'gosevareceiptpawti',
-              title: 'गोसेवा पावती',
-              type: 'item',
-              url: '/reports/totalgosevareceiptpawti'
-            },
-            {
-              id: 'reportsincome',
-              title: 'उत्पन्न अहवाल',
-              type: 'item',
-              url: '/reports/income'
-            },
-            {
-              id: 'reportsexpenses',
-              title: 'खर्च अहवाल',
-              type: 'item',
-              url: '/reports/expenses'
-            },
-            {
-              id: 'attendancereport',
-              title: 'कर्मचारी उपस्थिती अहवाल',
-              type: 'item',
-              url: '/reports/attendance'
-            },
-            {
-              id: 'leavereport',
-              title: 'कर्मचारी रजा अहवाल',
-              type: 'item',
-              url: '/reports/leave'
-            },
-            {
-              id: 'combinedreport',
-              title: 'एकत्रित कर्मचारी अहवाल',
-              type: 'item',
-              url: '/reports/combined'
-            },
-            {
-              id: 'dairypaymentreport',
-              title: 'डेअरी पेमेंट अहवाल',
-              type: 'item',
-              icon: 'fa fa-file-text-o',
-              url: '/reports/dairypayment'
-            },
-            {
-              id: 'milkdistributionreport',
-              title: 'दूध वितरण अहवाल',
-              type: 'item',
-              icon: 'fa fa-file-text-o',
-              url: '/reports/milkdistribution'
-            }
-          ]
         }
       ]
     }
-
-    // url: '/app/templeMaster',
-    // children: [
+    // Add your new menu groups here as you create new components
+    // Example:
     // {
-    //   id: 'button',
-    //   title: 'Button',
-    //   type: 'item',
-    //   url: '/basic/button'
-    // }
-
-    // {
-    //   id: 'badges',
-    //   title: 'Badges',
-    //   type: 'item',
-    //   url: '/basic/badges'
-    // },
-    // {
-    //   id: 'breadcrumb-pagination',
-    //   title: 'Breadcrumb & Pagination',
-    //   type: 'item',
-    //   url: '/basic/breadcrumb-pagination'
-    // },
-    // {
-    //   id: 'collapse',
-    //   title: 'Collapse',
-    //   type: 'item',
-    //   url: '/basic/collapse'
-    // },
-    // {
-    //   id: 'typography',
-    //   title: 'Typography',
-    //   type: 'item',
-    //   url: '/basic/typography'
-    // },
-    // {
-    //   id: 'tooltip-popovers',
-    //   title: 'Tooltip & Popovers',
-    //   type: 'item',
-    //   url: '/basic/tooltip-popovers'
+    //   id: 'main-modules',
+    //   title: 'Main Modules',
+    //   type: 'group',
+    //   icon: 'icon-ui',
+    //   children: [
+    //     {
+    //       id: 'users',
+    //       title: 'User Management',
+    //       type: 'item',
+    //       icon: 'fa-solid fa-users',
+    //       url: '/users'
+    //     },
+    //     {
+    //       id: 'products',
+    //       title: 'Product Management',
+    //       type: 'item',
+    //       icon: 'fa-solid fa-box',
+    //       url: '/products'
+    //     }
+    //   ]
     // }
   ]
 };
-
-// {
-//   id: 'auth',
-//   title: 'Authentication',
-//   type: 'group',
-//   icon: 'icon-pages',
-//   children: [
-//     {
-//       id: 'sign in',
-//       title: 'Login',
-//       type: 'item',
-//       icon: 'feather icon-lock',
-//       url: '/',
-//       target: true,
-//       breadcrumbs: false
-//     },
-// {
-//   id: 'sign Up',
-//   title: 'Register',
-//   type: 'item',
-//   icon: 'feather icon-log-in',
-//   url: '/auth/signup-1',
-//   target: true,
-//   breadcrumbs: false
-// },
-// {
-//   id: 'reset-pass',
-//   title: 'Change Password',
-//   type: 'item',
-//   icon: 'feather icon-unlock',
-//   url: '/reset-password',
-//   target: true,
-//   breadcrumbs: false
-// }
-//   ]
-// }
-// ]
-// {
-//   id: 'support',
-//   title: 'Support',
-//   type: 'group',
-//   icon: 'icon-support',
-//   children: [
-//     {
-//       id: 'sample-page',
-//       title: 'Sample Page',
-//       type: 'item',
-//       url: '/sample-page',
-//       classes: 'nav-item',
-//       icon: 'feather icon-sidebar'
-//     },
-//     {
-//       id: 'documentation',
-//       title: 'Documentation',
-//       type: 'item',
-//       icon: 'feather icon-help-circle',
-//       classes: 'nav-item',
-//       url: 'https://codedthemes.gitbook.io/gradient-able-react/',
-//       target: true,
-//       external: true
-//     }
-//   ]
-// }
 
 export default menuItems;

@@ -36,11 +36,7 @@ const renderRoutes = (routes = []) => (
 );
 
 export const routes = [
-  // {
-  //   exact: 'true',
-  //   path: '/auth/signup-1',
-  //   element: lazy(() => import('./views/auth/signup/SignUp1'))
-  // },
+  // Authentication routes
   {
     exact: 'true',
     path: '/',
@@ -66,266 +62,47 @@ export const routes = [
         path: '/*',
         element: () => <Navigate to="/dashboard" replace />
       },
-      // {
-      //   exact: 'true',
-      //   path: '/basic/button',
-      //   element: lazy(() => import('./views/ui-elements/BasicButton'))
-      // },
       {
         exact: 'true',
-        path: '/empmaster',
-        element: lazy(() => import('./views/Employee Master/Register/Emp'))
+        path: '/buyers',
+        element: lazy(() => import('./views/Buyers/Buyers'))
       },
       {
         exact: 'true',
-        path: '/attendance',
-        element: lazy(() => import('./views/Employee Master/Attendance/EmployeeAttendance'))
-      },
-      {
-        exact: 'true',
-        path: '/leave',
-        element: lazy(() => import('./views/Employee Master/Leave/EmployeeLeave'))
-      },
-      // {
-      //   exact: 'true',
-      //   path: '/editattendance/:id',
-      //   element: lazy(() => import('./views/Employee Master/Attendance/EditAttendance'))
-      // },
-      {
-        exact: 'true',
-        path: '/editemp/:id',
-        element: lazy(() => import('./views/Employee Master/Register/EditEmp'))
-      },
-      {
-        exact: 'true',
-        path: '/devotee',
-        element: lazy(() => import('./views/Employee Master/devotee/Devotee'))
-      },
-      {
-        exact: 'true',
-        path: '/editdevotee/:id',
-        element: lazy(() => import('./views/Employee Master/devotee/editDevotee'))
-      },
-      {
-        exact: 'true',
-        path: '/stock',
-        element: lazy(() => import('./views/Employee Master/stock/StockManagement'))
-      },
-
-      {
-        exact: 'true',
-        path: '/gosevareceipt',
-        element: lazy(() => import('./views/GoSevaReceipt/GoSevaReceipt'))
-      },
-      {
-        exact: 'true',
-        path: '/editgosevareceipt/:id',
-        element: lazy(() => import('./views//GoSevaReceipt/EditGoSevaReceipt'))
-      },
-      {
-        exact: 'true',
-        path: '/dengipawti',
-        element: lazy(() => import('./views/Employee Master/DengiPawati/DengiPawati'))
-      },
-      {
-        exact: 'true',
-        path: '/whatsappinstance',
-        element: lazy(() => import('./views/WhatsappInstance/WhatsappInstance'))
-      },
-      {
-        exact: 'true',
-        path: '/pooja',
-        element: lazy(() => import('./views/Employee Master/pooja/Pooja'))
-      },
-      {
-        exact: 'true',
-        path: '/editseva/:id',
-        element: lazy(() => import('./views/Employee Master/pooja/editSeva'))
-      },
-      {
-        exact: 'true',
-        path: '/gotra',
-        element: lazy(() => import('./views/Employee Master/gotra/Gotra'))
-      },
-      {
-        exact: 'true',
-        path: '/editgotra/:id',
-        element: lazy(() => import('./views/Employee Master/gotra/editGotra'))
-      },
-      {
-        exact: 'true',
-        path: '/donation',
-        element: lazy(() => import('./views/Employee Master/donation/Donation'))
-      },
-      {
-        exact: 'true',
-        path: '/templereg',
-        element: lazy(() => import('./views/Employee Master/temple profile/TempleProfile'))
-      },
-
-      {
-        exact: 'true',
-        path: '/cowregister',
-        element: lazy(() => import('./views/Cow/Cow'))
-      },
-
-      {
-        exact: 'true',
-        path: '/cowmanagement',
-        element: lazy(() => import('./views/CowManagement/CowManagement'))
-      },
-      {
-        exact: 'true',
-        path: '/cowprescription',
-        element: lazy(() => import('./views/CowPrescription/CowPrescription.jsx'))
-      },
-      {
-        exact: 'true',
-        path: '/milkdistribution',
-        element: lazy(() => import('./views/MilkDistribution/MilkDistribution'))
-      },
-      {
-        exact: 'true',
-        path: '/dairypayment',
-        element: lazy(() => import('./views/DairyPayment/DairyPayment'))
-      },
-      {
-        exact: 'true',
-        path: '/directdengidarreceipt',
-        element: lazy(() => import('./views/DirectDengidarReceipt/DirectDengidarReceipt'))
-      },
-
-      {
-        exact: 'true',
-        path: '/edittemple/:id',
-        element: lazy(() => import('./views/Employee Master/temple profile/EditTemple'))
-      },
-      {
-        exact: 'true',
-        path: '/donar',
-        element: lazy(() => import('./views/Employee Master/donar/Donar'))
-      },
-      {
-        exact: 'true',
-        path: '/countermaster',
-        element: lazy(() => import('./views/Employee Master/counter master/ConterMaster'))
-      },
-      {
-        exact: 'true',
-        path: '/countertype',
-        element: lazy(() => import('./views/Employee Master/CounterType/CounterType'))
-      },
-      {
-        exact: 'true',
-        path: '/cashbook',
-        element: lazy(() => import('./views/Employee Master/cashbook/Cashbook'))
+        path: '/buyers-payment',
+        element: lazy(() => import('./views/Buyers Payment/BuyersPayment'))
       },
       {
         exact: 'true',
         path: '/income',
-        element: lazy(() => import('./views/Employee Master/income form/IncomeForm'))
+        element: lazy(() => import('./views/Income/Income'))
       },
       {
         exact: 'true',
         path: '/expenses',
-        element: lazy(() => import('./views/Employee Master/expenses form/ExpenseForm'))
-      },
-      // {
-      //   exact: 'true',
-      //   path: '/reports/totalemp',
-      //   element: lazy(() => import('./views/Reports/Total Employee/TotalEmployee'))
-      // },
-      // {
-      //   exact: 'true',
-      //   path: '/reports/totaldonar',
-      //   element: lazy(() => import('./views/Reports/Total Donar/TotalDonar'))
-      // },
-      {
-        exact: 'true',
-        path: '/reports/totaldevotee',
-        element: lazy(() => import('./views/Reports/Total Devotee/TotalDevotee'))
+        element: lazy(() => import('./views/Expenses/Expenses'))
       },
       {
         exact: 'true',
-        path: '/reports/totaldevoteepawti',
-        element: lazy(() => import('./views/Reports/DevoteePawati/DevoteePawti'))
+        path: '/milkstore',
+        element: lazy(() => import('./views/Milk Store/MilkStore'))
       },
-      {
-        exact: 'true',
-        path: '/reports/totalgosevareceiptpawti',
-        element: lazy(() => import('./views/Reports/GoSevaReceipt/GoSevaReceipt'))
-      },
-      // {
-      //   exact: 'true',
-      //   path: '/reports/dailytran',
-      //   element: lazy(() => import('./views/Reports/Daily Transaction/DailyTransaction'))
-      // },
-      {
-        exact: 'true',
-        path: '/reports/cashbook',
-        element: lazy(() => import('./views/Reports/Cashbook/Cashbook'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/income',
-        element: lazy(() => import('./views/Reports/Income/Income'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/expenses',
-        element: lazy(() => import('./views/Reports/Expenses/Expenses'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/attendance',
-        element: lazy(() => import('./views/Reports/Employee Attendance/AttendanceReport'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/leave',
-        element: lazy(() => import('./views/Reports/Employee Leave/LeaveReport'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/combined',
-        element: lazy(() => import('./views/Reports/Combined Employee/CombinedEmployeeReport'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/dairypayment',
-        element: lazy(() => import('./views/Reports/DairyPayment/DairyPayment'))
-      },
-      {
-        exact: 'true',
-        path: '/reports/milkdistribution',
-        element: lazy(() => import('./views/Reports/MilkDistribution/MilkDistribution'))
-      },
-      // {
-      //   exact: 'true',
-      //   path: '/basic/breadcrumb-pagination',
-      //   element: lazy(() => import('./views/ui-elements/BasicBreadcrumbPagination'))
-      // },
-      // {
-      //   exact: 'true',
-      //   path: '/basic/collapse',
-      //   element: lazy(() => import('./views/ui-elements/BasicCollapse'))
-      // },
 
-      // {
-      //   exact: 'true',
-      //   path: '/basic/typography',
-      //   element: lazy(() => import('./views/ui-elements/BasicTypography'))
-      // },
-      // {
-      //   exact: 'true',
-      //   path: '/basic/tooltip-popovers',
-      //   element: lazy(() => import('./views/ui-elements/BasicTooltipsPopovers'))
-      // },
-      // {
-      //   exact: 'true',
-      //   path: '/sample-page',
-      //   element: lazy(() => import('./views/extra/SamplePage'))
-      // },
+      {
+        exact: 'true',
+        path: '/milkdistribution',
+        element: lazy(() => import('./views/Milk Distribution/MilkDistribution'))
+      },
+      {
+        exact: 'true',
+        path: '/sellers',
+        element: lazy(() => import('./views/Sellers/Sellers'))
+      },
+      {
+        exact: 'true',
+        path: '/sellers-payment',
+        element: lazy(() => import('./views/Sellers Payment/SellersPayment'))
+      },
       {
         path: '*',
         exact: 'true',

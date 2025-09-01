@@ -14,7 +14,7 @@ import axios from 'axios';
 // ==============================|| RESET PASSWORD 1 ||============================== //
 
 const ResetPassword1 = () => {
-  const [oldPassword, setOldPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,13 +30,12 @@ const ResetPassword1 = () => {
     }
 
     try {
-      const res = await axios.post(
-        'https://api.mytemplesoftware.in/api/auth/change-password',
+      const res = await axios.put(
+        'https://dairyapi.demotest.in.net/api/auth/change-password',
 
         {
-          oldPassword,
-          newPassword,
-          confirmPassword
+          currentPassword,
+          newPassword
         },
         {
           headers: {
@@ -81,8 +80,8 @@ const ResetPassword1 = () => {
                         type="password"
                         className="form-control"
                         placeholder="Old password"
-                        value={oldPassword}
-                        onChange={(e) => setOldPassword(e.target.value)}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
                         required
                       />
                     </div>

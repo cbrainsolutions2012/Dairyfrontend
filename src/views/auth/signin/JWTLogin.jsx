@@ -10,37 +10,55 @@ const JWTLogin = () => {
 
   const handleLogin = async (values, setSubmitting, setErrors) => {
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://dairyapi.demotest.in.net';
+
+      // Try with Content-Type header
       const response = await axios.post(
-        'https://api.mytemplesoftware.in/api/auth/login',
+        `${apiUrl}/api/auth/login`,
         {
-          Username: values.Username,
-          Password: values.Password
+          username: values.username,
+          password: values.password
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
             'Content-Type': 'application/json'
           }
         }
       );
-      // Check if user is admin (handle both boolean false and numeric 0)
-      if (response.data.user.IsAdmin === false || response.data.user.IsAdmin === 0) {
-        setErrors({ submit: 'You are not authorized to access this application.' });
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        return;
-      } else {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
 
+      console.log('Login response:', response.data);
+
+      // Check if login was successful - handle different response structures
+      if (response.data.success || response.data.token || response.status === 200) {
+        // Store token if provided
+        const token = response.data.token || response.data.accessToken || response.data.data?.token;
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+
+        // Store user data if provided
+        if (response.data.user || response.data.data?.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user || response.data.data.user));
+        }
+
+        // Navigate to dashboard
         navigate('/dashboard');
+      } else {
+        setErrors({ submit: response.data.message || 'Login failed' });
       }
     } catch (error) {
+      console.error('Login error:', error);
       if (error.response) {
-        setErrors({ submit: error.response.data.message || 'Something went wrong' });
+        // Server responded with error status
+        console.log('Error response:', error.response.data);
+        const message =
+          error.response.data?.message || error.response.data?.error || `Error ${error.response.status}: ${error.response.statusText}`;
+        setErrors({ submit: message });
       } else if (error.request) {
-        setErrors({ submit: 'No response from server. Please check your network.' });
+        // Request was made but no response received
+        setErrors({ submit: 'No response from server. Please check your network connection.' });
       } else {
+        // Something else happened
         setErrors({ submit: 'Request failed. Please try again.' });
       }
     } finally {
@@ -52,14 +70,14 @@ const JWTLogin = () => {
     <Formik
       initialValues={{
         // role: '', // This is for the select dropdown
-        Username: '',
-        Password: '',
+        username: '',
+        password: '',
         submit: null
       }}
       validationSchema={Yup.object().shape({
         // role: Yup.string().required('Role is required'),
-        Username: Yup.string().max(255).required('Username is required'),
-        Password: Yup.string().max(255).required('Password is required')
+        username: Yup.string().max(255).required('Username is required'),
+        password: Yup.string().max(255).required('Password is required')
       })}
       onSubmit={(values, { setSubmitting, setErrors }) => {
         handleLogin(values, setSubmitting, setErrors);
@@ -76,28 +94,28 @@ const JWTLogin = () => {
             {touched.role && errors.role && <small className="text-danger form-text">{errors.role}</small>}
           </div> */}
           <div className="form-group mb-3">
-            <label htmlFor="Username">Email Address / Username</label>
+            <label htmlFor="username">Email Address / Username</label>
             <input
               className="form-control"
-              name="Username"
+              name="username"
               onBlur={handleBlur}
               onChange={handleChange}
               type="text"
-              value={values.Username}
+              value={values.username}
             />
-            {touched.Username && errors.Username && <small className="text-danger form-text">{errors.Username}</small>}
+            {touched.username && errors.username && <small className="text-danger form-text">{errors.username}</small>}
           </div>
           <div className="form-group mb-4">
-            <label htmlFor="Password">Password</label>
+            <label htmlFor="password">Password</label>
             <input
               className="form-control"
-              name="Password"
+              name="password"
               onBlur={handleBlur}
               onChange={handleChange}
               type="password"
-              value={values.Password}
+              value={values.password}
             />
-            {touched.Password && errors.Password && <small className="text-danger form-text">{errors.Password}</small>}
+            {touched.password && errors.password && <small className="text-danger form-text">{errors.password}</small>}
           </div>
 
           {errors.submit && (
