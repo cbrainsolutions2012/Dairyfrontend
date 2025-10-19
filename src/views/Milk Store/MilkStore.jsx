@@ -450,275 +450,88 @@ function MilkStore() {
         return;
       }
 
-      // Generate receipt number (you can customize this format)
-      const receiptNo = `R${Date.now()}${buyerId}`;
+      // Check if mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      // Create receipt HTML
-      const receiptHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Milk Purchase Receipt</title>
-          <style>
-            body { 
-              font-family: 'Arial', sans-serif; 
-              margin: 30px; 
-              font-size: 14px;
-              color: #333;
-              line-height: 1.5;
-              -webkit-print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-            .receipt-container { 
-              max-width: 480px; 
-              margin: 0 auto; 
-              border-radius: 15px;
-              padding: 30px;
-              background: white;
-              box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-              border: 3px solid #4CAF50;
-            }
-            .header { 
-              text-align: center; 
-              border: 3px solid #4CAF50;
-              color: #2E7D32;
-              border-radius: 10px;
-              padding: 20px; 
-              margin-bottom: 25px; 
-              background-color: #E8F5E9 !important;
-            }
-            .dairy-name { 
-              font-size: 24px; 
-              font-weight: bold; 
-              margin-bottom: 8px; 
-              letter-spacing: 2px;
-              color: #1B5E20 !important;
-            }
-            .address { 
-              font-size: 13px; 
-              color: #388E3C !important; 
-              line-height: 1.4;
-              margin-top: 10px;
-            }
-            .receipt-info { 
-              margin: 25px 0; 
-              font-size: 14px;
-              background-color: #F3E5F5 !important;
-              padding: 20px;
-              border-radius: 10px;
-              border-left: 5px solid #9C27B0;
-            }
-            .info-row { 
-              display: flex; 
-              justify-content: space-between; 
-              margin: 12px 0; 
-              padding: 8px 0;
-              border-bottom: 1px solid #E1BEE7;
-            }
-            .info-row:last-child {
-              border-bottom: none;
-            }
-            .info-left {
-              font-weight: bold;
-              color: #7B1FA2 !important;
-            }
-            .info-right {
-              font-weight: 600;
-              color: #333 !important;
-            }
-            .table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin: 25px 0; 
-              font-size: 14px;
-              border-radius: 10px;
-              overflow: hidden;
-              box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            .table th, .table td { 
-              padding: 12px; 
-              text-align: left; 
-            }
-            .table th { 
-              background-color: #FFE0B2 !important;
-              color: #E65100 !important;
-              font-size: 14px;
-              font-weight: bold;
-              text-align: center;
-              border: 2px solid #FF9800;
-            }
-            .table td { 
-              font-size: 13px; 
-              background: white;
-              border-bottom: 1px solid #e9ecef;
-            }
-            .table tbody tr:hover {
-              background: #f8f9fa;
-            }
-            .total-row { 
-              font-weight: bold; 
-              background-color: #C8E6C9 !important;
-              color: #1B5E20 !important;
-            }
-            .total-row td {
-              background-color: #C8E6C9 !important;
-              color: #1B5E20 !important;
-              font-weight: bold;
-              border: 2px solid #4CAF50 !important;
-            }
-            .text-right { 
-              text-align: right; 
-            }
-            .text-center { 
-              text-align: center; 
-            }
-            .footer {
-              text-align: center; 
-              margin-top: 30px; 
-              font-size: 12px; 
-              color: #666;
-              background: #f8f9fa;
-              border-radius: 10px;
-              padding: 20px;
-              border-top: 3px solid #4CAF50;
-            }
-            .footer .thank-you {
-              font-size: 16px; 
-              font-weight: bold; 
-              color: #4CAF50;
-              margin-bottom: 10px;
-            }
-            .milk-item {
-              color: #7B1FA2;
-              font-weight: 600;
-            }
-            .amount-highlight {
-              color: #4CAF50;
-              font-weight: bold;
-            }
-            @media print {
-              body { 
-                margin: 0; 
-                background: white;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-              }
-              .receipt-container { 
-                border: 2px solid #4CAF50;
-                box-shadow: none;
-                max-width: none;
-                border-radius: 0;
-              }
-              .header {
-                background-color: #E8F5E9 !important;
-                border: 3px solid #4CAF50 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .dairy-name {
-                color: #1B5E20 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .address {
-                color: #388E3C !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .receipt-info {
-                background-color: #F3E5F5 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .info-left {
-                color: #7B1FA2 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .table th {
-                background-color: #FFE0B2 !important;
-                color: #E65100 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .total-row td {
-                background-color: #C8E6C9 !important;
-                color: #1B5E20 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .footer {
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-              .footer .thank-you {
-                color: #4CAF50 !important;
-                -webkit-print-color-adjust: exact !important;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="receipt-container">
-            <div class="header">
-              <div style="font-size: 10px; margin-bottom: 5px; color: #666; text-align: center;">|| श्री तुळजा भवानी प्रसन्न ||</div>
-              <div class="dairy-name">🥛 कामधेनु दुध संकलन केंद्र 🥛</div>
-              <div class="address">
-                ता. सिंगणापुर जि. परभणी<br>
-                 Phone: +91 98765 43210
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 12px; font-weight: bold;">
-                <span>📅 दिनांक: ${new Date(date).toLocaleDateString('en-IN')}</span>
-                <span>🧾 रसीद क्र.: ${receiptNo}</span>
-              </div>
-            </div>
-            
-            <div class="receipt-info">
-              <div class="info-row">
-                <span class="info-left">👤 नाव:</span>
-                <span class="info-right">${buyer.FullName || 'N/A'}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-left">📱 मोबाईल:</span>
-                <span class="info-right">${buyer.MobileNumber || 'N/A'}</span>
-              </div>
-            </div>
-            
-            <table class="table">
-              <thead>
-                <tr>
-                  <th style="width: 50%">तपशील</th>
-                  <th style="width: 15%">प्रमाण (लि)</th>
-                  <th style="width: 18%">दर (₹)</th>
-                  <th style="width: 17%">रक्कम (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${buyerMilkData
-                  .map(
-                    (milk) => `
-                  <tr>
-                    <td><span class="milk-item">${milk.MilkType === 'cow' ? '🐄 गाई दूध' : '🐃 म्हैस दूध'}</span><br><small style="color: #666;">(${milk.FatPercentage}% चरबी)</small></td>
-                    <td class="text-right"><strong>${parseFloat(milk.TotalQty).toFixed(2)}</strong></td>
-                    <td class="text-right">₹${parseFloat(milk.BuyerPrice).toFixed(2)}</td>
-                    <td class="text-right amount-highlight">₹${parseFloat(milk.TotalAmount).toFixed(2)}</td>
-                  </tr>
-                `
-                  )
-                  .join('')}
-                <tr class="total-row">
-                  <td><strong>🏆 एकूण</strong></td>
-                  <td class="text-right"><strong>${buyerMilkData.reduce((sum, milk) => sum + parseFloat(milk.TotalQty || 0), 0).toFixed(2)} लि</strong></td>
-                  <td class="text-center"><strong>-</strong></td>
-                  <td class="text-right"><strong>₹${buyerMilkData.reduce((sum, milk) => sum + parseFloat(milk.TotalAmount || 0), 0).toFixed(2)}</strong></td>
-                </tr>
-              </tbody>
-            </table>
-            
-            <div class="footer">
-              <div class="thank-you">🙏 आपल्या व्यवसायाबद्दल धन्यवाद! 🙏</div>
-              <div style="margin-top: 10px; color: #4CAF50; font-weight: bold;">💚 कामधेनु दुध संकलन केंद्र 💚</div>
-            </div>
-          </div>
-        </body>
-        </html>
-      `;
+      if (isMobile) {
+        // Mobile-friendly approach
+        handleMobilePrint(buyer, buyerMilkData, date, buyerId);
+      } else {
+        // Desktop approach
+        handleDesktopPrint(buyer, buyerMilkData, date, buyerId);
+      }
+    } catch (error) {
+      console.error('Error printing receipt:', error);
+      alert('Failed to generate receipt. Please try again.');
+    }
+  };
 
-      // Open new window and print
-      const printWindow = window.open('', '_blank');
+  // Mobile print function
+  const handleMobilePrint = (buyer, buyerMilkData, date, buyerId) => {
+    const receiptHtml = generateReceiptHTML(buyer, buyerMilkData, date, buyerId);
+
+    // Create a blob with the HTML content
+    const blob = new Blob([receiptHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    // Open in same window for mobile browsers
+    const currentContent = document.body.innerHTML;
+    document.body.innerHTML = receiptHtml;
+
+    // Add print styles to current document
+    const printStyle = document.createElement('style');
+    printStyle.innerHTML = `
+      @page {
+        size: A4;
+        margin: 0.5in;
+      }
+      @media print {
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 12px;
+          line-height: 1.4;
+          color: black !important;
+          -webkit-print-color-adjust: exact;
+          color-adjust: exact;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+      }
+    `;
+    document.head.appendChild(printStyle);
+
+    // Force immediate print
+    setTimeout(() => {
+      window.print();
+
+      // Restore original content after print
+      setTimeout(() => {
+        document.body.innerHTML = currentContent;
+        document.head.removeChild(printStyle);
+        URL.revokeObjectURL(url);
+        // Reload the page to restore React state
+        window.location.reload();
+      }, 1000);
+    }, 500);
+  };
+
+  // Desktop print function
+  const handleDesktopPrint = (buyer, buyerMilkData, date, buyerId) => {
+    const receiptHtml = generateReceiptHTML(buyer, buyerMilkData, date, buyerId);
+
+    try {
+      // Try to open new window
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+      if (!printWindow) {
+        // Fallback to mobile method if popup is blocked
+        alert('Popup blocked. Using alternative print method...');
+        handleMobilePrint(buyer, buyerMilkData, date, buyerId);
+        return;
+      }
+
       printWindow.document.write(receiptHtml);
       printWindow.document.close();
       printWindow.focus();
@@ -730,17 +543,310 @@ function MilkStore() {
           document.body.style.webkitPrintColorAdjust = 'exact';
           document.body.style.colorAdjust = 'exact';
         });
+        
+        window.addEventListener('afterprint', function() {
+          window.close();
+        });
       `;
       printWindow.document.head.appendChild(script);
 
       setTimeout(() => {
         printWindow.print();
-        printWindow.close();
       }, 1000);
     } catch (error) {
-      console.error('Error printing receipt:', error);
-      alert('Failed to generate receipt. Please try again.');
+      console.error('Desktop print failed, using mobile method:', error);
+      handleMobilePrint(buyer, buyerMilkData, date, buyerId);
     }
+  };
+
+  // Generate receipt HTML (shared function)
+  const generateReceiptHTML = (buyer, buyerMilkData, date, buyerId) => {
+    const receiptNo = `R${Date.now()}${buyerId}`;
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Milk Purchase Receipt</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 20px; 
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .receipt-container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            border-radius: 15px;
+            padding: 20px;
+            background: white;
+            border: 3px solid #4CAF50;
+          }
+          .header { 
+            text-align: center; 
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+            border-radius: 10px;
+            padding: 15px; 
+            margin-bottom: 20px; 
+            background-color: #E8F5E9;
+          }
+          .dairy-name { 
+            font-size: 20px; 
+            font-weight: bold; 
+            margin-bottom: 8px; 
+            color: #1B5E20;
+          }
+          .address { 
+            font-size: 12px; 
+            color: #388E3C; 
+            line-height: 1.4;
+            margin-top: 10px;
+          }
+          .receipt-info { 
+            margin: 20px 0; 
+            font-size: 13px;
+            background-color: #F3E5F5;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #9C27B0;
+          }
+          .info-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin: 10px 0; 
+            padding: 5px 0;
+            border-bottom: 1px solid #E1BEE7;
+          }
+          .info-row:last-child {
+            border-bottom: none;
+          }
+          .info-left {
+            font-weight: bold;
+            color: #7B1FA2;
+          }
+          .info-right {
+            font-weight: 600;
+            color: #333;
+          }
+          .table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+            font-size: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+          }
+          .table th, .table td { 
+            padding: 8px; 
+            text-align: left; 
+            border: 1px solid #ddd;
+          }
+          .table th { 
+            background-color: #FFE0B2;
+            color: #E65100;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+          }
+          .table td { 
+            font-size: 11px; 
+            background: white;
+          }
+          .total-row { 
+            font-weight: bold; 
+            background-color: #C8E6C9;
+            color: #1B5E20;
+          }
+          .total-row td {
+            background-color: #C8E6C9;
+            color: #1B5E20;
+            font-weight: bold;
+          }
+          .text-right { 
+            text-align: right; 
+          }
+          .text-center { 
+            text-align: center; 
+          }
+          .footer {
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 11px; 
+            color: #666;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-top: 3px solid #4CAF50;
+          }
+          .footer .thank-you {
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #4CAF50;
+            margin-bottom: 10px;
+          }
+          .milk-item {
+            color: #7B1FA2;
+            font-weight: 600;
+          }
+          .amount-highlight {
+            color: #4CAF50;
+            font-weight: bold;
+          }
+          
+          @media print {
+            @page {
+              size: A4;
+              margin: 0.5in;
+            }
+            body { 
+              margin: 0; 
+              background: white !important;
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .receipt-container { 
+              border: 2px solid #4CAF50 !important;
+              box-shadow: none;
+              max-width: none;
+              border-radius: 0;
+              margin: 0;
+              padding: 15px;
+            }
+            .header {
+              background-color: #E8F5E9 !important;
+              border: 2px solid #4CAF50 !important;
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            .dairy-name {
+              color: #1B5E20 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .address {
+              color: #388E3C !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .receipt-info {
+              background-color: #F3E5F5 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .info-left {
+              color: #7B1FA2 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .table th {
+              background-color: #FFE0B2 !important;
+              color: #E65100 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .total-row td {
+              background-color: #C8E6C9 !important;
+              color: #1B5E20 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .footer {
+              background-color: #f8f9fa !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            .footer .thank-you {
+              color: #4CAF50 !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          }
+          
+          @media screen and (max-width: 600px) {
+            .receipt-container {
+              margin: 10px;
+              padding: 15px;
+            }
+            .table {
+              font-size: 10px;
+            }
+            .table th, .table td {
+              padding: 5px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt-container">
+          <div class="header">
+            <div style="font-size: 10px; margin-bottom: 5px; color: #666; text-align: center;">|| श्री तुळजा भवानी प्रसन्न ||</div>
+            <div class="dairy-name">🥛 कामधेनु दुध संकलन केंद्र 🥛</div>
+            <div class="address">
+              ता. सिंगणापुर जि. परभणी<br>
+              Phone: +91 98765 43210
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 11px; font-weight: bold;">
+              <span>📅 दिनांक: ${new Date(date).toLocaleDateString('en-IN')}</span>
+              <span>🧾 रसीद क्र.: ${receiptNo}</span>
+            </div>
+          </div>
+          
+          <div class="receipt-info">
+            <div class="info-row">
+              <span class="info-left">👤 नाव:</span>
+              <span class="info-right">${buyer.FullName || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-left">📱 मोबाईल:</span>
+              <span class="info-right">${buyer.MobileNumber || 'N/A'}</span>
+            </div>
+          </div>
+          
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 45%">तपशील</th>
+                <th style="width: 18%">प्रमाण (लि)</th>
+                <th style="width: 18%">दर (₹)</th>
+                <th style="width: 19%">रक्कम (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${buyerMilkData
+                .map(
+                  (milk) => `
+                <tr>
+                  <td><span class="milk-item">${milk.MilkType === 'cow' ? '🐄 गाई दूध' : '🐃 म्हैस दूध'}</span><br><small style="color: #666;">(${milk.FatPercentage}% Fat)</small></td>
+                  <td class="text-right"><strong>${parseFloat(milk.TotalQty).toFixed(2)}</strong></td>
+                  <td class="text-right">₹${parseFloat(milk.BuyerPrice).toFixed(2)}</td>
+                  <td class="text-right amount-highlight">₹${parseFloat(milk.TotalAmount).toFixed(2)}</td>
+                </tr>
+              `
+                )
+                .join('')}
+              <tr class="total-row">
+                <td><strong>🏆 एकूण</strong></td>
+                <td class="text-right"><strong>${buyerMilkData.reduce((sum, milk) => sum + parseFloat(milk.TotalQty || 0), 0).toFixed(2)} लि</strong></td>
+                <td class="text-center"><strong>-</strong></td>
+                <td class="text-right"><strong>₹${buyerMilkData.reduce((sum, milk) => sum + parseFloat(milk.TotalAmount || 0), 0).toFixed(2)}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="footer">
+            <div class="thank-you">🙏 आपल्या व्यवसायाबद्दल धन्यवाद! 🙏</div>
+            <div style="margin-top: 10px; color: #4CAF50; font-weight: bold;">💚 कामधेनु दुध संकलन केंद्र 💚</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   };
 
   // Calculate total amount

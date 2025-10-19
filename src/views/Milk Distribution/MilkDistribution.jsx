@@ -439,277 +439,398 @@ function MilkDistribution() {
       // Get seller information
       const sellerInfo = sellersData.find((seller) => seller.Id === sellerId) || {};
 
-      // Generate receipt HTML
-      const receiptHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>दूध वितरण पावती</title>
-          <style>
-            @media print {
-              body { 
-                margin: 0; 
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
-              * {
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
-            }
-            body {
-              font-family: Arial, sans-serif;
-              margin: 0;
-              padding: 15px;
-              background: white;
-              color: #000 !important;
-            }
-            .receipt-container {
-              width: 650px;
-              margin: 0 auto;
-              border: 3px solid #2c5aa0 !important;
-              border-radius: 12px;
-              background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-              box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-              overflow: hidden;
-            }
-            .receipt-header {
-              background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%) !important;
-              color: white !important;
-              padding: 20px;
-              text-align: center;
-              border-bottom: 4px solid #ffd700 !important;
-            }
-            .blessing {
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 10px;
-              color: #ffd700 !important;
-              text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            }
-            .dairy-name {
-              font-size: 28px;
-              font-weight: bold;
-              margin-bottom: 8px;
-              color: white !important;
-              text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            }
-            .dairy-address {
-              font-size: 15px;
-              margin-bottom: 18px;
-              color: #e8f0ff !important;
-            }
-            .receipt-info {
-              display: flex;
-              justify-content: space-between;
-              font-size: 14px;
-              margin-top: 12px;
-              padding-top: 12px;
-              border-top: 1px solid rgba(255,255,255,0.3);
-              color: #e8f0ff !important;
-            }
-            .receipt-body {
-              padding: 25px;
-              background: white;
-            }
-            .customer-info {
-              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-              padding: 20px;
-              border-radius: 10px;
-              margin-bottom: 25px;
-              border: 2px solid #dee2e6 !important;
-            }
-            .customer-info h3 {
-              margin: 0 0 15px 0;
-              color: #2c5aa0 !important;
-              font-size: 20px;
-              border-bottom: 3px solid #2c5aa0 !important;
-              padding-bottom: 8px;
-            }
-            .customer-details {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 15px;
-              margin-top: 15px;
-            }
-            .customer-field {
-              font-size: 16px;
-            }
-            .customer-field strong {
-              color: #495057 !important;
-            }
-            .milk-table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 20px;
-              border: 3px solid #2c5aa0 !important;
-              border-radius: 10px;
-              overflow: hidden;
-            }
-            .milk-table th {
-              background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%) !important;
-              color: white !important;
-              padding: 15px 12px;
-              text-align: center;
-              font-weight: bold;
-              font-size: 16px;
-              border-bottom: 3px solid #ffd700 !important;
-            }
-            .milk-table td {
-              padding: 15px 12px;
-              text-align: center;
-              border-bottom: 1px solid #dee2e6 !important;
-              font-size: 15px;
-              background: white;
-            }
-            .milk-table tr:nth-child(even) td {
-              background: #f8f9fa !important;
-            }
-            .milk-table tr:hover td {
-              background: #e3f2fd !important;
-            }
-            .total-row {
-              background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
-              color: white !important;
-              font-weight: bold;
-            }
-            .total-row td {
-              background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
-              color: white !important;
-              border-bottom: none !important;
-              font-size: 18px !important;
-              padding: 20px 12px !important;
-            }
-            .receipt-footer {
-              text-align: center;
-              margin-top: 30px;
-              padding-top: 25px;
-              border-top: 3px solid #2c5aa0 !important;
-              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-              border-radius: 10px;
-              padding: 20px;
-            }
-            .thank-you {
-              color: #2c5aa0 !important;
-              font-weight: bold;
-              font-size: 20px;
-              margin-bottom: 8px;
-            }
-            .footer-note {
-              color: #6c757d !important;
-              font-size: 14px;
-            }
-            .type-badge {
-              display: inline-block;
-              padding: 6px 12px;
-              border-radius: 18px;
-              font-size: 13px;
-              font-weight: bold;
-              color: white !important;
-            }
-            .type-cow {
-              background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
-            }
-            .type-buffalo {
-              background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
-              color: #000 !important;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="receipt-container">
-            <div class="receipt-header">
-              <div class="blessing">|| श्री तुळजा भवानी प्रसन्न ||</div>
-              <div class="dairy-name">कामधेनु दुध संकलन केंद्र</div>
-              <div class="dairy-address">ता. सिंगणापुर जि. परभणी</div>
-              <div class="receipt-info">
-                <span>तारीख: ${new Date(date).toLocaleDateString('en-IN')}</span>
-                <span>पावती क्र: ${Date.now().toString().slice(-6)}</span>
-              </div>
-            </div>
-            
-            <div class="receipt-body">
-              <div class="customer-info">
-                <h3>ग्राहक माहिती</h3>
-                <div class="customer-details">
-                  <div class="customer-field">
-                    <strong>नाव:</strong> ${sellerInfo.FullName || 'N/A'}
-                  </div>
-                  <div class="customer-field">
-                    <strong>मोबाईल:</strong> ${sellerInfo.MobileNumber || 'N/A'}
-                  </div>
-                </div>
-              </div>
+      // Check if mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-              <table class="milk-table">
-                <thead>
-                  <tr>
-                    <th>तपशील</th>
-                    <th>प्रमाण</th>
-                    <th>दर</th>
-                    <th>रक्कम</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${filteredData
-                    .map(
-                      (item) => `
-                    <tr>
-                      <td>
-                        <span class="type-badge ${item.MilkType === 'cow' ? 'type-cow' : 'type-buffalo'}">
-                          ${item.MilkType === 'cow' ? 'गाईचे दूध' : 'म्हशीचे दूध'}
-                        </span>
-                        <br>
-                        <small>(चरबी: ${item.FatPercentage || 0}%)</small>
-                      </td>
-                      <td>${item.TotalQty || 0} लिटर</td>
-                      <td>₹${item.SellerPrice || 0}</td>
-                      <td>₹${item.TotalAmount || 0}</td>
-                    </tr>
-                  `
-                    )
-                    .join('')}
-                  <tr class="total-row">
-                    <td colspan="3"><strong>एकूण रक्कम</strong></td>
-                    <td><strong>₹${filteredData.reduce((sum, item) => sum + (parseFloat(item.TotalAmount) || 0), 0).toFixed(2)}</strong></td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="receipt-footer">
-                <div class="thank-you">धन्यवाद!</div>
-                <div class="footer-note">कामधेनु दुध संकलन केंद्र</div>
-              </div>
-            </div>
-          </div>
-
-          <script>
-            window.onload = function() {
-              window.print();
-              window.onafterprint = function() {
-                window.close();
-              };
-            };
-          </script>
-        </body>
-        </html>
-      `;
-
-      // Open print window
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(receiptHTML);
-        printWindow.document.close();
+      if (isMobile) {
+        // Mobile-friendly approach
+        handleMobilePrintDistribution(sellerInfo, filteredData, date, sellerId);
       } else {
-        alert('कृपया पॉप-अप ब्लॉकर बंद करा आणि पुन्हा प्रयत्न करा');
+        // Desktop approach
+        handleDesktopPrintDistribution(sellerInfo, filteredData, date, sellerId);
       }
     } catch (error) {
       console.error('Error generating receipt:', error);
       alert('पावती तयार करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.');
     }
+  };
+
+  // Mobile print function for distribution
+  const handleMobilePrintDistribution = (sellerInfo, filteredData, date, sellerId) => {
+    const receiptHtml = generateDistributionReceiptHTML(sellerInfo, filteredData, date, sellerId);
+
+    // Create a blob with the HTML content
+    const blob = new Blob([receiptHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    // Open in same window for mobile browsers
+    const currentContent = document.body.innerHTML;
+    document.body.innerHTML = receiptHtml;
+
+    // Add print styles to current document
+    const printStyle = document.createElement('style');
+    printStyle.innerHTML = `
+      @page {
+        size: A4;
+        margin: 0.5in;
+      }
+      @media print {
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 12px;
+          line-height: 1.4;
+          color: black !important;
+          -webkit-print-color-adjust: exact;
+          color-adjust: exact;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+      }
+    `;
+    document.head.appendChild(printStyle);
+
+    // Force immediate print
+    setTimeout(() => {
+      window.print();
+
+      // Restore original content after print
+      setTimeout(() => {
+        document.body.innerHTML = currentContent;
+        document.head.removeChild(printStyle);
+        URL.revokeObjectURL(url);
+        // Reload the page to restore React state
+        window.location.reload();
+      }, 1000);
+    }, 500);
+  };
+
+  // Desktop print function for distribution
+  const handleDesktopPrintDistribution = (sellerInfo, filteredData, date, sellerId) => {
+    const receiptHtml = generateDistributionReceiptHTML(sellerInfo, filteredData, date, sellerId);
+
+    try {
+      // Try to open new window
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+      if (!printWindow) {
+        // Fallback to mobile method if popup is blocked
+        alert('Popup blocked. Using alternative print method...');
+        handleMobilePrintDistribution(sellerInfo, filteredData, date, sellerId);
+        return;
+      }
+
+      printWindow.document.write(receiptHtml);
+      printWindow.document.close();
+      printWindow.focus();
+
+      // Add script to enable background printing
+      const script = printWindow.document.createElement('script');
+      script.innerHTML = `
+        window.addEventListener('beforeprint', function() {
+          document.body.style.webkitPrintColorAdjust = 'exact';
+          document.body.style.colorAdjust = 'exact';
+        });
+        
+        window.addEventListener('afterprint', function() {
+          window.close();
+        });
+      `;
+      printWindow.document.head.appendChild(script);
+
+      setTimeout(() => {
+        printWindow.print();
+      }, 1000);
+    } catch (error) {
+      console.error('Desktop print failed, using mobile method:', error);
+      handleMobilePrintDistribution(sellerInfo, filteredData, date, sellerId);
+    }
+  };
+
+  // Generate distribution receipt HTML (shared function)
+  const generateDistributionReceiptHTML = (sellerInfo, filteredData, date, sellerId) => {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>दूध वितरण पावती</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          @media print {
+            @page {
+              size: A4;
+              margin: 0.5in;
+            }
+            body { 
+              margin: 0; 
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: white;
+            color: #000 !important;
+          }
+          .receipt-container {
+            max-width: 650px;
+            margin: 0 auto;
+            border: 3px solid #2c5aa0 !important;
+            border-radius: 12px;
+            background: white;
+            overflow: hidden;
+          }
+          .receipt-header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%) !important;
+            color: white !important;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid #ffd700 !important;
+          }
+          .blessing {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffd700 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+          }
+          .dairy-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+          }
+          .dairy-address {
+            font-size: 14px;
+            margin-bottom: 18px;
+            color: #e8f0ff !important;
+          }
+          .receipt-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            color: #e8f0ff !important;
+          }
+          .receipt-body {
+            padding: 20px;
+            background: white;
+          }
+          .customer-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #dee2e6 !important;
+          }
+          .customer-info h3 {
+            margin: 0 0 12px 0;
+            color: #2c5aa0 !important;
+            font-size: 18px;
+            border-bottom: 3px solid #2c5aa0 !important;
+            padding-bottom: 6px;
+          }
+          .customer-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+          }
+          .customer-field {
+            font-size: 14px;
+          }
+          .customer-field strong {
+            color: #495057 !important;
+          }
+          .milk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border: 2px solid #2c5aa0 !important;
+            border-radius: 8px;
+            overflow: hidden;
+          }
+          .milk-table th {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%) !important;
+            color: white !important;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 2px solid #ffd700 !important;
+          }
+          .milk-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6 !important;
+            font-size: 12px;
+            background: white;
+          }
+          .milk-table tr:nth-child(even) td {
+            background: #f8f9fa !important;
+          }
+          .milk-table tr:hover td {
+            background: #e3f2fd !important;
+          }
+          .total-row {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            font-weight: bold;
+          }
+          .total-row td {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            border-bottom: none !important;
+            font-size: 14px !important;
+            padding: 15px 8px !important;
+          }
+          .receipt-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 3px solid #2c5aa0 !important;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 15px;
+          }
+          .thank-you {
+            color: #2c5aa0 !important;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 6px;
+          }
+          .footer-note {
+            color: #6c757d !important;
+            font-size: 12px;
+          }
+          .type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white !important;
+          }
+          .type-cow {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+          }
+          .type-buffalo {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+            color: #000 !important;
+          }
+          
+          @media screen and (max-width: 600px) {
+            .receipt-container {
+              margin: 5px;
+              border-radius: 8px;
+            }
+            .receipt-header {
+              padding: 15px;
+            }
+            .dairy-name {
+              font-size: 20px;
+            }
+            .blessing {
+              font-size: 14px;
+            }
+            .receipt-body {
+              padding: 15px;
+            }
+            .customer-details {
+              grid-template-columns: 1fr;
+              gap: 8px;
+            }
+            .milk-table {
+              font-size: 10px;
+            }
+            .milk-table th, .milk-table td {
+              padding: 8px 4px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt-container">
+          <div class="receipt-header">
+            <div class="blessing">|| श्री तुळजा भवानी प्रसन्न ||</div>
+            <div class="dairy-name">कामधेनु दुध संकलन केंद्र</div>
+            <div class="dairy-address">ता. सिंगणापुर जि. परभणी</div>
+            <div class="receipt-info">
+              <span>तारीख: ${new Date(date).toLocaleDateString('en-IN')}</span>
+              <span>पावती क्र: ${Date.now().toString().slice(-6)}</span>
+            </div>
+          </div>
+          
+          <div class="receipt-body">
+            <div class="customer-info">
+              <h3>ग्राहक माहिती</h3>
+              <div class="customer-details">
+                <div class="customer-field">
+                  <strong>नाव:</strong> ${sellerInfo.FullName || 'N/A'}
+                </div>
+                <div class="customer-field">
+                  <strong>मोबाईल:</strong> ${sellerInfo.MobileNumber || 'N/A'}
+                </div>
+              </div>
+            </div>
+
+            <table class="milk-table">
+              <thead>
+                <tr>
+                  <th>तपशील</th>
+                  <th>प्रमाण</th>
+                  <th>दर</th>
+                  <th>रक्कम</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredData
+                  .map(
+                    (item) => `
+                  <tr>
+                    <td>
+                      <span class="type-badge ${item.MilkType === 'cow' ? 'type-cow' : 'type-buffalo'}">
+                        ${item.MilkType === 'cow' ? 'गाईचे दूध' : 'म्हशीचे दूध'}
+                      </span>
+                      <br>
+                      <small>(Fat: ${item.FatPercentage || 0}%)</small>
+                    </td>
+                    <td>${item.TotalQty || 0} लिटर</td>
+                    <td>₹${item.SellerPrice || 0}</td>
+                    <td>₹${item.TotalAmount || 0}</td>
+                  </tr>
+                `
+                  )
+                  .join('')}
+                <tr class="total-row">
+                  <td colspan="3"><strong>एकूण रक्कम</strong></td>
+                  <td><strong>₹${filteredData.reduce((sum, item) => sum + (parseFloat(item.TotalAmount) || 0), 0).toFixed(2)}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="receipt-footer">
+              <div class="thank-you">धन्यवाद!</div>
+              <div class="footer-note">कामधेनु दुध संकलन केंद्र</div>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   };
 
   // Pagination calculations

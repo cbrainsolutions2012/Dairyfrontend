@@ -152,7 +152,7 @@ const NavRight = () => {
             <Dropdown.Menu align="end" className="profile-notification">
               <div className="pro-head">
                 <img src={avatar1} className="img-radius" alt="User Profile" />
-                <span>Temple Admin</span>
+                <span>कामधेनू दुध संकलन केंद्र</span>
                 <Link to="#" className="dud-logout" title="Logout" onClick={handleLogout}>
                   <i className="feather icon-log-out" />
                 </Link>
